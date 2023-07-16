@@ -12,6 +12,6 @@ Es un proyecto realizado para la materia de Ingeniería del Software
 *Desarrolladores:*
  * Paola Ascanio
  * Diego Vellojín
- * Rafae Marcano
+ * Rafael Marcano
  * Pedro Leal
  * Estefany Torres
