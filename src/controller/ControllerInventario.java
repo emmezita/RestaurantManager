@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,12 +33,13 @@ import view.viewinventario.PanelConsultarLotes;
 import view.viewinventario.PanelConsultarProveedores;
 import view.viewinventario.PanelIngresarLotes;
 import view.viewinventario.PanelIngresarProveedor;
+import view.viewinventario.PanelProveedor;
 
 /**
  *
  * Desarrollo: Paola Ascanio | Intefaces: Estefany Torres
  */
-public class ControllerInventario implements ActionListener, ItemListener {
+public class ControllerInventario implements ActionListener, ItemListener, KeyListener {
     
     private final SistemaPrincipal panelSistema;
     private final PanelConsultarInventario panelConsultar = new PanelConsultarInventario();
@@ -47,7 +50,6 @@ public class ControllerInventario implements ActionListener, ItemListener {
     private final PanelConsultarProveedores panelConsultarProveedores = new PanelConsultarProveedores();
     private final PanelIngresarLotes panelIngresarLotes = new PanelIngresarLotes();
     private final PanelIngresarProveedor panelIngresarProveedor = new PanelIngresarProveedor();
-    private Proveedor proveedor = new Proveedor();
     
     private static final ArrayList<Proveedor> listaProveedores = new ArrayList<>();
     
@@ -71,7 +73,8 @@ public class ControllerInventario implements ActionListener, ItemListener {
     private Date fechaActual;
     
     private final Inventario inventario = new Inventario();
-    private Insumo i = new Insumo();  
+    private Insumo i = new Insumo(); 
+    private Proveedor proveedor = new Proveedor();
     
     public ControllerInventario(SistemaPrincipal panelSistema) {
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -79,17 +82,15 @@ public class ControllerInventario implements ActionListener, ItemListener {
         calendar.set(Calendar.SECOND, 0);  
         calendar.set(Calendar.MILLISECOND, 0);
         fechaActual = calendar.getTime();
-        Insumo in = new Insumo("Bebidas",17 , "Vino blanco", "Botella",15,fechaActual);
-        inventario.agregarInsumo(in);
         
-        inventario.revisarInsumosVencidos(fechaActual);
+        /*inventario.revisarInsumosVencidos(fechaActual);
         if(inventario.revisarInsumosVencidos()){
             panelConsultar.botonAdvertencia.setEnabled(true);
             panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertenciaActivado.png")));
         } else {
             panelConsultar.botonAdvertencia.setEnabled(false);
             panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
-        }
+        }*/
         //Ventana del sistema
         this.panelSistema = panelSistema;
         this.panelSistema.botonInventario.addActionListener(this);
@@ -147,7 +148,7 @@ public class ControllerInventario implements ActionListener, ItemListener {
         PS = null;
         CN= new ConexionServidor();
         
-        setDatos();
+        setDatosInventario();
         setDatosProveedor();
         
         /*inventario.revisarInsumoVencido(fechaActual, inventario.getListaInsumos());
@@ -169,7 +170,8 @@ public class ControllerInventario implements ActionListener, ItemListener {
                  ||panelIngresar.txtNombreInsumo.getText().equals("Nombre")
                  //||panelIngresar.jDateFechaVencimiento.getDate()==null
                  ||panelIngresar.comboBoxTipoInsumo.getSelectedIndex()==0
-                 ||panelIngresar.comboBoxUnidad.getSelectedIndex()==0);       
+                 ||panelIngresar.comboBoxUnidad.getSelectedIndex()==0) 
+                 ||panelIngresar.comboBoxProveedor.getSelectedIndex()==0;
     }
     
     // Limpia el panel de ingresar
@@ -184,8 +186,7 @@ public class ControllerInventario implements ActionListener, ItemListener {
         panelIngresar.txtNombreInsumo.setText("Nombre");
         panelIngresar.comboBoxTipoInsumo.setSelectedIndex(0);
         panelIngresar.comboBoxUnidad.setSelectedIndex(0);
-        //panelIngresar.spinnerID.setModel(new javax.swing.SpinnerNumberModel(1, 1, 1000, 1));
-        //panelIngresar.spinnerCantidad.setModel(new javax.swing.SpinnerNumberModel(1.0d, 1.0d, 1000.0d, 1.0d));
+        panelIngresar.comboBoxProveedor.setSelectedIndex(0);
     }
     
         //Este metodo resetea los campos que se encuentran en el panel de registrar comensal
@@ -202,22 +203,21 @@ public class ControllerInventario implements ActionListener, ItemListener {
     }
    
      //Consultar Base de Datos
-    private DefaultTableModel setColumnas(){
+    private DefaultTableModel setColumnasInventario(){
         DT = new DefaultTableModel();
         DT.addColumn("idInsumo");
         DT.addColumn("tipoinsumo");
         DT.addColumn("unidad");
         DT.addColumn("cantidad");
         DT.addColumn("vencido");
-        DT.addColumn("fechavencimiento");
         DT.addColumn("nombre");
-       
+        DT.addColumn("proveedor");
         return DT;
     }
     
-    public DefaultTableModel setDatos(){
+    public DefaultTableModel setDatosInventario(){
         try{
-            setColumnas();
+            setColumnasInventario();
             PS = CN.getConnection().prepareStatement(SQL_SELECT);
             RS = PS.executeQuery();
             while (RS.next()){
@@ -226,9 +226,9 @@ public class ControllerInventario implements ActionListener, ItemListener {
                 String unidad = RS.getString(4);
                 Double cantidad = RS.getDouble(5);
                 boolean vencido = RS.getBoolean(6);
-                Date fechaVencimiento = new java.util.Date(RS.getDate(7).getTime());
-                String nombre = RS.getString(8);               
-                Insumo insumo = new Insumo(tipoInsumo,idInsumo,nombre,unidad,cantidad,fechaVencimiento,vencido);
+                String nombre = RS.getString(7);
+                String proveedor = RS.getString(8);
+                Insumo insumo = new Insumo(tipoInsumo,idInsumo,nombre,unidad,cantidad,vencido,proveedor);
                 inventario.agregarInsumo(insumo);
             }
         }
@@ -271,7 +271,7 @@ public class ControllerInventario implements ActionListener, ItemListener {
                 String rif = RS_PROVEEDOR.getString(5);
                 
                 // Crea objeto Empresa y lo agrega a su lista
-                Proveedor proveedor = new Proveedor(nombre, rif, correo, direccion, telefono);
+                Proveedor proveedor = new Proveedor(nombre, direccion, telefono, correo, rif);
                 listaProveedores.add(proveedor);
                 panelIngresar.comboBoxProveedor.addItem(nombre);
             }
@@ -288,6 +288,86 @@ public class ControllerInventario implements ActionListener, ItemListener {
         }
         return DT_PROVEEDOR;
     }
+    
+    public void mostrarCamposConsultarProveedores(boolean visible){
+        panelConsultarProveedores.fondoDetalleProveedor.setVisible(visible);
+        panelConsultarProveedores.labelImagen.setVisible(visible);
+        panelConsultarProveedores.labelCirculo.setVisible(visible);
+        panelConsultarProveedores.labelLinea.setVisible(visible);
+        panelConsultarProveedores.labelNombre.setVisible(visible);
+        panelConsultarProveedores.labelCedula.setVisible(visible);
+        panelConsultarProveedores.labelRol.setVisible(visible);
+        panelConsultarProveedores.iconoMail.setVisible(visible);
+        panelConsultarProveedores.iconoMunicipio.setVisible(visible);
+        panelConsultarProveedores.iconoTelefono.setVisible(visible);
+        panelConsultarProveedores.labelMail.setVisible(visible);
+        panelConsultarProveedores.labelMunicipio.setVisible(visible);
+        panelConsultarProveedores.labelTelefono.setVisible(visible);
+        panelConsultarProveedores.labelTItuloInsumos.setVisible(visible);
+        panelConsultarProveedores.jScrollPaneInsumos.setVisible(visible);
+        panelConsultarProveedores.panelInsumos.setVisible(visible);
+        panelConsultarProveedores.fondoTitulo1.setVisible(visible);
+        panelConsultarProveedores.fondoPanelInsumos.setVisible(false);
+    }
+    
+    public void cargarInventarioProveedor(String nombre){
+        panelConsultarProveedores.panelInsumos.removeAll();
+        for(Insumo i: inventario.getListaInsumos()){
+            if(i.getProveedor().equals(nombre)){
+                PanelInsumo panel = new PanelInsumo();
+                panel.setSize(310,80);
+                panel.labelNombreInsumo.setText(i.getNombre());
+                panel.labelCantidad.setText(String.valueOf(i.getCantidad()));
+                panel.labelID.setText(String.valueOf(i.getId()));
+                panel.labelID.setVisible(false);
+                panel.botonVerInsumo.addActionListener(new ActionListener() {
+                    @Override
+                        public void actionPerformed(ActionEvent e) {
+                            frameVer.setTitle("Restaurant Manager");
+                            frameVer.setSize(355,525);
+                            frameVer.setLocationRelativeTo(null);
+                            frameVer.setResizable(false);
+                            frameVer.labelTItulo.setText("Datos del Insumo");
+                            frameVer.txtNombreInsumo.setText(i.getNombre());
+                            frameVer.txtNombreInsumo.setEditable(false);
+                            frameVer.comboBoxUnidad.setSelectedItem(i.getUnidad());
+                            frameVer.comboBoxTipoInsumo.setSelectedItem(i.getTipoInsumo());
+                            frameVer.setVisible(true);
+                        }
+                });
+                panelConsultarProveedores.panelInsumos.add(panel);
+            }
+        }
+        panelConsultarProveedores.panelInsumos.revalidate();
+        panelConsultarProveedores.panelInsumos.repaint();
+    }
+    
+    public void cargarProveedores(){
+        panelConsultarProveedores.panelProveedores.removeAll();
+        mostrarCamposConsultarProveedores(false);
+        for(Proveedor p: listaProveedores){
+            PanelProveedor panelP = new PanelProveedor();
+            panelP.setSize(308, 80);
+            System.out.println(p.getNombre());
+            panelP.labelNombreProveedor.setText(p.getNombre());
+            panelP.botonProveedor.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    mostrarCamposConsultarProveedores(true);
+                    panelConsultarProveedores.labelNombre.setText(p.getNombre());
+                    panelConsultarProveedores.labelCedula.setText(p.getTelefono());
+                    panelConsultarProveedores.labelMail.setText(p.getCorreo());
+                    panelConsultarProveedores.labelMunicipio.setText(p.getDireccion());
+                    panelConsultarProveedores.labelTelefono.setText(p.getTelefono());
+                    cargarInventarioProveedor(p.getNombre());
+                }
+            });
+            panelConsultarProveedores.panelProveedores.add(panelP);
+        }
+        panelConsultarProveedores.panelProveedores.revalidate();
+        panelConsultarProveedores.panelProveedores.repaint();
+    }
+    
     
     /* Limpia todos los paneles y dependiendo del valor del combobox de filtrado, 
        muestra ciertos insumos o no en base a su tipo */ 
@@ -331,13 +411,10 @@ public class ControllerInventario implements ActionListener, ItemListener {
                             frameVer.setResizable(false);
 
                             frameVer.labelTItulo.setText("Datos del Insumo");
-                            //frameVer.spinnerID.setValue(i.getId());
-                            //frameVer.spinnerCantidad.setValue(i.getCantidad());
                             frameVer.txtNombreInsumo.setText(i.getNombre());
                             frameVer.txtNombreInsumo.setEditable(false);
                             frameVer.comboBoxUnidad.setSelectedItem(i.getUnidad());
                             frameVer.comboBoxTipoInsumo.setSelectedItem(i.getTipoInsumo());
-                            //frameVer.jDateFechaVencimiento.setDate(i.getFechaVencimiento());
 
                             frameVer.setVisible(true);
                         }
@@ -352,6 +429,17 @@ public class ControllerInventario implements ActionListener, ItemListener {
         panelConsultar.panelInsumosVencidos.repaint();
     }
     
+    public int generarID(){
+        int numMax = 0;
+        for (int i = 0; i<inventario.getListaInsumos().size();i++){
+            int num=inventario.getListaInsumos().get(i).getId();
+            if(num > numMax){
+                numMax = num;
+            }
+        }
+        return numMax + 1;
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         
@@ -359,15 +447,15 @@ public class ControllerInventario implements ActionListener, ItemListener {
         
         //Boton icono de Inventario
         if(e.getSource()==panelSistema.botonInventario){
-            inventario.revisarInsumosVencidos(fechaActual);
             cargarInventario (panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
+            /*inventario.revisarInsumosVencidos(fechaActual);
             if(inventario.revisarInsumosVencidos()){
                 panelConsultar.botonAdvertencia.setEnabled(true);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertenciaActivado.png")));
             } else {
                 panelConsultar.botonAdvertencia.setEnabled(false);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
-            }
+            }*/
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -400,7 +488,6 @@ public class ControllerInventario implements ActionListener, ItemListener {
         }
         
         if(e.getSource() == panelConsultar.botonAdvertencia){
-            inventario.revisarInsumosVencidos(fechaActual);
             inventario.mandarMensajeInsumosVencidos();
         }
         
@@ -444,6 +531,7 @@ public class ControllerInventario implements ActionListener, ItemListener {
         }
         
         if(e.getSource()==panelConsultar.botonProveedor){
+            cargarProveedores();
             panelConsultarProveedores.setSize(926,720);
             panelConsultarProveedores.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -456,14 +544,14 @@ public class ControllerInventario implements ActionListener, ItemListener {
         
         if(e.getSource()==panelIngresar.botonRegresarI){
             cargarInventario (panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
-            inventario.revisarInsumosVencidos(fechaActual);
+            /*inventario.revisarInsumosVencidos(fechaActual);
             if(inventario.revisarInsumosVencidos()){
                 panelConsultar.botonAdvertencia.setEnabled(true);
                 panelConsultar.fondoBotonAdvertencia.setEnabled(true);
             } else {
                 panelConsultar.botonAdvertencia.setEnabled(false);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
-            }
+            }*/
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -473,80 +561,72 @@ public class ControllerInventario implements ActionListener, ItemListener {
             resetearCamposIngresar();
         }        
         
-        /*if (e.getSource()==panelIngresar.botonRegistrar){
+        if (e.getSource()==panelIngresar.botonRegistrar){
             
             boolean validado = true;
             // Campos vacios
             if (camposOpcionIngresar()){
                 String nombre = panelIngresar.txtNombreInsumo.getText();
-                int ID = (int) panelIngresar.spinnerID.getValue();
+                int ID = generarID();
                 if (!inventario.iDRepetido(ID)) {
                     if(i.validarInsumo(nombre)){
                         if(!(inventario.nombreRepetido(nombre))){
-                            Date fechaVencimiento = panelIngresar.jDateFechaVencimiento.getDate();
-                            if (fechaVencimiento.after(fechaActual)) {
-                                String tipo = panelIngresar.comboBoxTipoInsumo.getSelectedItem().toString();
-                                double cantidad = (double) panelIngresar.spinnerCantidad.getValue();
-                                String unidad = panelIngresar.comboBoxUnidad.getSelectedItem().toString();
-                                // Verifica que los conjuntos de unidades y tipo de insumo introducidas tengan cierta logica
-                                if (unidad.equals("Litro") || unidad.equals("Botella")){
-                                    if (tipo.equals("Carnes") || tipo.equals("Frutas") || tipo.equals("Vegetales")) {
-                                        JOptionPane.showMessageDialog(null,"Este tipo de producto no puede tener la unidad en "+unidad, "Advertencia", JOptionPane.WARNING_MESSAGE);
-                                        validado = false;
-                                    }
+                            String tipo = panelIngresar.comboBoxTipoInsumo.getSelectedItem().toString();
+                            String unidad = panelIngresar.comboBoxUnidad.getSelectedItem().toString();
+                            String proveedor = panelIngresar.comboBoxProveedor.getSelectedItem().toString();
+                            // Verifica que los conjuntos de unidades y tipo de insumo introducidas tengan cierta logica
+                            if (unidad.equals("Litro") || unidad.equals("Botella")){
+                                if (tipo.equals("Carnes") || tipo.equals("Frutas") || tipo.equals("Vegetales")) {
+                                    JOptionPane.showMessageDialog(null,"Este tipo de producto no puede tener la unidad en "+unidad, "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                    validado = false;
                                 }
-                                if (unidad.equals("Kilogramo")){
-                                    if(tipo.equals("Bebidas")) {
-                                        JOptionPane.showMessageDialog(null,"Este tipo de producto no puede tener la unidad en Kilogramo", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                                        validado = false;
-                                    }
+                            }
+                            if (unidad.equals("Kilogramo")){
+                                if(tipo.equals("Bebidas")) {
+                                    JOptionPane.showMessageDialog(null,"Este tipo de producto no puede tener la unidad en Kilogramo", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                    validado = false;
                                 }
-                                   if (validado) {
-                                    Insumo in = new Insumo(tipo, ID, nombre, unidad,cantidad,fechaVencimiento);
+                            }
+                            if (validado) {
+                                Insumo in = new Insumo(tipo, ID, nombre, unidad, proveedor);
                                     try{
-                                                java.sql.Date sqlDate = new java.sql.Date(fechaVencimiento.getTime());
-                                                PS=CN.getConnection().prepareStatement(SQL_INSERT);
-                                                PS.setInt(1, ID);
-                                                PS.setString(2, tipo);
-                                                PS.setString(3, unidad);
-                                                PS.setDouble(4, cantidad);
-                                                PS.setBoolean(5, false);
-                                                PS.setDate(6, sqlDate); 
-                                                PS.setString(7, nombre);
-                                                
-                                                int res = PS.executeUpdate();
-                                                if (res > 0){
-                                                    inventario.agregarInsumo(in);
-                                                    JOptionPane.showMessageDialog(null, "El insumo ha sido registrado con éxito", "", 1);
-                                                }
-                                            } catch(SQLException ex){   
-                                                JOptionPane.showMessageDialog(null, "Error al guardar los datos del insumo en la base de datos: " +ex.getMessage(), "Error", 0);
-                                            }
-                                            finally{
-                                                PS=null;
-                                                CN.desconectar();
-                                            }
-                                    //JOptionPane.showMessageDialog(null, "El insumo ha sido registrado con éxito", "", 1);
-                                    // Crear panel de insumo 
-                                    cargarInventario (panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
-                                    inventario.revisarInsumosVencidos(fechaActual);
-                                    if(inventario.revisarInsumosVencidos()){
-                                        panelConsultar.botonAdvertencia.setEnabled(true);
-                                        panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertenciaActivado.png")));
-                                    } else {
-                                        panelConsultar.botonAdvertencia.setEnabled(false);
-                                        panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
+                                        PS=CN.getConnection().prepareStatement(SQL_INSERT);
+                                        PS.setInt(1, ID);
+                                        PS.setString(2, tipo);
+                                        PS.setString(3, unidad);
+                                        PS.setDouble(4, 0);
+                                        PS.setBoolean(5, false);
+                                        PS.setDate(6, null); 
+                                        PS.setString(7, nombre);
+                                        int res = PS.executeUpdate();
+                                        if (res > 0){
+                                            inventario.agregarInsumo(in);
+                                            JOptionPane.showMessageDialog(null, "El insumo ha sido registrado con éxito", "", 1);
+                                        }
+                                    } catch(SQLException ex){   
+                                        JOptionPane.showMessageDialog(null, "Error al guardar los datos del insumo en la base de datos: " +ex.getMessage(), "Error", 0);
+                                    } finally{
+                                        PS=null;
+                                        CN.desconectar();
                                     }
-                                    panelConsultar.setSize(926,720);
-                                    panelConsultar.setLocation(0,0);
-                                    panelSistema.panelPrincipal.removeAll();
-                                    panelSistema.panelPrincipal.add(panelConsultar);
-                                    panelSistema.panelPrincipal.revalidate();
-                                    panelSistema.panelPrincipal.repaint();
-                                    resetearCamposIngresar();   
-                                }
-                            } else {
-                                JOptionPane.showMessageDialog(null, "El insumo no puede vencerse en una fecha anterior o igual al dia de hoy", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                //JOptionPane.showMessageDialog(null, "El insumo ha sido registrado con éxito", "", 1);
+                                // Crear panel de insumo 
+                                cargarInventario (panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
+                                /*inventario.revisarInsumosVencidos(fechaActual);
+                                if(inventario.revisarInsumosVencidos()){
+                                    panelConsultar.botonAdvertencia.setEnabled(true);
+                                    panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertenciaActivado.png")));
+                                } else {
+                                    panelConsultar.botonAdvertencia.setEnabled(false);
+                                    panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
+                                }*/
+                                panelConsultar.setSize(926,720);
+                                panelConsultar.setLocation(0,0);
+                                panelSistema.panelPrincipal.removeAll();
+                                panelSistema.panelPrincipal.add(panelConsultar);
+                                panelSistema.panelPrincipal.revalidate();
+                                panelSistema.panelPrincipal.repaint();
+                                resetearCamposIngresar();   
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "El nombre de éste insumo ya está registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -557,20 +637,20 @@ public class ControllerInventario implements ActionListener, ItemListener {
                 }
             } else 
                 JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de registrar", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            } */
+        }
         
         //BOTONES DEL PANEL: panelBuscarInsumo
         
         if(e.getSource() == panelBuscar.botonRegresarI){
             cargarInventario (panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
-            inventario.revisarInsumosVencidos(fechaActual);
+            /*inventario.revisarInsumosVencidos(fechaActual);
             if(inventario.revisarInsumosVencidos()){
                 panelConsultar.botonAdvertencia.setEnabled(true);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertenciaActivado.png")));
             } else {
                 panelConsultar.botonAdvertencia.setEnabled(false);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
-            }
+            }*/
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -624,14 +704,14 @@ public class ControllerInventario implements ActionListener, ItemListener {
         
         if(e.getSource() == panelConsultarProveedores.botonRegresarI){
             cargarInventario (panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
-            inventario.revisarInsumosVencidos(fechaActual);
+            /*inventario.revisarInsumosVencidos(fechaActual);
             if(inventario.revisarInsumosVencidos()){
                 panelConsultar.botonAdvertencia.setEnabled(true);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertenciaActivado.png")));
             } else {
                 panelConsultar.botonAdvertencia.setEnabled(false);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
-            }
+            }*/
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -676,14 +756,14 @@ public class ControllerInventario implements ActionListener, ItemListener {
         
         if(e.getSource() == panelIngresarLotes.botonRegresarI){
             cargarInventario (panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
-            inventario.revisarInsumosVencidos(fechaActual);
+            /*inventario.revisarInsumosVencidos(fechaActual);
             if(inventario.revisarInsumosVencidos()){
                 panelConsultar.botonAdvertencia.setEnabled(true);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertenciaActivado.png")));
             } else {
                 panelConsultar.botonAdvertencia.setEnabled(false);
                 panelConsultar.fondoBotonAdvertencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonAdvertencia.png")));
-            }
+            }*/
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -701,38 +781,35 @@ public class ControllerInventario implements ActionListener, ItemListener {
                 String correo = panelIngresarProveedor.txtCorreo.getText();
                 String direccion = panelIngresarProveedor.comboBoxMunicipio.getSelectedItem().toString();
                 String telefono = panelIngresarProveedor.txtTelefono.getText();
-                if(proveedor.validarDatosProveedor(nombre, rif, correo, telefono)&&!(proveedor.verificarProveedorRepetido(listaProveedores,rif,nombre))){
-                    proveedor.setNombre(nombre);
-                    proveedor.setRif(rif);
-                    proveedor.setCorreo(correo);
-                    proveedor.setDireccion(direccion);
-                    proveedor.setTelefono(telefono);
-                    listaProveedores.add(proveedor);
+                if(proveedor.validarDatosEmpresa(nombre, rif, correo, telefono)&&!(proveedor.verificarProveedorRepetido(listaProveedores,rif,nombre))){
+                    Proveedor p = new Proveedor(nombre, direccion, telefono, correo ,rif);
+                    listaProveedores.add(p);
                     panelIngresar.comboBoxProveedor.addItem(nombre);
                     try{
-                            PS_PROVEEDOR=CN.getConnection().prepareStatement(SQL_INSERT_PROVEEDOR);
-                            PS_PROVEEDOR.setString(1, nombre);
-                            PS_PROVEEDOR.setString(2, direccion);
-                            PS_PROVEEDOR.setString(3, telefono);
-                            PS_PROVEEDOR.setString(4, correo);
-                            PS_PROVEEDOR.setString(5, rif);
-                            int res = PS_PROVEEDOR.executeUpdate();
-                            if (res > 0){
-                                JOptionPane.showMessageDialog(null, "El proveedor ha sido registrado con éxito.", "", 1);
-                            }
-                        }catch(SQLException ex){
-                            JOptionPane.showMessageDialog(null, "Error al guardar los datos del proveedor en la base de datos: " +ex.getMessage(), "Error", 0);
+                        PS_PROVEEDOR=CN.getConnection().prepareStatement(SQL_INSERT_PROVEEDOR);
+                        PS_PROVEEDOR.setString(1, nombre);
+                        PS_PROVEEDOR.setString(2, direccion);
+                        PS_PROVEEDOR.setString(3, telefono);
+                        PS_PROVEEDOR.setString(4, correo);
+                        PS_PROVEEDOR.setString(5, rif);
+                        int res = PS_PROVEEDOR.executeUpdate();
+                        if (res > 0){
+                            JOptionPane.showMessageDialog(null, "El proveedor ha sido registrado con éxito.", "", 1);
                         }
-                        finally{
-                            PS_PROVEEDOR=null;
-                            CN.desconectar();
-                        }
+                    }catch(SQLException ex){
+                        JOptionPane.showMessageDialog(null, "Error al guardar los datos del proveedor en la base de datos: " +ex.getMessage(), "Error", 0);
+                    }
+                    finally{
+                        PS_PROVEEDOR=null;
+                        CN.desconectar();
+                    }
                     resetearCamposPanelIngresarProveedor();
                 }
             }
         }
         
         if(e.getSource()==panelIngresarProveedor.botonRegresarI){
+            cargarProveedores();
             panelConsultarProveedores.setSize(926,720);
             panelConsultarProveedores.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -742,9 +819,6 @@ public class ControllerInventario implements ActionListener, ItemListener {
         }
         
     }
-    
-    
-
     
     // BOTONES DEL SISTEMA: Boton de filtrado de busqueda
     @Override
@@ -788,6 +862,18 @@ public class ControllerInventario implements ActionListener, ItemListener {
             
             cargarInventario("Otros");
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
     }
     
 }

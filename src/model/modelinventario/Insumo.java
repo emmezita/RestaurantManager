@@ -21,28 +21,27 @@ import java.util.ArrayList;
     private String nombre;
     private String unidad;
     private double cantidad;
-    private Date fechaVencimiento;
     private boolean vencido;
+    private String proveedor;
 
     // Constructor de Insumos que provienen de la Base de Datos para agregarlos al inventario del sistema
-    public Insumo(String tipoInsumo,int id, String nombre, String unidad, double cantidad, Date fechaVencimiento, boolean vencido) {
+    public Insumo(String tipoInsumo,int id, String nombre, String unidad, double cantidad, boolean vencido, String proveedor) {
         this.tipoInsumo = tipoInsumo;
         this.id = id;
         this.nombre = nombre;
         this.unidad = unidad;
         this.cantidad = cantidad;
-        this.fechaVencimiento = fechaVencimiento;
         this.vencido = vencido;
+        this.proveedor = proveedor;
     }   
     
     // Constructor para un Insumo nuevo 
-    public Insumo(String tipoInsumo, int id, String nombre, String unidad, double cantidad, Date fechaVencimiento) {
+    public Insumo(String tipoInsumo, int id, String nombre, String unidad, String proveedor) {
         this.tipoInsumo = tipoInsumo;
         this.id = id;
         this.nombre = nombre;
         this.unidad = unidad;
-        this.cantidad = cantidad;
-        this.fechaVencimiento = fechaVencimiento;
+        this.proveedor = proveedor;
         vencido = false;
     }
     
@@ -53,7 +52,7 @@ import java.util.ArrayList;
         nombre = "";
         unidad = "";
         cantidad = 0.0;
-        fechaVencimiento = null;
+        proveedor = "";
         vencido = false;
     }
     
@@ -99,20 +98,20 @@ import java.util.ArrayList;
         this.cantidad = cantidad;
     }
 
-    public Date getFechaVencimiento() {
-        return fechaVencimiento;
-    }
-
-    public void setFechaVencimiento(Date fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
-    }
-
     public boolean isVencido() {
         return vencido;
     }
 
     public void setVencido(boolean vencido) {
         this.vencido = vencido;
+    }
+
+    public String getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(String proveedor) {
+        this.proveedor = proveedor;
     }
     
     /*Método para validar si el nombre del insumo ingresado tiene números o caracteres especiales 

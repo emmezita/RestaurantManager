@@ -157,10 +157,14 @@ import model.modelusuario.Persona;
                     return false;
                 }   
                 // valida si no tiene ningun caracter especial
-                if(( (as>=48 && as<=57)==false) ){
+                if(((as>=91 && 96>=as) ||  (as>=33 && as<=47) || (as>=58 && 64>= as) || (as>=123 && 126>=as))==true ){
                     JOptionPane.showMessageDialog(null, "Numero de cuenta inválido.\nContiene algún carácter especial", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return false;
-                }     
+                }
+                if(as == 32){
+                    JOptionPane.showMessageDialog(null, "Numero de cuenta inválido.\nContiene espacios en blanco", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    return false;
+                }
             }      
         }
         return true;

@@ -8,69 +8,18 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
+import model.modelreservacion.Empresa;
 
-public class Proveedor {
-    
-    //Atributos
-    private String nombre;
-    private String rif;
-    private String correo;
-    private String direccion;
-    private String telefono;
+public class Proveedor extends Empresa{
+
+    public Proveedor(String nombre, String direccion, String telefono, String correo, String rif) {
+        super(nombre, direccion, telefono, correo, rif);
+    }
 
     public Proveedor() {
     }
-
     
-    public Proveedor(String nombre, String rif, String correo, String direccion, String telefono) {
-        this.nombre = nombre;
-        this.rif = rif;
-        this.correo = correo;
-        this.direccion = direccion;
-        this.telefono = telefono;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getRif() {
-        return rif;
-    }
-
-    public void setRif(String rif) {
-        this.rif = rif;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-    
-    public boolean validarNombreProveedor(String nombre) { 
+    /*public boolean validarNombreProveedor(String nombre) { 
         int i,as;
         Character a;
         for (i=0; nombre.length()>i;i++){
@@ -183,7 +132,7 @@ public class Proveedor {
             correcto = true;
         }
         return correcto;
-    }
+    }*/
     
     public boolean rifProveedorRepetido (ArrayList<Proveedor> listaProveedores, String rif) {
         for(Proveedor p: listaProveedores){
@@ -208,8 +157,17 @@ public class Proveedor {
     public boolean verificarProveedorRepetido(ArrayList<Proveedor> listaProveedores, String rif,String nombre){
         boolean correcto = false;
         if(rifProveedorRepetido(listaProveedores,rif) || nombreProveedorRepetido(listaProveedores,nombre)){
-        correcto = true;}
+            correcto = true;}
         return correcto;
+    }
+    
+    public Proveedor buscarProveedor(ArrayList<Proveedor> listaProveedores, String clave){
+        for(Proveedor p: listaProveedores){
+            if(p.getNombre().equals(clave) || p.getRif().equals(clave)){
+                return p;
+            }
+        }
+        return null;
     }
     
 }
