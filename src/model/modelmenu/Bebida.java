@@ -79,4 +79,26 @@ public class Bebida {
         }
         return false;
     }
+    
+    // Busca una bebida mediante su nombre y devuelve su objeto
+    public Bebida buscarBebida(String nombre, ArrayList<Bebida> listaBebidas) {
+    for (Bebida b : listaBebidas) {
+        if (b.getNombre().equals(nombre)) {
+            return b;
+        }
+    }
+    return null;
+    }
+    
+    // Modifica la información de una bebida en una lista en memoria
+    public void modificarBebida(String nombre, String categoria, String descripcion, ArrayList<Bebida> listaBebidas, String indicadorNombre) {
+    for (Bebida b : listaBebidas) {
+        if (b.getNombre().equals(indicadorNombre)) {
+            b.setNombre(nombre);
+            b.setCategoria(categoria);
+            b.setDescripcion(descripcion);
+        }
+    }
+}
+    
 }

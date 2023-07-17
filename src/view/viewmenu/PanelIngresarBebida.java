@@ -34,6 +34,7 @@ public class PanelIngresarBebida extends javax.swing.JPanel {
         txtNombre = new javax.swing.JTextField();
         labelInputP = new javax.swing.JLabel();
         botonRegistrar = new javax.swing.JButton();
+        botonGuardarCambios = new javax.swing.JButton();
         fondoBotonRegistrar = new javax.swing.JLabel();
         labelImagen = new javax.swing.JLabel();
         labelTitulo = new javax.swing.JLabel();
@@ -72,7 +73,7 @@ public class PanelIngresarBebida extends javax.swing.JPanel {
         comboBoxCategoria.setBackground(new java.awt.Color(86, 92, 94));
         comboBoxCategoria.setFont(new java.awt.Font("Open Sans", 0, 14)); // NOI18N
         comboBoxCategoria.setForeground(new java.awt.Color(255, 255, 255));
-        comboBoxCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Categoría" }));
+        comboBoxCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Categoría", "Entrada", "Primer Tiempo", "Segundo Tiempo", "Tercer Tiempo", "Postre" }));
         comboBoxCategoria.setBorder(null);
         comboBoxCategoria.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         add(comboBoxCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 310, 270, 40));
@@ -110,6 +111,24 @@ public class PanelIngresarBebida extends javax.swing.JPanel {
             }
         });
         add(botonRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 530, 150, 50));
+
+        botonGuardarCambios.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
+        botonGuardarCambios.setForeground(new java.awt.Color(39, 45, 47));
+        botonGuardarCambios.setText("Guardar Cambios");
+        botonGuardarCambios.setBorder(null);
+        botonGuardarCambios.setBorderPainted(false);
+        botonGuardarCambios.setContentAreaFilled(false);
+        botonGuardarCambios.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        botonGuardarCambios.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonGuardarCambios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botonGuardarCambiosMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botonGuardarCambiosMouseExited(evt);
+            }
+        });
+        add(botonGuardarCambios, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 530, 150, 50));
 
         fondoBotonRegistrar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fondoBotonRegistrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/botonRegistrarPoB.png"))); // NOI18N
@@ -154,8 +173,17 @@ public class PanelIngresarBebida extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_botonRegistrarMouseExited
 
+    private void botonGuardarCambiosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarCambiosMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonGuardarCambiosMouseEntered
+
+    private void botonGuardarCambiosMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarCambiosMouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonGuardarCambiosMouseExited
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton botonGuardarCambios;
     public javax.swing.JButton botonRegistrar;
     public javax.swing.JButton botonRegresar;
     public javax.swing.JComboBox<String> comboBoxCategoria;

@@ -75,6 +75,6 @@ public class PanelBebida extends javax.swing.JPanel {
     public javax.swing.JButton botonBebida;
     private javax.swing.JLabel labelFondo;
     private javax.swing.JLabel labelIconoBebida;
-    private javax.swing.JLabel labelNombreBebida;
+    public javax.swing.JLabel labelNombreBebida;
     // End of variables declaration//GEN-END:variables
 }

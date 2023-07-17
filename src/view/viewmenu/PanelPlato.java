@@ -48,6 +48,11 @@ public class PanelPlato extends javax.swing.JPanel {
                 botonPlatoMouseExited(evt);
             }
         });
+        botonPlato.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonPlatoActionPerformed(evt);
+            }
+        });
         add(botonPlato, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, 262, 50));
 
         labelNombrePlato.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
@@ -70,11 +75,15 @@ public class PanelPlato extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_botonPlatoMouseExited
 
+    private void botonPlatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPlatoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonPlatoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton botonPlato;
     private javax.swing.JLabel labelFondo;
     private javax.swing.JLabel labelIconoPlato;
-    private javax.swing.JLabel labelNombrePlato;
+    public javax.swing.JLabel labelNombrePlato;
     // End of variables declaration//GEN-END:variables
 }
