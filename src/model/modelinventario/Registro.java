@@ -11,22 +11,32 @@ import java.util.ArrayList;
  * @author emmez
  */
 public class Registro {
+    private String tipo;
     private String fechaRegistro;
     private String responsable;
     private String documentoIdentidad;
     private ArrayList<Lote> listaLotes;
 
-    public Registro(String fechaRegistro, String responsable, String documentoIdentidad, ArrayList<Lote> listaLotes) {
+    public Registro(String tipo, String fechaRegistro, String responsable, String documentoIdentidad, ArrayList<Lote> listaLotes) {
+        this.tipo = tipo;
         this.fechaRegistro = fechaRegistro;
         this.responsable = responsable;
         this.documentoIdentidad = documentoIdentidad;
         this.listaLotes = listaLotes;
-    }
-    
+    }    
     public Registro(){
+        tipo = "";
         fechaRegistro = "";
         responsable = "";
         documentoIdentidad = "";
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public String getFechaRegistro() {

@@ -26,6 +26,9 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        botonCambiar = new javax.swing.JButton();
+        fondoBotonCambiar = new javax.swing.JLabel();
+        labelFechaV = new javax.swing.JLabel();
         botonConsultarSalidas = new javax.swing.JButton();
         botonConsultarEntradas = new javax.swing.JButton();
         fondoBotonConsultar = new javax.swing.JLabel();
@@ -46,9 +49,38 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
         labelInputFechaIngreso = new javax.swing.JLabel();
         botonRegresarI = new javax.swing.JButton();
         fondoBotonRegresar = new javax.swing.JLabel();
+        jDateFechaV = new com.toedter.calendar.JDateChooser();
 
         setBackground(new java.awt.Color(39, 45, 47));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        botonCambiar.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
+        botonCambiar.setForeground(new java.awt.Color(39, 45, 47));
+        botonCambiar.setText("Cambiar");
+        botonCambiar.setBorder(null);
+        botonCambiar.setBorderPainted(false);
+        botonCambiar.setContentAreaFilled(false);
+        botonCambiar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        botonCambiar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonCambiar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botonCambiarMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botonCambiarMouseExited(evt);
+            }
+        });
+        add(botonCambiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 220, 100, 40));
+
+        fondoBotonCambiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonCambiar.png"))); // NOI18N
+        add(fondoBotonCambiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 220, -1, 40));
+
+        labelFechaV.setBackground(new java.awt.Color(0, 0, 0));
+        labelFechaV.setFont(new java.awt.Font("Open Sans", 1, 16)); // NOI18N
+        labelFechaV.setForeground(new java.awt.Color(230, 231, 235));
+        labelFechaV.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        labelFechaV.setText("Fecha de Vencimiento");
+        add(labelFechaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 110, 240, 50));
 
         botonConsultarSalidas.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
         botonConsultarSalidas.setForeground(new java.awt.Color(230, 231, 235));
@@ -105,7 +137,7 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
                 botonRegistrarSMouseExited(evt);
             }
         });
-        add(botonRegistrarS, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 540, 142, 46));
+        add(botonRegistrarS, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 620, 142, 46));
 
         botonRegistrarE.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
         botonRegistrarE.setForeground(new java.awt.Color(39, 45, 47));
@@ -123,10 +155,10 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
                 botonRegistrarEMouseExited(evt);
             }
         });
-        add(botonRegistrarE, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 540, 142, 46));
+        add(botonRegistrarE, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 620, 142, 46));
 
         fondoBotonRegistrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonRegistrar.png"))); // NOI18N
-        add(fondoBotonRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 540, -1, -1));
+        add(fondoBotonRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 620, -1, -1));
 
         tablaEntradas.setBackground(new java.awt.Color(230, 231, 235));
         tablaEntradas.setFont(new java.awt.Font("Open Sans", 0, 15)); // NOI18N
@@ -166,21 +198,21 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
         labelDocumento.setForeground(new java.awt.Color(230, 231, 235));
         labelDocumento.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         labelDocumento.setText("Documento de identidad");
-        add(labelDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 400, 240, 50));
+        add(labelDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 480, 240, 50));
 
         labelResponsable.setBackground(new java.awt.Color(0, 0, 0));
         labelResponsable.setFont(new java.awt.Font("Open Sans", 1, 18)); // NOI18N
         labelResponsable.setForeground(new java.awt.Color(230, 231, 235));
         labelResponsable.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         labelResponsable.setText("Responsable");
-        add(labelResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 280, 240, 50));
+        add(labelResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 380, 240, 50));
 
         labelFecha.setBackground(new java.awt.Color(0, 0, 0));
         labelFecha.setFont(new java.awt.Font("Open Sans", 1, 18)); // NOI18N
         labelFecha.setForeground(new java.awt.Color(230, 231, 235));
         labelFecha.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         labelFecha.setText("Fecha de Ingreso");
-        add(labelFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 160, 240, 50));
+        add(labelFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 280, 240, 50));
 
         labelTItulo.setBackground(new java.awt.Color(0, 0, 0));
         labelTItulo.setFont(new java.awt.Font("Open Sans", 1, 28)); // NOI18N
@@ -192,26 +224,26 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
         txtCedula.setFont(new java.awt.Font("Open Sans", 0, 15)); // NOI18N
         txtCedula.setForeground(new java.awt.Color(230, 231, 235));
         txtCedula.setText("V-28301361");
-        add(txtCedula, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 450, 220, 50));
+        add(txtCedula, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 530, 220, 50));
 
         labelInputDocumento.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewempleados/inputFechaNomina.png"))); // NOI18N
-        add(labelInputDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 450, -1, -1));
+        add(labelInputDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 530, -1, -1));
 
         txtResponsable.setFont(new java.awt.Font("Open Sans", 0, 15)); // NOI18N
         txtResponsable.setForeground(new java.awt.Color(230, 231, 235));
         txtResponsable.setText("Italo Visconti");
-        add(txtResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 330, 220, 50));
+        add(txtResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 430, 220, 50));
 
         labelInputResponsable.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewempleados/inputFechaNomina.png"))); // NOI18N
-        add(labelInputResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 330, -1, -1));
+        add(labelInputResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 430, -1, -1));
 
         txtFechaIngreso.setFont(new java.awt.Font("Open Sans", 0, 15)); // NOI18N
         txtFechaIngreso.setForeground(new java.awt.Color(230, 231, 235));
         txtFechaIngreso.setText("03/07/23 16:00");
-        add(txtFechaIngreso, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 210, 220, 50));
+        add(txtFechaIngreso, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 330, 220, 50));
 
         labelInputFechaIngreso.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewempleados/inputFechaNomina.png"))); // NOI18N
-        add(labelInputFechaIngreso, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 210, -1, -1));
+        add(labelInputFechaIngreso, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 330, -1, -1));
 
         botonRegresarI.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
         botonRegresarI.setForeground(new java.awt.Color(230, 231, 235));
@@ -232,6 +264,9 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
 
         fondoBotonRegresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonRegresar.png"))); // NOI18N
         add(fondoBotonRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, -1, 50));
+
+        jDateFechaV.setFont(new java.awt.Font("Open Sans Medium", 0, 13)); // NOI18N
+        add(jDateFechaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 160, 260, 40));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonRegistrarEMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegistrarEMouseEntered
@@ -280,25 +315,41 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
 
     private void botonRegistrarSMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegistrarSMouseEntered
         // TODO add your handling code here:
+        fondoBotonRegresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonRegresarPresionado.png"))); // NOI18N
     }//GEN-LAST:event_botonRegistrarSMouseEntered
 
     private void botonRegistrarSMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegistrarSMouseExited
         // TODO add your handling code here:
+        fondoBotonRegistrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonRegistrar.png")));
     }//GEN-LAST:event_botonRegistrarSMouseExited
+
+    private void botonCambiarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCambiarMouseEntered
+        // TODO add your handling code here:
+        fondoBotonCambiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonCambiarPresionado.png")));
+    }//GEN-LAST:event_botonCambiarMouseEntered
+
+    private void botonCambiarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCambiarMouseExited
+        // TODO add your handling code here:
+        fondoBotonCambiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonCambiar.png")));
+    }//GEN-LAST:event_botonCambiarMouseExited
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton botonCambiar;
     public javax.swing.JButton botonConsultarEntradas;
     public javax.swing.JButton botonConsultarSalidas;
     public javax.swing.JButton botonRegistrarE;
     public javax.swing.JButton botonRegistrarS;
     public javax.swing.JButton botonRegresarI;
+    public javax.swing.JLabel fondoBotonCambiar;
     private javax.swing.JLabel fondoBotonConsultar;
     private javax.swing.JLabel fondoBotonRegistrar;
     private javax.swing.JLabel fondoBotonRegresar;
+    public com.toedter.calendar.JDateChooser jDateFechaV;
     public javax.swing.JScrollPane jScrollPane;
     private javax.swing.JLabel labelDocumento;
     public javax.swing.JLabel labelFecha;
+    public javax.swing.JLabel labelFechaV;
     private javax.swing.JLabel labelInputDocumento;
     private javax.swing.JLabel labelInputFechaIngreso;
     private javax.swing.JLabel labelInputResponsable;

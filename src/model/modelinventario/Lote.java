@@ -14,10 +14,10 @@ public class Lote {
     private String nombre;
     private String tipo;
     private String unidad;
-    private int cantidad;
+    private double cantidad;
     private String fechaVencimiento;
 
-    public Lote(int idInsummo, int idLote, String nombre, String tipo, String unidad, int cantidad, String fechaVencimiento) {
+    public Lote(int idInsummo, int idLote, String nombre, String tipo, String unidad, double cantidad, String fechaVencimiento) {
         this.idInsummo = idInsummo;
         this.idLote = idLote;
         this.nombre = nombre;
@@ -33,7 +33,7 @@ public class Lote {
         nombre = "";
         tipo = "";
         unidad = "";
-        cantidad = 0;
+        cantidad = 0.0;
         fechaVencimiento = "";
     }
 
@@ -77,11 +77,11 @@ public class Lote {
         this.unidad = unidad;
     }
 
-    public int getCantidad() {
+    public double getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(double cantidad) {
         this.cantidad = cantidad;
     }
 

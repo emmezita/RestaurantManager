@@ -14,14 +14,25 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import model.modelinventario.Insumo;
 import model.modelinventario.Inventario;
@@ -31,21 +42,24 @@ import view.viewinventario.PanelIngresarInsumo;
 import view.viewinventario.PanelInsumo;
 import view.viewprincipal.SistemaPrincipal;
 import model.conexionBD.ConexionServidor;
+import model.modelinventario.Lote;
 import model.modelinventario.Proveedor;
 import model.modelinventario.Registro;
 import model.modelusuario.Gerente;
 import view.viewinventario.PanelBuscarInsumo;
 import view.viewinventario.PanelConsultarLotes;
 import view.viewinventario.PanelConsultarProveedores;
+import view.viewinventario.PanelEntrada;
 import view.viewinventario.PanelIngresarLotes;
 import view.viewinventario.PanelIngresarProveedor;
 import view.viewinventario.PanelProveedor;
+import view.viewinventario.PanelSalida;
 
 /**
  *
  * Desarrollo: Paola Ascanio | Intefaces: Estefany Torres
  */
-public class ControllerInventario implements ActionListener, ItemListener, KeyListener {
+public class ControllerInventario implements ActionListener, ItemListener, KeyListener, PropertyChangeListener {
     
     private final SistemaPrincipal panelSistema;
     private final PanelConsultarInventario panelConsultar = new PanelConsultarInventario();
@@ -140,6 +154,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         //Panel Consultar Lotes
         panelConsultarLotes.botonRegresarE.addActionListener(this);
         panelConsultarLotes.botonRegresarS.addActionListener(this);
+        panelConsultarLotes.jDateFiltro.addPropertyChangeListener(this);
         
         //Panel Consultar Proveedores
         panelConsultarProveedores.botonIngresar.addActionListener(this);
@@ -152,6 +167,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         panelIngresarLotes.botonRegistrarE.addActionListener(this);
         panelIngresarLotes.botonRegistrarS.addActionListener(this);
         panelIngresarLotes.botonRegresarI.addActionListener(this);
+        panelIngresarLotes.botonCambiar.addActionListener(this);
         
         //Panel Ingresar Proveedor
         panelIngresarProveedor.botonRegistrar.addActionListener(this);
@@ -507,11 +523,27 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         return numMax + 1;
     }
     
+    public void validarCeldaCantidad(TableModelEvent evento, int fila){
+        if(evento.getColumn()!=4){
+            return;
+        }
+        if(panelIngresarLotes.tablaEntradas.getValueAt(fila, 4).toString().equals("")){
+            panelIngresarLotes.tablaEntradas.setValueAt(0.0, fila, 4);
+            JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de registrar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
     public void cargarInsumosEntrada(){
+        panelIngresarLotes.botonCambiar.setVisible(true);
+        panelIngresarLotes.botonCambiar.setEnabled(true);
+        panelIngresarLotes.jDateFechaV.setVisible(true);
+        panelIngresarLotes.fondoBotonCambiar.setVisible(true);
+        panelIngresarLotes.labelFechaV.setVisible(true);
+       
         Gerente gerente = null, g = new Gerente();
         gerente = g.buscarGerente(listaGerentes,indicadorUsuario);
         String fecha = "";
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm aa");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar cal = Calendar.getInstance();
         Date fechaA = cal.getTime();
         fecha = format.format(fechaA);
@@ -530,7 +562,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, true, true
+                false, false, false, false, true, false
             };
 
             @Override
@@ -555,6 +587,73 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             modeloEntrada.setValueAt(0, 0, 4);
             modeloEntrada.setValueAt(fecha, 0, 5);
         }
+        modeloEntrada.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent evento) {
+                int fila = panelIngresarLotes.tablaEntradas.getSelectedRow();
+                validarCeldaCantidad(evento,fila);
+            }
+        });
+        
+    }
+    
+    public void cargarInsumosSalida(){
+        panelIngresarLotes.botonCambiar.setVisible(false);
+        panelIngresarLotes.botonCambiar.setEnabled(false);
+        panelIngresarLotes.jDateFechaV.setVisible(false);
+        panelIngresarLotes.fondoBotonCambiar.setVisible(false);
+        panelIngresarLotes.labelFechaV.setVisible(false);
+        
+        Gerente gerente = null, g = new Gerente();
+        gerente = g.buscarGerente(listaGerentes,indicadorUsuario);
+        String fecha = "";
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Calendar cal = Calendar.getInstance();
+        Date fechaA = cal.getTime();
+        fecha = format.format(fechaA);
+        
+        panelIngresarLotes.txtFechaIngreso.setText(fecha);
+        panelIngresarLotes.txtResponsable.setText(gerente.getNombre() + " " + gerente.getApellido());
+        panelIngresarLotes.txtCedula.setText(gerente.getCedula());
+        
+        String datos[][] = {};
+        String columna [] = {"id","Nombre","Tipo","Unidad","Cantidad"};
+        modeloSalida = new DefaultTableModel(datos, columna){
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true
+            };
+
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        };
+        panelIngresarLotes.tablaEntradas.setModel(modeloSalida);
+        panelIngresarLotes.tablaEntradas.getTableHeader().setReorderingAllowed(false);
+        for (int i = 0; i<inventario.getListaInsumos().size();i++){
+            Insumo insumo = inventario.getListaInsumos().get(i);
+            modeloSalida.insertRow(0, columna);
+            modeloSalida.setValueAt(generarIDLote(),0 ,0);
+            modeloSalida.setValueAt(insumo.getNombre(), 0, 1);
+            modeloSalida.setValueAt(insumo.getTipoInsumo(), 0, 2);
+            modeloSalida.setValueAt(insumo.getUnidad(), 0, 3);
+            modeloSalida.setValueAt(0, 0, 4);
+        }
+        modeloSalida.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent evento) {
+                int fila = panelIngresarLotes.tablaEntradas.getSelectedRow();
+                validarCeldaCantidad(evento,fila);
+            }
+        });
         
     }
     
@@ -567,6 +666,155 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             }
         }
         return numMax + 1;
+    }
+    
+    public boolean validarFechasIngresarLoteEntrada(){
+        boolean flag = false;
+        for(int i = 0; i<inventario.getListaInsumos().size();i++){
+            String fechaV = panelIngresarLotes.tablaEntradas.getValueAt(i, 5).toString();
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            Date fechaVencimiento = null;
+            try {
+                fechaVencimiento = formato.parse(fechaV);
+            } catch (ParseException ex) {
+                Logger.getLogger(ControllerInventario.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(fechaVencimiento.equals(fechaActual) || fechaVencimiento.before(fechaActual)){
+                flag = true;
+            }
+        }
+        return flag;
+    }
+    
+    public boolean validarCantidadesIngresarLote(){
+        boolean flag = true;
+        for(int i = 0; i<inventario.getListaInsumos().size();i++){
+            double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i, 4).toString());
+            if(cantidad > 0){
+                flag = false;
+            }
+        }
+        return flag;
+    }
+    
+    public void cargarEntradas(String fechaFiltro){
+        panelConsultarLotes.tablaRegistros.setVisible(false);
+        panelConsultarLotes.jScrollPaneRegistros.setVisible(false);
+        panelConsultarLotes.txtResponsable.setText("");
+        panelConsultarLotes.labelResponsable.setVisible(false);
+        String datos[][] = {};
+        String columna [] = {"id","Nombre","Tipo","Unidad","Cantidad","Fecha de vencimiento"};
+        modeloEntrada = new DefaultTableModel(datos, columna){
+            @Override
+            public boolean isCellEditable(int rowIndex,int columnIndex) {return false;}
+        };
+        panelConsultarLotes.tablaRegistros.setModel(modeloEntrada);
+        panelConsultarLotes.tablaRegistros.getTableHeader().setReorderingAllowed(false);
+        
+        panelConsultarLotes.panelRegistros.removeAll();
+        for(Registro r: listaRegistros){
+            if(r.getTipo().equals("entrada")){
+                PanelEntrada panelE = new PanelEntrada();
+                panelE.setSize(246, 80);
+                String fechaRegistro = r.getFechaRegistro();
+                String responsable = r.getResponsable();
+                panelE.labelFechaEntrada.setText(fechaRegistro);
+                panelE.botonEntrada.addActionListener( new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        modeloEntrada.setRowCount(0);
+                        panelConsultarLotes.tablaRegistros.setVisible(true);
+                        panelConsultarLotes.jScrollPaneRegistros.setVisible(true);
+                        panelConsultarLotes.txtResponsable.setText(responsable);
+                        panelConsultarLotes.labelResponsable.setVisible(true);
+                        ArrayList<Lote> listaLotes = r.getListaLotes();
+                        for (int i=0; i<listaLotes.size();i++) {
+                            Lote lote = listaLotes.get(i);
+                            modeloEntrada.insertRow(0, columna);
+                            modeloEntrada.setValueAt(lote.getIdLote(),0 ,0);
+                            modeloEntrada.setValueAt(lote.getNombre(), 0, 1);
+                            modeloEntrada.setValueAt(lote.getTipo(), 0, 2);
+                            modeloEntrada.setValueAt(lote.getUnidad(), 0, 3);
+                            modeloEntrada.setValueAt(lote.getCantidad(), 0, 4);
+                            modeloEntrada.setValueAt(lote.getFechaVencimiento(), 0, 5);
+                        }
+                    }
+                }); 
+                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+                String fechaNueva = "";
+                try {
+                    Date fechaN = formato.parse(fechaRegistro);
+                    fechaNueva = formato.format(fechaN);
+                } catch (ParseException ex) {
+                    Logger.getLogger(ControllerInventario.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                // Creating a calendar object
+                if(fechaNueva.equals(fechaFiltro)){
+                    panelConsultarLotes.panelRegistros.add(panelE);
+                }
+            }
+        }
+        panelConsultarLotes.panelRegistros.revalidate();
+        panelConsultarLotes.panelRegistros.repaint();
+    }
+    
+    public void cargarSalidas(String fechaFiltro){
+        panelConsultarLotes.tablaRegistros.setVisible(false);
+        panelConsultarLotes.jScrollPaneRegistros.setVisible(false);
+        panelConsultarLotes.txtResponsable.setText("");
+        panelConsultarLotes.labelResponsable.setVisible(false);
+        String datos[][] = {};
+        String columna [] = {"id","Nombre","Tipo","Unidad","Cantidad"};
+        modeloSalida = new DefaultTableModel(datos, columna){
+            @Override
+            public boolean isCellEditable(int rowIndex,int columnIndex) {return false;}
+        };
+        panelConsultarLotes.tablaRegistros.setModel(modeloSalida);
+        panelConsultarLotes.tablaRegistros.getTableHeader().setReorderingAllowed(false);
+        
+        panelConsultarLotes.panelRegistros.removeAll();
+        for(Registro r: listaRegistros){
+            if(r.getTipo().equals("salida")){
+                PanelSalida panelS = new PanelSalida();
+                panelS.setSize(246, 80);
+                String fechaRegistro = r.getFechaRegistro();
+                String responsable = r.getResponsable();
+                panelS.labelFechaSalida.setText(fechaRegistro);
+                panelS.botonSalida.addActionListener( new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        modeloSalida.setRowCount(0);
+                        panelConsultarLotes.tablaRegistros.setVisible(true);
+                        panelConsultarLotes.jScrollPaneRegistros.setVisible(true);
+                        panelConsultarLotes.txtResponsable.setText(responsable);
+                        panelConsultarLotes.labelResponsable.setVisible(true);
+                        ArrayList<Lote> listaLotes = r.getListaLotes();
+                        for (int i=0; i<listaLotes.size();i++) {
+                            Lote lote = listaLotes.get(i);
+                            modeloSalida.insertRow(0, columna);
+                            modeloSalida.setValueAt(lote.getIdLote(),0 ,0);
+                            modeloSalida.setValueAt(lote.getNombre(), 0, 1);
+                            modeloSalida.setValueAt(lote.getTipo(), 0, 2);
+                            modeloSalida.setValueAt(lote.getUnidad(), 0, 3);
+                            modeloSalida.setValueAt(lote.getCantidad(), 0, 4);
+                        }
+                    }
+                }); 
+                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+                String fechaNueva = "";
+                try {
+                    Date fechaN = formato.parse(fechaRegistro);
+                    fechaNueva = formato.format(fechaN);
+                } catch (ParseException ex) {
+                    Logger.getLogger(ControllerInventario.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if(fechaNueva.equals(fechaFiltro)){
+                    panelConsultarLotes.panelRegistros.add(panelS);
+                }
+            }
+        }
+        panelConsultarLotes.panelRegistros.revalidate();
+        panelConsultarLotes.panelRegistros.repaint();
     }
     
     @Override
@@ -672,6 +920,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         
         if(e.getSource()== panelConsultar.botonEntrada){
             cargarInsumosEntrada();
+            panelIngresarLotes.jDateFechaV.setDate(fechaActual);
             panelIngresarLotes.botonConsultarEntradas.setVisible(true);
             panelIngresarLotes.botonConsultarSalidas.setVisible(false);
             panelIngresarLotes.botonRegistrarE.setVisible(true);
@@ -687,6 +936,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource()==panelConsultar.botonSalida){
+            cargarInsumosSalida();
             panelIngresarLotes.botonConsultarEntradas.setVisible(false);
             panelIngresarLotes.botonConsultarSalidas.setVisible(true);
             panelIngresarLotes.botonRegistrarE.setVisible(false);
@@ -903,15 +1153,92 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         
         //BOTONES DEL PANEL: Ingresar Lotes
         
+        if(e.getSource() == panelIngresarLotes.botonCambiar){
+            int fila = panelIngresarLotes.tablaEntradas.getSelectedRow();
+            if(fila >= 0){
+                Date fechaVencimiento = panelIngresarLotes.jDateFechaV.getDate();
+                if(fechaVencimiento != null){
+                    if(fechaVencimiento.equals(fechaActual) || fechaVencimiento.before(fechaActual)){
+                        JOptionPane.showMessageDialog(null, "La fecha de vencimiento no puede ser igual o anterior a la fecha de hoy", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                        String fechaV = format.format(fechaVencimiento);
+                        panelIngresarLotes.tablaEntradas.setValueAt(fechaV, fila, 5);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Coloque una fecha de vencimiento válida", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecciona un insumo de la tabla", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
         if(e.getSource() == panelIngresarLotes.botonRegistrarE){
-            
+            if(!validarFechasIngresarLoteEntrada()){
+                if(!validarCantidadesIngresarLote()){
+                    ArrayList<Lote> listaLotes = new ArrayList<>();
+                    for (int i = 0; i<inventario.getListaInsumos().size(); i++){
+                        int j = 0;
+                        int id = Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString()); j++;
+                        String nombre = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                        String tipo = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                        String unidad = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                        double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i,j).toString());j++;
+                        String fechaV = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();
+                         
+                        int largo = inventario.getListaInsumos().size();
+                        int posicion = largo - i - 1;
+                        Lote lote = new Lote(inventario.getListaInsumos().get(posicion).getId(), id,nombre,tipo,unidad,cantidad, fechaV);
+                        listaLotes.add(lote);
+                    }
+                    String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
+                    String responsable = panelIngresarLotes.txtResponsable.getText();
+                    String documento = panelIngresarLotes.txtCedula.getText();
+                    Registro registro = new Registro("entrada",fechaRegistro,responsable,documento,listaLotes);
+                    listaRegistros.add(registro);
+                    JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
+                    cargarInsumosEntrada();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Las fechas de vencimiento no pueden ser iguales o anteriores a la fecha de hoy", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
         }
         
         if(e.getSource() == panelIngresarLotes.botonRegistrarS){
-            
+            if(!validarCantidadesIngresarLote()){
+                ArrayList<Lote> listaLotes = new ArrayList<>();
+                for (int i = 0; i<inventario.getListaInsumos().size(); i++){
+                    int j = 0;
+                    int id = Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString()); j++;
+                    String nombre = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                    String tipo = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                    String unidad = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                    double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i,j).toString());
+                         
+                    int largo = inventario.getListaInsumos().size();
+                    int posicion = largo - i - 1;
+                    Lote lote = new Lote(inventario.getListaInsumos().get(posicion).getId(), id,nombre,tipo,unidad,cantidad, "");
+                    listaLotes.add(lote);
+                } 
+                String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
+                String responsable = panelIngresarLotes.txtResponsable.getText();
+                String documento = panelIngresarLotes.txtCedula.getText();
+                Registro registro = new Registro("salida",fechaRegistro,responsable,documento,listaLotes);
+                listaRegistros.add(registro);
+                cargarInsumosSalida();
+                JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
         }
         
         if(e.getSource() == panelIngresarLotes.botonConsultarEntradas){
+            panelConsultarLotes.jDateFiltro.setDate(fechaActual);
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaF = format.format(fechaActual);
+            cargarEntradas(fechaF);
             panelConsultarLotes.labelTItulo.setText("ENTRADAS");
             panelConsultarLotes.botonRegresarE.setVisible(true);
             panelConsultarLotes.botonRegresarS.setVisible(false);
@@ -924,6 +1251,10 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource() == panelIngresarLotes.botonConsultarSalidas){
+            panelConsultarLotes.jDateFiltro.setDate(fechaActual);
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaF = format.format(fechaActual);
+            cargarSalidas(fechaF);
             panelConsultarLotes.labelTItulo.setText("SALIDAS");
             panelConsultarLotes.botonRegresarE.setVisible(false);
             panelConsultarLotes.botonRegresarS.setVisible(true);
@@ -1069,6 +1400,20 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if(evt.getSource()==panelConsultarLotes.jDateFiltro){
+            Date fechaR = panelConsultarLotes.jDateFiltro.getDate();
+            Format formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaRegistro = formatter.format(fechaR);
+            if(panelConsultarLotes.labelTItulo.getText().equalsIgnoreCase("entradas")){
+                cargarEntradas(fechaRegistro);
+            } else {
+                cargarSalidas(fechaRegistro);
+            }
+        }
     }
     
 }

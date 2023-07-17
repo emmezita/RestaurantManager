@@ -29,11 +29,13 @@ public class PanelConsultarLotes extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tablaNominas = new javax.swing.JTable();
+        txtResponsable = new javax.swing.JLabel();
+        labelResponsable = new javax.swing.JLabel();
+        jScrollPaneRegistros = new javax.swing.JScrollPane();
+        tablaRegistros = new javax.swing.JTable();
         labelBuscar = new javax.swing.JLabel();
         jScrollPane = new javax.swing.JScrollPane();
-        panelNóminas = new javax.swing.JPanel(new GridLayout(0, 1, 1, 1));
+        panelRegistros = new javax.swing.JPanel(new GridLayout(0, 1, 1, 1));
         labelPanelNominas = new javax.swing.JLabel();
         labelTItulo = new javax.swing.JLabel();
         labelFondoTItulo = new javax.swing.JLabel();
@@ -45,10 +47,22 @@ public class PanelConsultarLotes extends javax.swing.JPanel {
         setBackground(new java.awt.Color(39, 45, 47));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tablaNominas.setBackground(new java.awt.Color(230, 231, 235));
-        tablaNominas.setFont(new java.awt.Font("Open Sans", 0, 15)); // NOI18N
-        tablaNominas.setForeground(new java.awt.Color(39, 45, 47));
-        tablaNominas.setModel(new javax.swing.table.DefaultTableModel(
+        txtResponsable.setFont(new java.awt.Font("Open Sans", 0, 15)); // NOI18N
+        txtResponsable.setForeground(new java.awt.Color(230, 231, 235));
+        txtResponsable.setText("Italo Visconti");
+        add(txtResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 30, 220, 50));
+
+        labelResponsable.setBackground(new java.awt.Color(0, 0, 0));
+        labelResponsable.setFont(new java.awt.Font("Open Sans", 1, 18)); // NOI18N
+        labelResponsable.setForeground(new java.awt.Color(230, 231, 235));
+        labelResponsable.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        labelResponsable.setText("Responsable");
+        add(labelResponsable, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 30, 130, 50));
+
+        tablaRegistros.setBackground(new java.awt.Color(230, 231, 235));
+        tablaRegistros.setFont(new java.awt.Font("Open Sans", 0, 15)); // NOI18N
+        tablaRegistros.setForeground(new java.awt.Color(39, 45, 47));
+        tablaRegistros.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -59,9 +73,9 @@ public class PanelConsultarLotes extends javax.swing.JPanel {
                 "ID", "Nombre", "Tipo", "Unidad", "Cantidad", "Fecha de Vencimiento", "Responsable"
             }
         ));
-        jScrollPane1.setViewportView(tablaNominas);
+        jScrollPaneRegistros.setViewportView(tablaRegistros);
 
-        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 110, 578, 552));
+        add(jScrollPaneRegistros, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 110, 578, 552));
 
         labelBuscar.setFont(new java.awt.Font("Open Sans Medium", 0, 16)); // NOI18N
         labelBuscar.setForeground(new java.awt.Color(230, 231, 235));
@@ -75,8 +89,8 @@ public class PanelConsultarLotes extends javax.swing.JPanel {
         jScrollPane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jScrollPane.setViewportView(null);
 
-        panelNóminas.setBackground(new java.awt.Color(58, 64, 65));
-        jScrollPane.setViewportView(panelNóminas);
+        panelRegistros.setBackground(new java.awt.Color(58, 64, 65));
+        jScrollPane.setViewportView(panelRegistros);
 
         add(jScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 186, 246, 470));
 
@@ -158,12 +172,14 @@ public class PanelConsultarLotes extends javax.swing.JPanel {
     private javax.swing.JLabel fondoBotonRegresar;
     public com.toedter.calendar.JDateChooser jDateFiltro;
     public javax.swing.JScrollPane jScrollPane;
-    private javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JScrollPane jScrollPaneRegistros;
     private javax.swing.JLabel labelBuscar;
     private javax.swing.JLabel labelFondoTItulo;
     private javax.swing.JLabel labelPanelNominas;
+    public javax.swing.JLabel labelResponsable;
     public javax.swing.JLabel labelTItulo;
-    public javax.swing.JPanel panelNóminas;
-    public javax.swing.JTable tablaNominas;
+    public javax.swing.JPanel panelRegistros;
+    public javax.swing.JTable tablaRegistros;
+    public javax.swing.JLabel txtResponsable;
     // End of variables declaration//GEN-END:variables
 }
