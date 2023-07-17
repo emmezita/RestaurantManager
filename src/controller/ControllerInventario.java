@@ -81,7 +81,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     private DefaultTableModel DT_PROVEEDOR;
     private ResultSet RS_PROVEEDOR;
     
-    private final String SQL_INSERT = "INSERT INTO Insumo (idInsumo,tipoinsumo,unidad,cantidad,vencido,fechavencimiento,nombre) values (?,?,?,?,?,?,?)";
+    private final String SQL_INSERT = "INSERT INTO Insumo (idInsumo,tipoinsumo,unidad,cantidad,nombre) values (?,?,?,?,?,?)";
     private PreparedStatement PS;                                                                                                                   
     private final ConexionServidor CN;
     
