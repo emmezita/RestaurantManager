@@ -34,6 +34,15 @@ public class PanelIngresarInsumo extends javax.swing.JPanel {
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxUnidad.setRenderer(new MyComboBoxRender());
+        
+        comboBoxProveedor.setOpaque(false);
+        comboBoxProveedor.setEditable(true);
+        boxField = (JTextField)comboBoxProveedor.getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxProveedor.setRenderer(new MyComboBoxRender());
     }
 
     /**

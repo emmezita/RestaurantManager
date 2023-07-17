@@ -451,9 +451,11 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, true, false
             };
+            @Override
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
+            @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }

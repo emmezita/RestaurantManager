@@ -4,6 +4,8 @@
  */
 package controller;
 
+import static controller.ControllerLogin.indicadorUsuario;
+import static controller.ControllerLogin.listaGerentes;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +17,7 @@ import java.awt.event.KeyListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +32,8 @@ import view.viewinventario.PanelInsumo;
 import view.viewprincipal.SistemaPrincipal;
 import model.conexionBD.ConexionServidor;
 import model.modelinventario.Proveedor;
+import model.modelinventario.Registro;
+import model.modelusuario.Gerente;
 import view.viewinventario.PanelBuscarInsumo;
 import view.viewinventario.PanelConsultarLotes;
 import view.viewinventario.PanelConsultarProveedores;
@@ -70,10 +75,13 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     private DefaultTableModel DT;
     private ResultSet RS;
     
+    private DefaultTableModel modeloEntrada, modeloSalida;
+    
     private final Calendar calendar = Calendar.getInstance();
     private Date fechaActual;
     
     private final Inventario inventario = new Inventario();
+    private final ArrayList <Registro> listaRegistros = new ArrayList<>();
     private Insumo i = new Insumo(); 
     private Proveedor proveedor = new Proveedor();
     
@@ -173,8 +181,17 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                  ||panelIngresar.txtNombreInsumo.getText().equals("Nombre")
                  //||panelIngresar.jDateFechaVencimiento.getDate()==null
                  ||panelIngresar.comboBoxTipoInsumo.getSelectedIndex()==0
-                 ||panelIngresar.comboBoxUnidad.getSelectedIndex()==0) 
-                 ||panelIngresar.comboBoxProveedor.getSelectedIndex()==0;
+                 ||panelIngresar.comboBoxUnidad.getSelectedIndex()==0 
+                 ||panelIngresar.comboBoxProveedor.getSelectedIndex()==0);
+    }
+    
+    public boolean camposOpcionVer() {
+        return !(  frameVer.txtNombreInsumo.getText().isEmpty()
+                 ||frameVer.txtNombreInsumo.getText().equals("Nombre")
+                 //||panelIngresar.jDateFechaVencimiento.getDate()==null
+                 ||frameVer.comboBoxTipoInsumo.getSelectedIndex()==0
+                 ||frameVer.comboBoxUnidad.getSelectedIndex()==0 
+                 ||frameVer.comboBoxProveedor.getSelectedIndex()==0);
     }
     
     // Limpia el panel de ingresar
@@ -277,6 +294,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                 Proveedor proveedor = new Proveedor(nombre, direccion, telefono, correo, rif);
                 listaProveedores.add(proveedor);
                 panelIngresar.comboBoxProveedor.addItem(nombre);
+                frameVer.comboBoxProveedor.addItem(nombre);
             }
         }
         // Excepcion si no se pudo listar las tablas
@@ -332,9 +350,9 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                             frameVer.setResizable(false);
                             frameVer.labelTItulo.setText("Datos del Insumo");
                             frameVer.txtNombreInsumo.setText(i.getNombre());
-                            frameVer.txtNombreInsumo.setEditable(false);
                             frameVer.comboBoxUnidad.setSelectedItem(i.getUnidad());
                             frameVer.comboBoxTipoInsumo.setSelectedItem(i.getTipoInsumo());
+                            frameVer.comboBoxProveedor.setSelectedItem(i.getProveedor());
                             frameVer.setVisible(true);
                         }
                 });
@@ -399,10 +417,10 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
 
                         frameVer.labelTItulo.setText("Datos del Insumo");
                         frameVer.txtNombreInsumo.setText(i.getNombre());
-                        frameVer.txtNombreInsumo.setEditable(false);
                         frameVer.comboBoxUnidad.setSelectedItem(i.getUnidad());
                         frameVer.comboBoxTipoInsumo.setSelectedItem(i.getTipoInsumo());
-
+                        frameVer.comboBoxProveedor.setSelectedItem(i.getProveedor());
+                        
                         frameVer.setVisible(true);
                     }
              });
@@ -460,9 +478,9 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
 
                             frameVer.labelTItulo.setText("Datos del Insumo");
                             frameVer.txtNombreInsumo.setText(i.getNombre());
-                            frameVer.txtNombreInsumo.setEditable(false);
                             frameVer.comboBoxUnidad.setSelectedItem(i.getUnidad());
                             frameVer.comboBoxTipoInsumo.setSelectedItem(i.getTipoInsumo());
+                            frameVer.comboBoxProveedor.setSelectedItem(i.getProveedor());
 
                             frameVer.setVisible(true);
                         }
@@ -475,6 +493,68 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         panelConsultar.panelInsumosPorReponer.repaint();
         panelConsultar.panelInsumosVencidos.revalidate();
         panelConsultar.panelInsumosVencidos.repaint();
+    }
+    
+    public int generarIDLote(){
+        int numMax = 0;
+        for (int i = 0; i<listaRegistros.size();i++){
+            int num=listaRegistros.get(i).getListaLotes().get(0).getIdLote();
+            if(num > numMax){
+                numMax = num;
+            }
+        }
+        return numMax + 1;
+    }
+    
+    public void cargarInsumosEntrada(){
+        Gerente gerente = null, g = new Gerente();
+        gerente = g.buscarGerente(listaGerentes,indicadorUsuario);
+        String fecha = "";
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm aa");
+        Calendar cal = Calendar.getInstance();
+        Date fechaA = cal.getTime();
+        fecha = format.format(fechaA);
+        
+        panelIngresarLotes.txtFechaIngreso.setText(fecha);
+        panelIngresarLotes.txtResponsable.setText(gerente.getNombre() + " " + gerente.getApellido());
+        panelIngresarLotes.txtCedula.setText(gerente.getCedula());
+        
+        SimpleDateFormat format2 = new SimpleDateFormat("dd/MM/yyyy");
+        fecha = format2.format(fechaActual);
+        
+        String datos[][] = {};
+        String columna [] = {"id","Nombre","Tipo","Unidad","Cantidad","Fecha de vencimiento"};
+        modeloEntrada = new DefaultTableModel(datos, columna){
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true, true
+            };
+
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        };
+        panelIngresarLotes.tablaEntradas.setModel(modeloEntrada);
+        panelIngresarLotes.tablaEntradas.getTableHeader().setReorderingAllowed(false);
+        for (int i = 0; i<inventario.getListaInsumos().size();i++){
+            Insumo insumo = inventario.getListaInsumos().get(i);
+            modeloEntrada.insertRow(0, columna);
+            modeloEntrada.setValueAt(generarIDLote(),0 ,0);
+            modeloEntrada.setValueAt(insumo.getNombre(), 0, 1);
+            modeloEntrada.setValueAt(insumo.getTipoInsumo(), 0, 2);
+            modeloEntrada.setValueAt(insumo.getUnidad(), 0, 3);
+            modeloEntrada.setValueAt(0, 0, 4);
+            modeloEntrada.setValueAt(fecha, 0, 5);
+        }
+        
     }
     
     public int generarID(){
@@ -515,7 +595,11 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         //BOTONES DEL FRAME: Ver insumo
         
         if(e.getSource()==frameVer.botonGuardar){
-            
+            boolean validado = true;
+            if (camposOpcionVer()){
+            } else {
+                JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de registrar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
         }
         
         if(e.getSource()==frameVer.botonEliminar){
@@ -540,6 +624,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource()== panelConsultar.botonEntrada){
+            cargarInsumosEntrada();
             panelIngresarLotes.botonConsultarEntradas.setVisible(true);
             panelIngresarLotes.botonConsultarSalidas.setVisible(false);
             panelIngresarLotes.botonRegistrarE.setVisible(true);
@@ -834,6 +919,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     Proveedor p = new Proveedor(nombre, direccion, telefono, correo ,rif);
                     listaProveedores.add(p);
                     panelIngresar.comboBoxProveedor.addItem(nombre);
+                    frameVer.comboBoxProveedor.addItem(nombre);
                     try{
                         PS_PROVEEDOR=CN.getConnection().prepareStatement(SQL_INSERT_PROVEEDOR);
                         PS_PROVEEDOR.setString(1, nombre);
