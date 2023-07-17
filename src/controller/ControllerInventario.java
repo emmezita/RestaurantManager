@@ -81,7 +81,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     private DefaultTableModel DT_PROVEEDOR;
     private ResultSet RS_PROVEEDOR;
     
-    private final String SQL_INSERT = "INSERT INTO Insumo (idInsumo,tipoinsumo,unidad,cantidad,nombre) values (?,?,?,?,?,?)";
+    private final String SQL_INSERT = "INSERT INTO Insumo (idInsumo,tipoinsumo,unidad,cantidad,nombre,proveedor) values (?,?,?,?,?,?)";
     private PreparedStatement PS;                                                                                                                   
     private final ConexionServidor CN;
     
@@ -1026,9 +1026,8 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                                         PS.setString(2, tipo);
                                         PS.setString(3, unidad);
                                         PS.setDouble(4, 0);
-                                        PS.setBoolean(5, false);
-                                        PS.setDate(6, null); 
-                                        PS.setString(7, nombre);
+                                        PS.setString(5, nombre); 
+                                        PS.setString(6, proveedor);
                                         int res = PS.executeUpdate();
                                         if (res > 0){
                                             inventario.agregarInsumo(in);
