@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import model.modelinventario.Insumo;
 import model.modelinventario.Inventario;
@@ -520,6 +522,16 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         return numMax + 1;
     }
     
+    public void validarCeldaCantidad(TableModelEvent evento, int fila){
+        if(evento.getColumn()!=4){
+            return;
+        }
+        if(panelIngresarLotes.tablaEntradas.getValueAt(fila, 4).toString().equals("")){
+            panelIngresarLotes.tablaEntradas.setValueAt(0.0, fila, 4);
+            JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de registrar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
     public void cargarInsumosEntrada(){
         panelIngresarLotes.botonCambiar.setVisible(true);
         panelIngresarLotes.botonCambiar.setEnabled(true);
@@ -574,6 +586,13 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             modeloEntrada.setValueAt(0, 0, 4);
             modeloEntrada.setValueAt(fecha, 0, 5);
         }
+        modeloEntrada.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent evento) {
+                int fila = panelIngresarLotes.tablaEntradas.getSelectedRow();
+                validarCeldaCantidad(evento,fila);
+            }
+        });
         
     }
     
@@ -627,6 +646,13 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             modeloSalida.setValueAt(insumo.getUnidad(), 0, 3);
             modeloSalida.setValueAt(0, 0, 4);
         }
+        modeloSalida.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent evento) {
+                int fila = panelIngresarLotes.tablaEntradas.getSelectedRow();
+                validarCeldaCantidad(evento,fila);
+            }
+        });
         
     }
     
@@ -1124,6 +1150,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     Registro registro = new Registro("entrada",fechaRegistro,responsable,documento,listaLotes);
                     listaRegistros.add(registro);
                     JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
+                    cargarInsumosEntrada();
                 } else {
                     JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
@@ -1153,6 +1180,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                 String documento = panelIngresarLotes.txtCedula.getText();
                 Registro registro = new Registro("salida",fechaRegistro,responsable,documento,listaLotes);
                 listaRegistros.add(registro);
+                cargarInsumosSalida();
                 JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
             } else {
                 JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
