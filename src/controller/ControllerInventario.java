@@ -1101,7 +1101,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource() == panelIngresarLotes.botonRegistrarE){
-            //if(!validarFechasIngresarLoteEntrada()){
+            if(!validarFechasIngresarLoteEntrada()){
                 if(!validarCantidadesIngresarLote()){
                     ArrayList<Lote> listaLotes = new ArrayList<>();
                     for (int i = 0; i<inventario.getListaInsumos().size(); i++){
@@ -1127,9 +1127,9 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                 } else {
                     JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
-            //} else {
-                //JOptionPane.showMessageDialog(null, "Las fechas de vencimiento no pueden ser iguales o anteriores a la fecha de hoy", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            //}
+            } else {
+                JOptionPane.showMessageDialog(null, "Las fechas de vencimiento no pueden ser iguales o anteriores a la fecha de hoy", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
         }
         
         if(e.getSource() == panelIngresarLotes.botonRegistrarS){
