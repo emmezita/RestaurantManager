@@ -49,26 +49,26 @@ public class PanelSalida extends javax.swing.JPanel {
                 botonSalidaMouseExited(evt);
             }
         });
-        add(botonSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 210, 50));
+        add(botonSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 210, 50));
 
         labelIconoSalida.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/iconoSalida.png"))); // NOI18N
-        add(labelIconoSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 26, -1, -1));
+        add(labelIconoSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 25, -1, -1));
 
         labelFechaSalida.setFont(new java.awt.Font("Open Sans Medium", 0, 14)); // NOI18N
         labelFechaSalida.setForeground(new java.awt.Color(230, 231, 235));
         labelFechaSalida.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelFechaSalida.setText("03/07/23 16:00");
-        add(labelFechaSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 150, 40));
+        add(labelFechaSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, 150, 40));
 
         fondoSalidaPresionado.setBackground(new java.awt.Color(102, 102, 102));
         fondoSalidaPresionado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fondoSalidaPresionado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoNombreEyS.png"))); // NOI18N
-        add(fondoSalidaPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 10, 220, 60));
+        add(fondoSalidaPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 220, 60));
 
         fondoSalida.setBackground(new java.awt.Color(102, 102, 102));
         fondoSalida.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fondoSalida.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoNombreEyS.png"))); // NOI18N
-        add(fondoSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 10, 220, 60));
+        add(fondoSalida, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 220, 60));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonSalidaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonSalidaMouseEntered

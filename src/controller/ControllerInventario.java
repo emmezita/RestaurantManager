@@ -14,14 +14,18 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -53,7 +57,7 @@ import view.viewinventario.PanelSalida;
  *
  * Desarrollo: Paola Ascanio | Intefaces: Estefany Torres
  */
-public class ControllerInventario implements ActionListener, ItemListener, KeyListener, ChangeListener {
+public class ControllerInventario implements ActionListener, ItemListener, KeyListener, PropertyChangeListener {
     
     private final SistemaPrincipal panelSistema;
     private final PanelConsultarInventario panelConsultar = new PanelConsultarInventario();
@@ -147,6 +151,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         //Panel Consultar Lotes
         panelConsultarLotes.botonRegresarE.addActionListener(this);
         panelConsultarLotes.botonRegresarS.addActionListener(this);
+        panelConsultarLotes.jDateFiltro.addPropertyChangeListener(this);
         
         //Panel Consultar Proveedores
         panelConsultarProveedores.botonIngresar.addActionListener(this);
@@ -525,7 +530,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         Gerente gerente = null, g = new Gerente();
         gerente = g.buscarGerente(listaGerentes,indicadorUsuario);
         String fecha = "";
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm aa");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar cal = Calendar.getInstance();
         Date fechaA = cal.getTime();
         fecha = format.format(fechaA);
@@ -582,7 +587,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         Gerente gerente = null, g = new Gerente();
         gerente = g.buscarGerente(listaGerentes,indicadorUsuario);
         String fecha = "";
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm aa");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar cal = Calendar.getInstance();
         Date fechaA = cal.getTime();
         fecha = format.format(fechaA);
@@ -665,7 +670,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         return flag;
     }
     
-    public void cargarEntradas(){
+    public void cargarEntradas(String fechaFiltro){
         panelConsultarLotes.tablaRegistros.setVisible(false);
         panelConsultarLotes.jScrollPaneRegistros.setVisible(false);
         panelConsultarLotes.txtResponsable.setText("");
@@ -708,14 +713,25 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                         }
                     }
                 }); 
-                panelConsultarLotes.panelRegistros.add(panelE);
+                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+                String fechaNueva = "";
+                try {
+                    Date fechaN = formato.parse(fechaRegistro);
+                    fechaNueva = formato.format(fechaN);
+                } catch (ParseException ex) {
+                    Logger.getLogger(ControllerInventario.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                // Creating a calendar object
+                if(fechaNueva.equals(fechaFiltro)){
+                    panelConsultarLotes.panelRegistros.add(panelE);
+                }
             }
         }
         panelConsultarLotes.panelRegistros.revalidate();
         panelConsultarLotes.panelRegistros.repaint();
     }
     
-    public void cargarSalidas(){
+    public void cargarSalidas(String fechaFiltro){
         panelConsultarLotes.tablaRegistros.setVisible(false);
         panelConsultarLotes.jScrollPaneRegistros.setVisible(false);
         panelConsultarLotes.txtResponsable.setText("");
@@ -756,8 +772,18 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                             modeloSalida.setValueAt(lote.getCantidad(), 0, 4);
                         }
                     }
-                });    
-                panelConsultarLotes.panelRegistros.add(panelS);
+                }); 
+                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+                String fechaNueva = "";
+                try {
+                    Date fechaN = formato.parse(fechaRegistro);
+                    fechaNueva = formato.format(fechaN);
+                } catch (ParseException ex) {
+                    Logger.getLogger(ControllerInventario.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if(fechaNueva.equals(fechaFiltro)){
+                    panelConsultarLotes.panelRegistros.add(panelS);
+                }
             }
         }
         panelConsultarLotes.panelRegistros.revalidate();
@@ -1134,7 +1160,10 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource() == panelIngresarLotes.botonConsultarEntradas){
-            cargarEntradas();
+            panelConsultarLotes.jDateFiltro.setDate(fechaActual);
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaF = format.format(fechaActual);
+            cargarEntradas(fechaF);
             panelConsultarLotes.labelTItulo.setText("ENTRADAS");
             panelConsultarLotes.botonRegresarE.setVisible(true);
             panelConsultarLotes.botonRegresarS.setVisible(false);
@@ -1147,7 +1176,10 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource() == panelIngresarLotes.botonConsultarSalidas){
-            cargarSalidas();
+            panelConsultarLotes.jDateFiltro.setDate(fechaActual);
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaF = format.format(fechaActual);
+            cargarSalidas(fechaF);
             panelConsultarLotes.labelTItulo.setText("SALIDAS");
             panelConsultarLotes.botonRegresarE.setVisible(false);
             panelConsultarLotes.botonRegresarS.setVisible(true);
@@ -1296,8 +1328,17 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     }
 
     @Override
-    public void stateChanged(ChangeEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void propertyChange(PropertyChangeEvent evt) {
+        if(evt.getSource()==panelConsultarLotes.jDateFiltro){
+            Date fechaR = panelConsultarLotes.jDateFiltro.getDate();
+            Format formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaRegistro = formatter.format(fechaR);
+            if(panelConsultarLotes.labelTItulo.getText().equalsIgnoreCase("entradas")){
+                cargarEntradas(fechaRegistro);
+            } else {
+                cargarSalidas(fechaRegistro);
+            }
+        }
     }
     
 }

@@ -49,26 +49,26 @@ public class PanelEntrada extends javax.swing.JPanel {
                 botonEntradaMouseExited(evt);
             }
         });
-        add(botonEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 15, 210, 50));
+        add(botonEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 210, 50));
 
         labelIconoEntrada.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/iconoEntrada.png"))); // NOI18N
-        add(labelIconoEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 26, -1, -1));
+        add(labelIconoEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 25, -1, -1));
 
         labelFechaEntrada.setFont(new java.awt.Font("Open Sans Medium", 0, 14)); // NOI18N
         labelFechaEntrada.setForeground(new java.awt.Color(230, 231, 235));
         labelFechaEntrada.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelFechaEntrada.setText("03/07/23 16:00");
-        add(labelFechaEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 150, 40));
+        add(labelFechaEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, 150, 40));
 
         fondoEntradaPresionado.setBackground(new java.awt.Color(102, 102, 102));
         fondoEntradaPresionado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fondoEntradaPresionado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoNombreEyS.png"))); // NOI18N
-        add(fondoEntradaPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 10, 220, 60));
+        add(fondoEntradaPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 220, 60));
 
         fondoEntrada.setBackground(new java.awt.Color(102, 102, 102));
         fondoEntrada.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fondoEntrada.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoNombreEyS.png"))); // NOI18N
-        add(fondoEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 10, 220, 60));
+        add(fondoEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 220, 60));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonEntradaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEntradaMouseEntered
