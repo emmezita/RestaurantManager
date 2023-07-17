@@ -74,6 +74,7 @@ public class FrameVerInsumo extends javax.swing.JFrame {
         fondoBotonGuardar = new javax.swing.JLabel();
         labelCantidadExistente = new javax.swing.JLabel();
         labelCantidad = new javax.swing.JLabel();
+        fondo1 = new javax.swing.JLabel();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -188,9 +189,13 @@ public class FrameVerInsumo extends javax.swing.JFrame {
         labelCantidad.setText("Cantidad existente: ");
         getContentPane().add(labelCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 360, -1, -1));
 
+        fondo1.setBackground(new java.awt.Color(39, 45, 47));
+        fondo1.setForeground(new java.awt.Color(39, 45, 47));
+        fondo1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoIngresarDatos.png"))); // NOI18N
+        getContentPane().add(fondo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 340, 470));
+
         fondo.setBackground(new java.awt.Color(39, 45, 47));
         fondo.setForeground(new java.awt.Color(39, 45, 47));
-        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoIngresarDatos.png"))); // NOI18N
         fondo.setOpaque(true);
         getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 340, 500));
 
@@ -259,6 +264,7 @@ public class FrameVerInsumo extends javax.swing.JFrame {
     public javax.swing.JComboBox<String> comboBoxTipoInsumo;
     public javax.swing.JComboBox<String> comboBoxUnidad;
     private javax.swing.JLabel fondo;
+    private javax.swing.JLabel fondo1;
     private javax.swing.JLabel fondoBotonEliminar;
     private javax.swing.JLabel fondoBotonGuardar;
     private javax.swing.JLabel inputNombre;

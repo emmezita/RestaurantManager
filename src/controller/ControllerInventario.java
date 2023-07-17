@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.PreparedStatement;
@@ -125,6 +126,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         
         //Panel Buscar Insumo
         panelBuscar.botonRegresarI.addActionListener(this);
+        panelBuscar.txtBuscar.addKeyListener(this);
         
         //Panel Consultar Lotes
         panelConsultarLotes.botonRegresarE.addActionListener(this);
@@ -133,6 +135,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         //Panel Consultar Proveedores
         panelConsultarProveedores.botonIngresar.addActionListener(this);
         panelConsultarProveedores.botonRegresarI.addActionListener(this);
+        panelConsultarProveedores.txtBuscar.addKeyListener(this);
         
         //Panel Ingresar Lotes
         panelIngresarLotes.botonConsultarEntradas.addActionListener(this);
@@ -324,7 +327,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     @Override
                         public void actionPerformed(ActionEvent e) {
                             frameVer.setTitle("Restaurant Manager");
-                            frameVer.setSize(355,525);
+                            frameVer.setSize(355,547);
                             frameVer.setLocationRelativeTo(null);
                             frameVer.setResizable(false);
                             frameVer.labelTItulo.setText("Datos del Insumo");
@@ -348,7 +351,6 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         for(Proveedor p: listaProveedores){
             PanelProveedor panelP = new PanelProveedor();
             panelP.setSize(308, 80);
-            System.out.println(p.getNombre());
             panelP.labelNombreProveedor.setText(p.getNombre());
             panelP.botonProveedor.addActionListener(new ActionListener() {
                 @Override
@@ -362,10 +364,56 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     cargarInventarioProveedor(p.getNombre());
                 }
             });
-            panelConsultarProveedores.panelProveedores.add(panelP);
+            String entrada = panelConsultarProveedores.txtBuscar.getText();
+            String nombre = p.getNombre().toLowerCase();
+            if(nombre.contains(entrada)){
+                panelConsultarProveedores.panelProveedores.add(panelP);  
+            }
         }
         panelConsultarProveedores.panelProveedores.revalidate();
         panelConsultarProveedores.panelProveedores.repaint();
+    }
+    
+    public final void cargarInventarioBuscar () {
+        panelBuscar.panelInsumos.removeAll();
+        // Busca los insumos correspondientes en inventario por su ID y su tipo
+        
+        for (Insumo i: inventario.getListaInsumos()) {
+            
+            // Crea los datos generales para todos los paneles
+            PanelInsumo panel = new PanelInsumo();
+            panel.setSize(310,80);
+            panel.labelNombreInsumo.setText(i.getNombre());
+            panel.labelCantidad.setText(String.valueOf(i.getCantidad()));
+            panel.labelID.setText(String.valueOf(i.getId()));
+            panel.labelID.setVisible(false);
+            // Verifica los datos del insumo para saber en que panel colocarlos
+            // Panel de vencidos
+            panel.botonVerInsumo.addActionListener(new ActionListener() {
+                @Override
+                    public void actionPerformed(ActionEvent e) {
+                        frameVer.setTitle("Restaurant Manager");
+                        frameVer.setSize(355,547);
+                        frameVer.setLocationRelativeTo(null);
+                        frameVer.setResizable(false);
+
+                        frameVer.labelTItulo.setText("Datos del Insumo");
+                        frameVer.txtNombreInsumo.setText(i.getNombre());
+                        frameVer.txtNombreInsumo.setEditable(false);
+                        frameVer.comboBoxUnidad.setSelectedItem(i.getUnidad());
+                        frameVer.comboBoxTipoInsumo.setSelectedItem(i.getTipoInsumo());
+
+                        frameVer.setVisible(true);
+                    }
+             });
+            String entrada = panelBuscar.txtBuscar.getText();
+            String nombre = i.getNombre().toLowerCase();
+            if(nombre.contains(entrada)){
+                panelBuscar.panelInsumos.add(panel);  
+            }
+        }
+        panelBuscar.panelInsumos.revalidate();
+        panelBuscar.panelInsumos.repaint();
     }
     
     
@@ -406,7 +454,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     @Override
                         public void actionPerformed(ActionEvent e) {
                             frameVer.setTitle("Restaurant Manager");
-                            frameVer.setSize(355,525);
+                            frameVer.setSize(355,547);
                             frameVer.setLocationRelativeTo(null);
                             frameVer.setResizable(false);
 
@@ -522,6 +570,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource()==panelConsultar.botonBuscar){
+            cargarInventarioBuscar () ;
             panelBuscar.setSize(926,720);
             panelBuscar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -866,6 +915,19 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
 
     @Override
     public void keyTyped(KeyEvent e) {
+        panelConsultarProveedores.txtBuscar.addKeyListener(new KeyAdapter (){
+            @Override
+            public void keyReleased(KeyEvent e) {
+                cargarProveedores();
+            }
+        });
+        panelBuscar.txtBuscar.addKeyListener(new KeyAdapter (){
+            @Override
+            public void keyReleased(KeyEvent e) {
+                cargarInventarioBuscar ();
+            }
+        });
+         
     }
 
     @Override

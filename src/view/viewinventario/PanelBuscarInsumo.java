@@ -65,10 +65,10 @@ public class PanelBuscarInsumo extends javax.swing.JPanel {
         txtBuscar.setFont(new java.awt.Font("Open Sans Medium", 0, 15)); // NOI18N
         txtBuscar.setForeground(new java.awt.Color(230, 231, 235));
         txtBuscar.setBorder(null);
-        add(txtBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 32, 270, 45));
+        add(txtBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 60, 270, 45));
 
         labelBarraBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/barraBuscar.png"))); // NOI18N
-        add(labelBarraBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 30, 340, 50));
+        add(labelBarraBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, 340, 50));
 
         jScrollPaneD.setBorder(null);
         jScrollPaneD.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -78,19 +78,19 @@ public class PanelBuscarInsumo extends javax.swing.JPanel {
         panelInsumos.setBackground(new java.awt.Color(58, 64, 65));
         jScrollPaneD.setViewportView(panelInsumos);
 
-        add(jScrollPaneD, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 170, 340, 470));
+        add(jScrollPaneD, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 200, 340, 470));
 
         labelTItulo.setBackground(new java.awt.Color(0, 0, 0));
         labelTItulo.setFont(new java.awt.Font("Open Sans Medium", 1, 16)); // NOI18N
         labelTItulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelTItulo.setText("RESULTADO DE LA BÚSQUEDA");
-        add(labelTItulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 100, 340, 50));
+        add(labelTItulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 130, 340, 50));
 
         labelFondoPanel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/panelResultadoBusqueda.png"))); // NOI18N
-        add(labelFondoPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 160, -1, -1));
+        add(labelFondoPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 190, -1, -1));
 
         labelFondoTitulo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoTituloBuscar.png"))); // NOI18N
-        add(labelFondoTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 100, -1, -1));
+        add(labelFondoTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 130, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonRegresarIMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegresarIMouseEntered
