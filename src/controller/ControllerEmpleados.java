@@ -89,7 +89,15 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
     private final String SQL_SELECT = "SELECT * FROM Empleado";
     private DefaultTableModel DT;
     private ResultSet RS;
-    private DefaultTableModel modeloEmpleado,modeloNomina;
+    private DefaultTableModel modeloEmpleado, modeloNomina;
+    
+    private final String SQL_INSERT_NOMINA = "INSERT INTO DatosPago (cedula,nombre,rol,sueldoDiario,"
+            + "diasTrabajo,netoACobrar,fechaInicio,fechaCierre) values (?,?,?,?,?,?,?,?)";
+    private PreparedStatement PS_NOMINA;
+    
+    private final String SQL_SELECT_NOMINA = "SELECT * FROM DatosPago";
+    private DefaultTableModel DT_NOMINA;
+    private ResultSet RS_NOMINA;
     
     //Atributos para manejo de fechas
     private final Calendar calendar = Calendar.getInstance();
@@ -132,11 +140,13 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
         panelIngresarN.botonRegresar.addActionListener(this);
         // Comandos de consulta de datos de la BD
         PS = null;
+        PS_NOMINA = null;
         CN= new ConexionServidor();
         //Método para ingresar los datos de la BD al programa
         setDatos();
-        
+        setDatosNomina();    
     }
+    
     //Método que vacia los campos del panel consultar
     public void resetearCamposConsultarUsuario(){
         panelConsultar.labelNombre.setText("");
@@ -181,6 +191,19 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
         DT.addColumn("fechaingreso");
         DT.addColumn("icono");
         return DT;
+    }
+    
+    private DefaultTableModel setColumnasNomina() {
+        DT_NOMINA = new DefaultTableModel();
+        DT_NOMINA.addColumn("cedula");
+        DT_NOMINA.addColumn("nombre");
+        DT_NOMINA.addColumn("rol");
+        DT_NOMINA.addColumn("sueldoDario");
+        DT_NOMINA.addColumn("diasTrabajo");
+        DT_NOMINA.addColumn("netoACobrar");
+        DT_NOMINA.addColumn("fechaInicio");
+        DT_NOMINA.addColumn("fechaCierre");
+        return DT_NOMINA;
     }
     /* Obtiene los datos de cada Empleado de la tabla de la BD y los 
        registra en la lista de Empleados del programa */
@@ -230,6 +253,49 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
             CN.desconectar();
         }
         return DT;
+    }
+    
+    public DefaultTableModel setDatosNomina() {
+        try{
+            // Establece modelo de tabla
+            setColumnasNomina();
+            // Conexion a BD para obtener informacion de tabla Nomina
+            PS_NOMINA = CN.getConnection().prepareStatement(SQL_SELECT_NOMINA);
+            RS_NOMINA = PS_NOMINA.executeQuery();
+            // Busca datos de cada columna
+            ArrayList<DatosPago> listaPagos = new ArrayList<>();
+            int i = 1;
+            while (RS_NOMINA.next()){
+                String cedula = RS_NOMINA.getString(2);
+                String nombre = RS_NOMINA.getString(3);
+                String rol = RS_NOMINA.getString(4);
+                double sueldoDiario = RS_NOMINA.getDouble(5);
+                int diasTrabajo = RS_NOMINA.getInt(6);
+                double netoACobrar = RS_NOMINA.getDouble(7);                
+                DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
+                listaPagos.add(dp);
+                if (i == listaEmpleados.size()) {
+                    String fechaInicio = RS_NOMINA.getString(8);
+                    String fechaCierre = RS_NOMINA.getString(9);
+                    NominaPago nomina = new NominaPago(fechaInicio, fechaCierre, listaPagos);
+                    listaNominas.add(nomina);
+                    listaPagos = new ArrayList<>();
+                    i = 1;
+                } else 
+                    i++;
+            }
+        }
+        // Excepcion si no se pudo listar las tablas
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error al listar los datos de la nomina: " +e.getMessage(), "Error", 0);
+        }
+        // Finaliza conexion con BD
+        finally{
+            PS_NOMINA=null;
+            RS_NOMINA=null;
+            CN.desconectar();
+        }
+        return DT_NOMINA;
     }
     
     public void cargarNominas(int monthA, int yearA){
@@ -977,6 +1043,7 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
                                     }
                                     if(seguir){
                                         ArrayList<DatosPago> listaPagos = new ArrayList<>();
+                                        boolean guardado = true;
                                         for (int i = 0; i<listaEmpleados.size(); i++){
                                             int j = 0;
                                             String cedula = panelIngresarN.tablaNominas.getValueAt(i, j).toString(); j++;
@@ -985,15 +1052,40 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
                                             double sueldoDiario = Double.parseDouble(panelIngresarN.tablaNominas.getValueAt(i, j).toString());j++;
                                             int diasTrabajo = Integer.parseInt(panelIngresarN.tablaNominas.getValueAt(i, j).toString());j++;
                                             double netoACobrar = Double.parseDouble(panelIngresarN.tablaNominas.getValueAt(i, j).toString());
-                                            DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
-                                            listaPagos.add(dp);
+                                            try{
+                                                PS_NOMINA = CN.getConnection().prepareStatement(SQL_INSERT_NOMINA);
+                                                PS_NOMINA.setString(1, cedula);
+                                                PS_NOMINA.setString(2, nombre);
+                                                PS_NOMINA.setString(3, rol);
+                                                PS_NOMINA.setDouble(4, sueldoDiario);
+                                                PS_NOMINA.setInt(5, diasTrabajo);
+                                                PS_NOMINA.setDouble(6, netoACobrar);
+                                                PS_NOMINA.setString(7, fIni);
+                                                PS_NOMINA.setString(8, fCie);
+                                                int res = PS_NOMINA.executeUpdate();
+                                                if(res > 0) {
+                                                    DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
+                                                    listaPagos.add(dp);  
+                                                }
+                                            }catch(SQLException ex) {
+                                                JOptionPane.showMessageDialog(null, "Error al guardar los datos de la nomina en la base de datos: " +ex.getMessage(), "Error", 0);
+                                                guardado = false;
+                                                break;
+                                            }
+                                            finally{
+                                                PS_NOMINA = null;
+                                                CN.desconectar();
+                                            }
                                         }
-                                        NominaPago np = new NominaPago(fIni,fCie,listaPagos);
-                                        listaNominas.add(np);
-                                        JOptionPane.showMessageDialog(null, "La Nómina de Pago ha sido registrada con éxito", "", 1);
+                                        if (guardado) {
+                                            NominaPago np = new NominaPago(fIni,fCie,listaPagos);
+                                            listaNominas.add(np);
+                                            JOptionPane.showMessageDialog(null, "La Nómina de Pago ha sido registrada con éxito", "", 1);
+                                        }
                                         int year = Integer.parseInt(panelConsultarN.spinnerAgno.getValue().toString());
                                         int mes = panelConsultarN.comboBoxMes.getSelectedIndex();
                                         cargarNominas(mes, year);
+                                        
                                         panelConsultarN.setSize(926,720);
                                         panelConsultarN.setLocation(0,0);
                                         panelSistema.panelPrincipal.removeAll();
