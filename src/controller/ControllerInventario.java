@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import model.modelinventario.Insumo;
 import model.modelinventario.Inventario;
@@ -41,15 +43,17 @@ import model.modelusuario.Gerente;
 import view.viewinventario.PanelBuscarInsumo;
 import view.viewinventario.PanelConsultarLotes;
 import view.viewinventario.PanelConsultarProveedores;
+import view.viewinventario.PanelEntrada;
 import view.viewinventario.PanelIngresarLotes;
 import view.viewinventario.PanelIngresarProveedor;
 import view.viewinventario.PanelProveedor;
+import view.viewinventario.PanelSalida;
 
 /**
  *
  * Desarrollo: Paola Ascanio | Intefaces: Estefany Torres
  */
-public class ControllerInventario implements ActionListener, ItemListener, KeyListener {
+public class ControllerInventario implements ActionListener, ItemListener, KeyListener, ChangeListener {
     
     private final SistemaPrincipal panelSistema;
     private final PanelConsultarInventario panelConsultar = new PanelConsultarInventario();
@@ -661,6 +665,105 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         return flag;
     }
     
+    public void cargarEntradas(){
+        panelConsultarLotes.tablaRegistros.setVisible(false);
+        panelConsultarLotes.jScrollPaneRegistros.setVisible(false);
+        panelConsultarLotes.txtResponsable.setText("");
+        panelConsultarLotes.labelResponsable.setVisible(false);
+        String datos[][] = {};
+        String columna [] = {"id","Nombre","Tipo","Unidad","Cantidad","Fecha de vencimiento"};
+        modeloEntrada = new DefaultTableModel(datos, columna){
+            @Override
+            public boolean isCellEditable(int rowIndex,int columnIndex) {return false;}
+        };
+        panelConsultarLotes.tablaRegistros.setModel(modeloEntrada);
+        panelConsultarLotes.tablaRegistros.getTableHeader().setReorderingAllowed(false);
+        
+        panelConsultarLotes.panelRegistros.removeAll();
+        for(Registro r: listaRegistros){
+            if(r.getTipo().equals("entrada")){
+                PanelEntrada panelE = new PanelEntrada();
+                panelE.setSize(246, 80);
+                String fechaRegistro = r.getFechaRegistro();
+                String responsable = r.getResponsable();
+                panelE.labelFechaEntrada.setText(fechaRegistro);
+                panelE.botonEntrada.addActionListener( new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        modeloEntrada.setRowCount(0);
+                        panelConsultarLotes.tablaRegistros.setVisible(true);
+                        panelConsultarLotes.jScrollPaneRegistros.setVisible(true);
+                        panelConsultarLotes.txtResponsable.setText(responsable);
+                        panelConsultarLotes.labelResponsable.setVisible(true);
+                        ArrayList<Lote> listaLotes = r.getListaLotes();
+                        for (int i=0; i<listaLotes.size();i++) {
+                            Lote lote = listaLotes.get(i);
+                            modeloEntrada.insertRow(0, columna);
+                            modeloEntrada.setValueAt(lote.getIdLote(),0 ,0);
+                            modeloEntrada.setValueAt(lote.getNombre(), 0, 1);
+                            modeloEntrada.setValueAt(lote.getTipo(), 0, 2);
+                            modeloEntrada.setValueAt(lote.getUnidad(), 0, 3);
+                            modeloEntrada.setValueAt(lote.getCantidad(), 0, 4);
+                            modeloEntrada.setValueAt(lote.getFechaVencimiento(), 0, 5);
+                        }
+                    }
+                }); 
+                panelConsultarLotes.panelRegistros.add(panelE);
+            }
+        }
+        panelConsultarLotes.panelRegistros.revalidate();
+        panelConsultarLotes.panelRegistros.repaint();
+    }
+    
+    public void cargarSalidas(){
+        panelConsultarLotes.tablaRegistros.setVisible(false);
+        panelConsultarLotes.jScrollPaneRegistros.setVisible(false);
+        panelConsultarLotes.txtResponsable.setText("");
+        panelConsultarLotes.labelResponsable.setVisible(false);
+        String datos[][] = {};
+        String columna [] = {"id","Nombre","Tipo","Unidad","Cantidad"};
+        modeloSalida = new DefaultTableModel(datos, columna){
+            @Override
+            public boolean isCellEditable(int rowIndex,int columnIndex) {return false;}
+        };
+        panelConsultarLotes.tablaRegistros.setModel(modeloSalida);
+        panelConsultarLotes.tablaRegistros.getTableHeader().setReorderingAllowed(false);
+        
+        panelConsultarLotes.panelRegistros.removeAll();
+        for(Registro r: listaRegistros){
+            if(r.getTipo().equals("salida")){
+                PanelSalida panelS = new PanelSalida();
+                panelS.setSize(246, 80);
+                String fechaRegistro = r.getFechaRegistro();
+                String responsable = r.getResponsable();
+                panelS.labelFechaSalida.setText(fechaRegistro);
+                panelS.botonSalida.addActionListener( new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        modeloSalida.setRowCount(0);
+                        panelConsultarLotes.tablaRegistros.setVisible(true);
+                        panelConsultarLotes.jScrollPaneRegistros.setVisible(true);
+                        panelConsultarLotes.txtResponsable.setText(responsable);
+                        panelConsultarLotes.labelResponsable.setVisible(true);
+                        ArrayList<Lote> listaLotes = r.getListaLotes();
+                        for (int i=0; i<listaLotes.size();i++) {
+                            Lote lote = listaLotes.get(i);
+                            modeloSalida.insertRow(0, columna);
+                            modeloSalida.setValueAt(lote.getIdLote(),0 ,0);
+                            modeloSalida.setValueAt(lote.getNombre(), 0, 1);
+                            modeloSalida.setValueAt(lote.getTipo(), 0, 2);
+                            modeloSalida.setValueAt(lote.getUnidad(), 0, 3);
+                            modeloSalida.setValueAt(lote.getCantidad(), 0, 4);
+                        }
+                    }
+                });    
+                panelConsultarLotes.panelRegistros.add(panelS);
+            }
+        }
+        panelConsultarLotes.panelRegistros.revalidate();
+        panelConsultarLotes.panelRegistros.repaint();
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         
@@ -992,7 +1095,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
                     String responsable = panelIngresarLotes.txtResponsable.getText();
                     String documento = panelIngresarLotes.txtCedula.getText();
-                    Registro registro = new Registro(fechaRegistro,responsable,documento,listaLotes);
+                    Registro registro = new Registro("entrada",fechaRegistro,responsable,documento,listaLotes);
                     listaRegistros.add(registro);
                     JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
                 } else {
@@ -1022,7 +1125,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                 String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
                 String responsable = panelIngresarLotes.txtResponsable.getText();
                 String documento = panelIngresarLotes.txtCedula.getText();
-                Registro registro = new Registro(fechaRegistro,responsable,documento,listaLotes);
+                Registro registro = new Registro("salida",fechaRegistro,responsable,documento,listaLotes);
                 listaRegistros.add(registro);
                 JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
             } else {
@@ -1031,6 +1134,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource() == panelIngresarLotes.botonConsultarEntradas){
+            cargarEntradas();
             panelConsultarLotes.labelTItulo.setText("ENTRADAS");
             panelConsultarLotes.botonRegresarE.setVisible(true);
             panelConsultarLotes.botonRegresarS.setVisible(false);
@@ -1043,6 +1147,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         }
         
         if(e.getSource() == panelIngresarLotes.botonConsultarSalidas){
+            cargarSalidas();
             panelConsultarLotes.labelTItulo.setText("SALIDAS");
             panelConsultarLotes.botonRegresarE.setVisible(false);
             panelConsultarLotes.botonRegresarS.setVisible(true);
@@ -1188,6 +1293,11 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }
