@@ -348,7 +348,7 @@ public class ControllerMenu implements ActionListener{
                 String nombre = panelIngresarPlato.txtNombre.getText();
                 String categoria = panelIngresarPlato.comboBoxCategoria.getSelectedItem().toString();
                 String descripcion = panelIngresarPlato.txtDescripcion.getText();
-
+                
                 try {
                     // Actualiza el plato en la base de datos
                     String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE nombre=?";
