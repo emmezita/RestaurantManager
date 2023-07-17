@@ -81,4 +81,24 @@ public class Plato {
     return false;
 }
     
+    // Busca un plato mediante su nombre y devuelve su objeto
+    public Plato buscarPlato(String nombre, ArrayList<Plato> listaPlatos) {
+    for (Plato p : listaPlatos) {
+        if (p.getNombre().equals(nombre)) {
+            return p;
+        }
+    }
+    return null;
+    }
+    
+        public void modificarPlato (String nombre, String categoria, String descripcion, ArrayList<Plato> listaPlatos, String indicadorNombre) {
+        for (Plato p: listaPlatos){
+            if (p.getNombre().equals(indicadorNombre)){
+                p.setNombre(nombre);
+                p.setCategoria(categoria);
+                p.setDescripcion(descripcion);
+            }    
+        }
+    }
+    
 }

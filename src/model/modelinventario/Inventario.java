@@ -79,6 +79,28 @@ public class Inventario {
         return null;        
     }
     
+    // Modifica la información de un insumo en una lista en memoria
+    public void modificarInsumo(String tipoInsumo, String unidad, String nombre, String proveedor, int id) {
+        for (Insumo i : listaInsumos) {
+            if (i.getId() == id) {
+                i.setTipoInsumo(tipoInsumo);
+                i.setUnidad(unidad);
+                i.setNombre(nombre);
+                i.setProveedor(proveedor);
+            }
+        }
+    }
+    
+    // Elimina un insumo de una lista en memoria por su ID
+    public void eliminarInsumo(int id) {
+        ArrayList<Insumo> copiaLista = new ArrayList<>(listaInsumos);
+        for (Insumo i : copiaLista) {
+            if (i.getId() == id) {
+                listaInsumos.remove(i);
+                break; // Importante: salir del bucle después de eliminar el insumo
+            }
+        }
+    }
     /* Busca en la lista de Insumos del Inventario cuales estan vencidos, y agrega 
        los datos de cada uno a un mensaje de advertencia */
     public void mandarMensajeInsumosVencidos () {

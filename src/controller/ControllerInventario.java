@@ -81,7 +81,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     private DefaultTableModel DT_PROVEEDOR;
     private ResultSet RS_PROVEEDOR;
     
-    private final String SQL_INSERT = "INSERT INTO Insumo (idInsumo,tipoinsumo,unidad,cantidad,nombre,proveedor) values (?,?,?,?,?,?,?)";
+    private final String SQL_INSERT = "INSERT INTO Insumo (idInsumo,tipoinsumo,unidad,cantidad,nombre,proveedor) values (?,?,?,?,?,?)";
     private PreparedStatement PS;                                                                                                                   
     private final ConexionServidor CN;
     
@@ -96,7 +96,8 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     
     private final Inventario inventario = new Inventario();
     private final ArrayList <Registro> listaRegistros = new ArrayList<>();
-    private Insumo i = new Insumo(); 
+    private Insumo i = new Insumo();
+    private int indicadorID = -1;
     private Proveedor proveedor = new Proveedor();
     
     public ControllerInventario(SistemaPrincipal panelSistema) {
@@ -491,7 +492,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                             frameVer.setSize(355,547);
                             frameVer.setLocationRelativeTo(null);
                             frameVer.setResizable(false);
-
+                            indicadorID = i.getId();
                             frameVer.labelTItulo.setText("Datos del Insumo");
                             frameVer.txtNombreInsumo.setText(i.getNombre());
                             frameVer.comboBoxUnidad.setSelectedItem(i.getUnidad());
@@ -844,13 +845,59 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         
         if(e.getSource()==frameVer.botonGuardar){
             boolean validado = true;
+            
             if (camposOpcionVer()){
+                String nombre = frameVer.txtNombreInsumo.getText();
+                if (i.validarInsumo(nombre)){
+                    String tipo = frameVer.comboBoxTipoInsumo.getSelectedItem().toString();
+                    String unidad =  frameVer.comboBoxUnidad.getSelectedItem().toString();
+                    String proveedor = frameVer.comboBoxProveedor.getSelectedItem().toString();
+                    try{
+                        String SQL = "UPDATE Insumo SET tipoinsumo=?, unidad=?, nombre=?, proveedor=? WHERE idInsumo=?";
+                        PS = CN.getConnection().prepareStatement(SQL);
+                        PS.setString(1, tipo);
+                        PS.setString(2, unidad);
+                        PS.setString(3, nombre);
+                        PS.setString(4, proveedor);
+                        PS.setInt(5, indicadorID);
+                    int res = PS.executeUpdate();
+                    if (res > 0) {
+                        inventario.modificarInsumo(tipo, unidad, nombre, proveedor, indicadorID);
+                        JOptionPane.showMessageDialog(null, "El Insumo ha sido modificado con éxito.", "", 1);
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Error al actualizar los datos del insumo en la base de datos: " + ex.getMessage(), "Error", 0);
+                } finally {
+                    PS = null;
+                    CN.desconectar();
+                }
+                   
+                }
             } else {
-                JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de registrar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de modificar", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
         }
         
         if(e.getSource()==frameVer.botonEliminar){
+            int op = JOptionPane.showOptionDialog(null, "¿Desea eliminar el insumo " + frameVer.txtNombreInsumo.getText() + "?", "Inventario", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (op == 0) {
+                try {
+                    String SQL = "DELETE FROM Insumo WHERE idInsumo = ?";
+                    PS = CN.getConnection().prepareStatement(SQL);
+                    PS.setInt(1, indicadorID);
+                    int res = PS.executeUpdate();
+                    if (res > 0) {
+                        inventario.eliminarInsumo(indicadorID);
+                        cargarInventario(panelConsultar.comboBoxTipoInsumo.getSelectedItem().toString());
+                        JOptionPane.showMessageDialog(null, "El Insumo ha sido eliminado con éxito", "", 1);
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Error al eliminar el Insumo de la base de datos: " + ex.getMessage(), "Error", 0);
+                } finally {
+                    PS = null;
+                    CN.desconectar();
+                }
+            }
             
         } 
         
@@ -979,9 +1026,8 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                                         PS.setString(2, tipo);
                                         PS.setString(3, unidad);
                                         PS.setDouble(4, 0);
-                                        PS.setBoolean(5, false);
-                                        PS.setDate(6, null); 
-                                        PS.setString(7, nombre);
+                                        PS.setString(5, nombre); 
+                                        PS.setString(6, proveedor);
                                         int res = PS.executeUpdate();
                                         if (res > 0){
                                             inventario.agregarInsumo(in);
