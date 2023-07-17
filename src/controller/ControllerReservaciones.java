@@ -1777,7 +1777,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
             eventoE = evE;
             /*Luego se cargan las reservación según como haya quedado el filtro en el panel Consultar*/
             panelConsultar.botonFecha.setSelected(true);
-            cargarReservaciones("");
+            cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
             panelConsultar.txtBuscar.setText("");
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
@@ -1805,19 +1805,19 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
         
         //Filtra las reservaciones por fecha
         if(e.getSource()==panelConsultar.botonFecha){
-            cargarReservaciones("");
+            cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
             panelConsultar.txtBuscar.setText("");
         }
         
         //Filtra las reservaciones por tipo de reservación
         if(e.getSource()==panelConsultar.botonTipoR){
-            cargarReservaciones("");
+            cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
             panelConsultar.txtBuscar.setText("");
         }
         
         //No hace ningún filtro si no que muestra todas
         if(e.getSource()==panelConsultar.botonTodas){
-            cargarReservaciones("");
+            cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
             panelConsultar.txtBuscar.setText("");
         }
         
@@ -2010,7 +2010,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                 }
                 tipoReservacion = 0;
                 resetearCamposPanelRegistrarComensal();
-                cargarReservaciones("");
+                cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
                 panelConsultar.setSize(926,720);
                 panelConsultar.setLocation(0,0);
                 panelSistema.panelPrincipal.removeAll();
@@ -2114,7 +2114,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                 EventoEjecutivo evE = new EventoEjecutivo();
                 eventoE = evE;
                 tipoReservacion = 0;
-                cargarReservaciones("");
+                cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
                 panelConsultar.setSize(926,720);
                 panelConsultar.setLocation(0,0);
                 panelSistema.panelPrincipal.removeAll();
@@ -2192,7 +2192,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                 ReservacionGeneral rG = new ReservacionGeneral();
                 reservacionG = rG;
                 tipoReservacion = 0;
-                cargarReservaciones("");
+                cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
                 panelConsultar.setSize(926,720);
                 panelConsultar.setLocation(0,0);
                 panelSistema.panelPrincipal.removeAll();
@@ -2263,7 +2263,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                 reservacionG = rG;
                 tipoReservacion = 0;
                 resetearCamposPanelRegistrarReservacion();
-                cargarReservaciones("");
+                cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
                 panelConsultar.setSize(926,720);
                 panelConsultar.setLocation(0,0);
                 panelSistema.panelPrincipal.removeAll();
@@ -2289,7 +2289,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                     eventoE = evE;
                 }
                 tipoReservacion = 0;
-                cargarReservaciones("");
+                cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
                 panelConsultar.setSize(926,720);
                 panelConsultar.setLocation(0,0);
                 panelSistema.panelPrincipal.removeAll();
@@ -2414,7 +2414,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                     eventoE = evE;
                 }
                 tipoReservacion = 0;
-                cargarReservaciones("");
+                cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
                 panelConsultar.setSize(926,720);
                 panelConsultar.setLocation(0,0);
                 panelSistema.panelPrincipal.removeAll();
@@ -2484,6 +2484,8 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                                 frameDetalles.dispose();
                                 cargarReservaciones(panelConsultar.comboBoxFiltro.getSelectedItem().toString());
                             }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Las reservaciones generales sólo son entre jueves y sabado", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         }
                     }
                 } else {

@@ -52,7 +52,7 @@ public class PanelConsultarProveedores extends javax.swing.JPanel {
         botonIngresar = new javax.swing.JButton();
         fondoBotonIngresar = new javax.swing.JLabel();
         fondoDetalleProveedor = new javax.swing.JLabel();
-        labelTItulo1 = new javax.swing.JLabel();
+        labelTItuloInsumos = new javax.swing.JLabel();
         fondoTitulo1 = new javax.swing.JLabel();
         jScrollPaneInsumos = new javax.swing.JScrollPane();
         panelInsumos = new javax.swing.JPanel(new GridLayout(0, 1, 1, 1));
@@ -190,11 +190,11 @@ public class PanelConsultarProveedores extends javax.swing.JPanel {
         fondoDetalleProveedor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoDetalleProveedor.png"))); // NOI18N
         add(fondoDetalleProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 40, -1, -1));
 
-        labelTItulo1.setBackground(new java.awt.Color(0, 0, 0));
-        labelTItulo1.setFont(new java.awt.Font("Open Sans Medium", 1, 16)); // NOI18N
-        labelTItulo1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelTItulo1.setText("INSUMOS");
-        add(labelTItulo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 380, 340, 50));
+        labelTItuloInsumos.setBackground(new java.awt.Color(0, 0, 0));
+        labelTItuloInsumos.setFont(new java.awt.Font("Open Sans Medium", 1, 16)); // NOI18N
+        labelTItuloInsumos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelTItuloInsumos.setText("INSUMOS");
+        add(labelTItuloInsumos, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 380, 340, 50));
 
         fondoTitulo1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoTituloInsumos.png"))); // NOI18N
         add(fondoTitulo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 380, -1, -1));
@@ -239,11 +239,11 @@ public class PanelConsultarProveedores extends javax.swing.JPanel {
     public javax.swing.JButton botonRegresarI;
     private javax.swing.JLabel fondoBotonIngresar;
     private javax.swing.JLabel fondoBotonRegresar;
-    private javax.swing.JLabel fondoDetalleProveedor;
-    private javax.swing.JLabel fondoPanelInsumos;
+    public javax.swing.JLabel fondoDetalleProveedor;
+    public javax.swing.JLabel fondoPanelInsumos;
     private javax.swing.JLabel fondoPanelProveedores;
     private javax.swing.JLabel fondoTitulo;
-    private javax.swing.JLabel fondoTitulo1;
+    public javax.swing.JLabel fondoTitulo1;
     public javax.swing.JLabel iconoMail;
     public javax.swing.JLabel iconoMunicipio;
     public javax.swing.JLabel iconoTelefono;
@@ -252,14 +252,14 @@ public class PanelConsultarProveedores extends javax.swing.JPanel {
     private javax.swing.JLabel labelBarraBuscar;
     public javax.swing.JLabel labelCedula;
     public javax.swing.JLabel labelCirculo;
-    private javax.swing.JLabel labelImagen;
+    public javax.swing.JLabel labelImagen;
     public javax.swing.JLabel labelLinea;
     public javax.swing.JLabel labelMail;
     public javax.swing.JLabel labelMunicipio;
     public javax.swing.JLabel labelNombre;
     public javax.swing.JLabel labelRol;
     public javax.swing.JLabel labelTItulo;
-    public javax.swing.JLabel labelTItulo1;
+    public javax.swing.JLabel labelTItuloInsumos;
     public javax.swing.JLabel labelTelefono;
     public javax.swing.JPanel panelInsumos;
     public javax.swing.JPanel panelProveedores;

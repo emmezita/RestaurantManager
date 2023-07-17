@@ -129,7 +129,7 @@ public class Empresa {
                             JOptionPane.showMessageDialog(null, "Numero de teléfono.\nContiene letras", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         }
                         // Valida si contiene algun caracter especial al chequear si no posee numeros
-                        if(( (as>=48 && as<=57) )==false ){
+                        if(((as>=91 && 96>=as) ||  (as>=33 && as<=47) || (as>=58 && 64>= as) || (as>=123 && 126>=as))==true ){
                             i= telefono.length();
                             JOptionPane.showMessageDialog(null, "Numero de teléfono.\nContiene algún carácter especial", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         }
@@ -189,8 +189,12 @@ public class Empresa {
                         return false;
                     }
                     // Valida si contiene algun caracter especial al chequear si no posee numeros
-                    if(( (as>=48 && as<=57) )==false){
+                    if(((as>=91 && 96>=as) ||  (as>=33 && as<=47) || (as>=58 && 64>= as) || (as>=123 && 126>=as))==true ){
                         JOptionPane.showMessageDialog(null, "Número de Rif inválido.\nContiene algun carácter especial", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        return false;
+                    }
+                    if(as == 32){
+                        JOptionPane.showMessageDialog(null, "Número de Rif inválido.\nContiene espacios en blanco", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         return false;
                     }
                 }

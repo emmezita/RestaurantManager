@@ -49,26 +49,26 @@ public class PanelProveedor extends javax.swing.JPanel {
                 botonProveedorMouseExited(evt);
             }
         });
-        add(botonProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 260, 60));
+        add(botonProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 260, 60));
 
         labelIconoProveedor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/iconoProveedor.png"))); // NOI18N
-        add(labelIconoProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, -1));
+        add(labelIconoProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
 
         labelNombreProveedor.setFont(new java.awt.Font("Open Sans Medium", 0, 16)); // NOI18N
         labelNombreProveedor.setForeground(new java.awt.Color(230, 231, 235));
         labelNombreProveedor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         labelNombreProveedor.setText("Insumo");
-        add(labelNombreProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 20, 180, 40));
+        add(labelNombreProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, 180, 40));
 
         fondoProveedorPresionado.setBackground(new java.awt.Color(102, 102, 102));
         fondoProveedorPresionado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fondoProveedorPresionado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoNombreProveedor.png"))); // NOI18N
-        add(fondoProveedorPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 10, 270, 60));
+        add(fondoProveedorPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 270, 60));
 
         fondoProveedor.setBackground(new java.awt.Color(102, 102, 102));
         fondoProveedor.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fondoProveedor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoNombreProveedor.png"))); // NOI18N
-        add(fondoProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 10, 270, 60));
+        add(fondoProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 270, 60));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonProveedorMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonProveedorMouseEntered

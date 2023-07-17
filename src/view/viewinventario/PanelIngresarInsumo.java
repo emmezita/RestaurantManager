@@ -34,6 +34,15 @@ public class PanelIngresarInsumo extends javax.swing.JPanel {
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxUnidad.setRenderer(new MyComboBoxRender());
+        
+        comboBoxProveedor.setOpaque(false);
+        comboBoxProveedor.setEditable(true);
+        boxField = (JTextField)comboBoxProveedor.getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxProveedor.setRenderer(new MyComboBoxRender());
     }
 
     /**
@@ -88,7 +97,7 @@ public class PanelIngresarInsumo extends javax.swing.JPanel {
         comboBoxProveedor.setBackground(new java.awt.Color(86, 92, 94));
         comboBoxProveedor.setFont(new java.awt.Font("Open Sans Medium", 0, 14)); // NOI18N
         comboBoxProveedor.setForeground(new java.awt.Color(255, 255, 255));
-        comboBoxProveedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona Proveedor", "Kilogramo", "Botella", "Litro" }));
+        comboBoxProveedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona Proveedor" }));
         comboBoxProveedor.setBorder(null);
         comboBoxProveedor.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         add(comboBoxProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 390, 260, 40));

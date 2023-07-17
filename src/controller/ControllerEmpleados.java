@@ -451,9 +451,11 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, true, false
             };
+            @Override
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
+            @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
@@ -958,49 +960,60 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
                                 if(flag){
                                     JOptionPane.showMessageDialog(null, "Los días trabajados no pueden pasar de 7", "Advertencia", JOptionPane.WARNING_MESSAGE);
                                 } else {
-                                    boolean flag2 = false;
+                                    boolean vacio = false;
+                                    int cantidad = 0;
                                     for (int i = 0; i<listaEmpleados.size(); i++){
-                                        if(panelIngresarN.tablaNominas.getValueAt(i, 4).toString().equals("0")){
-                                            flag2=true;
-                                            break;
+                                        if(Integer.parseInt(panelIngresarN.tablaNominas.getValueAt(i, 4).toString()) == 0){
+                                            cantidad++;
                                         }
                                     }
-                                    if(flag2){
-                                        int conf = JOptionPane.showOptionDialog(null, "¿Desea crear la Nómina de Pago con algunos empleados con días trabajados igual a 0?","Manejo de Nóminas de Pago",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
-                                        if (conf == 0) {
-                                            seguir = true;
-                                        } else {
-                                            seguir = false;
-                                        }                                        
-                                    }else {
-                                        seguir = true;
-                                    }
-                                    if(seguir){
-                                        ArrayList<DatosPago> listaPagos = new ArrayList<>();
+                                    if(cantidad == listaEmpleados.size()){
+                                        JOptionPane.showMessageDialog(null, "Debe haber al menos un empleado con días trabajados", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                    } else {
+                                        boolean flag2 = false;
                                         for (int i = 0; i<listaEmpleados.size(); i++){
-                                            int j = 0;
-                                            String cedula = panelIngresarN.tablaNominas.getValueAt(i, j).toString(); j++;
-                                            String nombre = panelIngresarN.tablaNominas.getValueAt(i, j).toString();j++;
-                                            String rol = panelIngresarN.tablaNominas.getValueAt(i, j).toString();j++;
-                                            double sueldoDiario = Double.parseDouble(panelIngresarN.tablaNominas.getValueAt(i, j).toString());j++;
-                                            int diasTrabajo = Integer.parseInt(panelIngresarN.tablaNominas.getValueAt(i, j).toString());j++;
-                                            double netoACobrar = Double.parseDouble(panelIngresarN.tablaNominas.getValueAt(i, j).toString());
-                                            DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
-                                            listaPagos.add(dp);
+                                            if(panelIngresarN.tablaNominas.getValueAt(i, 4).toString().equals("0")){
+                                                flag2=true;
+                                                break;
+                                            }
                                         }
-                                        NominaPago np = new NominaPago(fIni,fCie,listaPagos);
-                                        listaNominas.add(np);
-                                        JOptionPane.showMessageDialog(null, "La Nómina de Pago ha sido registrada con éxito", "", 1);
-                                        int year = Integer.parseInt(panelConsultarN.spinnerAgno.getValue().toString());
-                                        int mes = panelConsultarN.comboBoxMes.getSelectedIndex();
-                                        cargarNominas(mes, year);
-                                        panelConsultarN.setSize(926,720);
-                                        panelConsultarN.setLocation(0,0);
-                                        panelSistema.panelPrincipal.removeAll();
-                                        panelSistema.panelPrincipal.add(panelConsultarN);
-                                        panelSistema.panelPrincipal.revalidate();
-                                        panelSistema.panelPrincipal.repaint();
-                                    } 
+                                        if(flag2){
+                                            int conf = JOptionPane.showOptionDialog(null, "¿Desea crear la Nómina de Pago con algunos empleados con días trabajados igual a 0?","Manejo de Nóminas de Pago",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+                                            if (conf == 0) {
+                                                seguir = true;
+                                            } else {
+                                                seguir = false;
+                                            }                                        
+                                        }else {
+                                            seguir = true;
+                                        }
+                                        if(seguir){
+                                            ArrayList<DatosPago> listaPagos = new ArrayList<>();
+                                            for (int i = 0; i<listaEmpleados.size(); i++){
+                                                int j = 0;
+                                                String cedula = panelIngresarN.tablaNominas.getValueAt(i, j).toString(); j++;
+                                                String nombre = panelIngresarN.tablaNominas.getValueAt(i, j).toString();j++;
+                                                String rol = panelIngresarN.tablaNominas.getValueAt(i, j).toString();j++;
+                                                double sueldoDiario = Double.parseDouble(panelIngresarN.tablaNominas.getValueAt(i, j).toString());j++;
+                                                int diasTrabajo = Integer.parseInt(panelIngresarN.tablaNominas.getValueAt(i, j).toString());j++;
+                                                double netoACobrar = Double.parseDouble(panelIngresarN.tablaNominas.getValueAt(i, j).toString());
+                                                DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
+                                                listaPagos.add(dp);
+                                            }
+                                            NominaPago np = new NominaPago(fIni,fCie,listaPagos);
+                                            listaNominas.add(np);
+                                            JOptionPane.showMessageDialog(null, "La Nómina de Pago ha sido registrada con éxito", "", 1);
+                                            int year = Integer.parseInt(panelConsultarN.spinnerAgno.getValue().toString());
+                                            int mes = panelConsultarN.comboBoxMes.getSelectedIndex();
+                                            cargarNominas(mes, year);
+                                            panelConsultarN.setSize(926,720);
+                                            panelConsultarN.setLocation(0,0);
+                                            panelSistema.panelPrincipal.removeAll();
+                                            panelSistema.panelPrincipal.add(panelConsultarN);
+                                            panelSistema.panelPrincipal.revalidate();
+                                            panelSistema.panelPrincipal.repaint();
+                                        }                                         
+                                    }
                                 }
                             } else {
                                 JOptionPane.showMessageDialog(null, "La fecha de cierre debe ser el siguiente domingo " + fechaE, "Advertencia", JOptionPane.WARNING_MESSAGE);

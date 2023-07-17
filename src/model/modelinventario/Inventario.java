@@ -94,7 +94,7 @@ public class Inventario {
     
     /* Busca y actualiza en la lista de Insumos del Inventario los vencidos comparando 
        su fecha de vencimiento con la actual */
-    public void revisarInsumosVencidos(Date fechaActual){
+    /*public void revisarInsumosVencidos(Date fechaActual){
         for (Insumo i: listaInsumos){
             if (i.getFechaVencimiento().equals(fechaActual) || i.getFechaVencimiento().before(fechaActual)){
                 i.setVencido(true);
@@ -102,7 +102,7 @@ public class Inventario {
                 i.setVencido(false);
             }
         }
-    }
+    }*/
     
     // Busca si existe un Insumo vencido en el Inventario
     public boolean revisarInsumosVencidos(){

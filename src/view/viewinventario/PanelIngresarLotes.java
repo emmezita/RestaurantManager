@@ -32,7 +32,7 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
         botonRegistrarS = new javax.swing.JButton();
         botonRegistrarE = new javax.swing.JButton();
         fondoBotonRegistrar = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane = new javax.swing.JScrollPane();
         tablaEntradas = new javax.swing.JTable();
         labelDocumento = new javax.swing.JLabel();
         labelResponsable = new javax.swing.JLabel();
@@ -141,10 +141,25 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
             new String [] {
                 "ID", "Nombre", "Tipo", "Unidad", "Cantidad", "Fecha de Vencimiento"
             }
-        ));
-        jScrollPane1.setViewportView(tablaEntradas);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true, true
+            };
 
-        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, 578, 552));
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane.setViewportView(tablaEntradas);
+
+        add(jScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, 578, 552));
 
         labelDocumento.setBackground(new java.awt.Color(0, 0, 0));
         labelDocumento.setFont(new java.awt.Font("Open Sans", 1, 18)); // NOI18N
@@ -281,7 +296,7 @@ public class PanelIngresarLotes extends javax.swing.JPanel {
     private javax.swing.JLabel fondoBotonConsultar;
     private javax.swing.JLabel fondoBotonRegistrar;
     private javax.swing.JLabel fondoBotonRegresar;
-    private javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JScrollPane jScrollPane;
     private javax.swing.JLabel labelDocumento;
     public javax.swing.JLabel labelFecha;
     private javax.swing.JLabel labelInputDocumento;

@@ -40,6 +40,15 @@ public class FrameVerInsumo extends javax.swing.JFrame {
         boxField.setFocusable(false);
         comboBoxUnidad.setRenderer(new MyComboBoxRender());
         
+        comboBoxProveedor.setOpaque(false);
+        comboBoxProveedor.setEditable(true);
+        boxField = (JTextField)comboBoxProveedor.getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxProveedor.setRenderer(new MyComboBoxRender());
+        
         setIconImage(getIconImage());
     }
     
@@ -72,6 +81,9 @@ public class FrameVerInsumo extends javax.swing.JFrame {
         fondoBotonEliminar = new javax.swing.JLabel();
         botonGuardar = new javax.swing.JButton();
         fondoBotonGuardar = new javax.swing.JLabel();
+        labelCantidadExistente = new javax.swing.JLabel();
+        labelCantidad = new javax.swing.JLabel();
+        fondo1 = new javax.swing.JLabel();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -126,7 +138,7 @@ public class FrameVerInsumo extends javax.swing.JFrame {
         comboBoxProveedor.setBackground(new java.awt.Color(86, 92, 94));
         comboBoxProveedor.setFont(new java.awt.Font("Open Sans Medium", 0, 14)); // NOI18N
         comboBoxProveedor.setForeground(new java.awt.Color(255, 255, 255));
-        comboBoxProveedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona Proveedor", "Kilogramo", "Botella", "Litro" }));
+        comboBoxProveedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona Proveedor" }));
         comboBoxProveedor.setBorder(null);
         comboBoxProveedor.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         getContentPane().add(comboBoxProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 280, 260, 40));
@@ -150,10 +162,10 @@ public class FrameVerInsumo extends javax.swing.JFrame {
                 botonEliminarMouseExited(evt);
             }
         });
-        getContentPane().add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 370, 46, 46));
+        getContentPane().add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 420, 46, 46));
 
         fondoBotonEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonEliminarAmarillo.png"))); // NOI18N
-        getContentPane().add(fondoBotonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 370, -1, -1));
+        getContentPane().add(fondoBotonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 420, -1, -1));
 
         botonGuardar.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
         botonGuardar.setForeground(new java.awt.Color(39, 45, 47));
@@ -171,16 +183,30 @@ public class FrameVerInsumo extends javax.swing.JFrame {
                 botonGuardarMouseExited(evt);
             }
         });
-        getContentPane().add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 370, 175, 46));
+        getContentPane().add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 420, 175, 46));
 
         fondoBotonGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/botonGuardarCambios.png"))); // NOI18N
-        getContentPane().add(fondoBotonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 370, -1, -1));
+        getContentPane().add(fondoBotonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 420, -1, -1));
+
+        labelCantidadExistente.setFont(new java.awt.Font("Open Sans", 1, 16)); // NOI18N
+        labelCantidadExistente.setForeground(new java.awt.Color(255, 197, 41));
+        labelCantidadExistente.setText("0");
+        getContentPane().add(labelCantidadExistente, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 350, 120, 40));
+
+        labelCantidad.setFont(new java.awt.Font("Open Sans Medium", 0, 15)); // NOI18N
+        labelCantidad.setForeground(new java.awt.Color(255, 255, 255));
+        labelCantidad.setText("Cantidad existente: ");
+        getContentPane().add(labelCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 360, -1, -1));
+
+        fondo1.setBackground(new java.awt.Color(39, 45, 47));
+        fondo1.setForeground(new java.awt.Color(39, 45, 47));
+        fondo1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoIngresarDatos.png"))); // NOI18N
+        getContentPane().add(fondo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 340, 470));
 
         fondo.setBackground(new java.awt.Color(39, 45, 47));
         fondo.setForeground(new java.awt.Color(39, 45, 47));
-        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewinventario/fondoIngresarDatos.png"))); // NOI18N
         fondo.setOpaque(true);
-        getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 340, 490));
+        getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 340, 500));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -247,12 +273,15 @@ public class FrameVerInsumo extends javax.swing.JFrame {
     public javax.swing.JComboBox<String> comboBoxTipoInsumo;
     public javax.swing.JComboBox<String> comboBoxUnidad;
     private javax.swing.JLabel fondo;
+    private javax.swing.JLabel fondo1;
     private javax.swing.JLabel fondoBotonEliminar;
     private javax.swing.JLabel fondoBotonGuardar;
     private javax.swing.JLabel inputNombre;
     private javax.swing.JLabel inputProveedor;
     private javax.swing.JLabel inputTipoInsumo;
     private javax.swing.JLabel inputUnidadInsumo;
+    private javax.swing.JLabel labelCantidad;
+    public javax.swing.JLabel labelCantidadExistente;
     private javax.swing.JLabel labelFondoITitulo;
     public javax.swing.JLabel labelTItulo;
     public javax.swing.JTextField txtNombreInsumo;
