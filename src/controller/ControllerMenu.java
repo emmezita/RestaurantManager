@@ -618,10 +618,11 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
                     listaPlatos.add(pl);
                     try{
                             PS_PLATOBEBIDA=CN.getConnection().prepareStatement(SQL_INSERT_PLATOBEBIDA);
-                            PS_PLATOBEBIDA.setString(1, nombre);
-                            PS_PLATOBEBIDA.setString(2, categoria);
-                            PS_PLATOBEBIDA.setString(3, descripcion);
-                            PS_PLATOBEBIDA.setString(4, "p");
+                            PS_PLATOBEBIDA.setInt(1, ID);
+                            PS_PLATOBEBIDA.setString(2, nombre);
+                            PS_PLATOBEBIDA.setString(3, categoria);
+                            PS_PLATOBEBIDA.setString(4, descripcion);
+                            PS_PLATOBEBIDA.setString(5, "p");
                             int res = PS_PLATOBEBIDA.executeUpdate();
                             if (res > 0){
                                 JOptionPane.showMessageDialog(null, "El plato ha sido registrado con éxito.", "", 1);
@@ -661,10 +662,11 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
                     listaBebidas.add(b);
                     try{
                             PS_PLATOBEBIDA=CN.getConnection().prepareStatement(SQL_INSERT_PLATOBEBIDA);
-                            PS_PLATOBEBIDA.setString(1, nombre);
-                            PS_PLATOBEBIDA.setString(2, categoria);
-                            PS_PLATOBEBIDA.setString(3, descripcion);
-                            PS_PLATOBEBIDA.setString(4, "b");
+                            PS_PLATOBEBIDA.setInt(1, ID);
+                            PS_PLATOBEBIDA.setString(2, nombre);
+                            PS_PLATOBEBIDA.setString(3, categoria);
+                            PS_PLATOBEBIDA.setString(4, descripcion);
+                            PS_PLATOBEBIDA.setString(5, "b");
                             int res = PS_PLATOBEBIDA.executeUpdate();
                             if (res > 0){
                                 JOptionPane.showMessageDialog(null, "La bebida ha sido registrada con éxito.", "", 1);

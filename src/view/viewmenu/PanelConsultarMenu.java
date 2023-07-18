@@ -60,7 +60,6 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         labelNombrePoB = new javax.swing.JLabel();
         labelLineaPoB = new javax.swing.JLabel();
         labelImagenPoB = new javax.swing.JLabel();
-        labelID = new javax.swing.JLabel();
         labelFondoDatosPoB = new javax.swing.JLabel();
         labelTipoMenu = new javax.swing.JLabel();
         labelNombreMenu = new javax.swing.JLabel();
@@ -71,6 +70,7 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         panelTiempos = new javax.swing.JPanel(new GridLayout(0, 1, 1, 1));
         labelFondoPanelTiempos = new javax.swing.JLabel();
         labelTituloDescripcion1 = new javax.swing.JLabel();
+        labelID = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(39, 45, 47));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -215,10 +215,6 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         labelImagenPoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/imagenPlato.png"))); // NOI18N
         add(labelImagenPoB, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 120, -1, -1));
 
-        labelID.setFont(new java.awt.Font("Open Sans Medium", 0, 15)); // NOI18N
-        labelID.setForeground(new java.awt.Color(255, 197, 41));
-        add(labelID, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 380, 10, -1));
-
         labelFondoDatosPoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoDetallePoB.png"))); // NOI18N
         add(labelFondoDatosPoB, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 100, -1, 300));
 
@@ -260,6 +256,10 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         labelTituloDescripcion1.setForeground(new java.awt.Color(255, 197, 41));
         labelTituloDescripcion1.setText("Descripción:");
         add(labelTituloDescripcion1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 240, 240, -1));
+
+        labelID.setFont(new java.awt.Font("Open Sans Medium", 0, 15)); // NOI18N
+        labelID.setForeground(new java.awt.Color(255, 197, 41));
+        add(labelID, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 100, 100, 30));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonIngresarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonIngresarMouseEntered
