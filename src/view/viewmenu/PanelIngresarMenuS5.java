@@ -4,6 +4,11 @@
  */
 package view.viewmenu;
 
+import java.awt.Color;
+import javax.swing.BorderFactory;
+import javax.swing.JTextField;
+import model.modelview.MyComboBoxRender;
+
 /**
  *
  * @author emmez
@@ -15,6 +20,59 @@ public class PanelIngresarMenuS5 extends javax.swing.JPanel {
      */
     public PanelIngresarMenuS5() {
         initComponents();
+        comboBoxP1 .setOpaque(false);
+        comboBoxP1.setEditable(true);
+        JTextField boxField = (JTextField)comboBoxP1 .getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxP1.setRenderer(new MyComboBoxRender());
+        
+        comboBoxP2 .setOpaque(false);
+        comboBoxP2.setEditable(true);
+        boxField = (JTextField)comboBoxP2 .getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxP2.setRenderer(new MyComboBoxRender());
+        
+        comboBoxP3 .setOpaque(false);
+        comboBoxP3.setEditable(true);
+        boxField = (JTextField)comboBoxP3 .getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxP3.setRenderer(new MyComboBoxRender());
+        
+        comboBoxP4 .setOpaque(false);
+        comboBoxP4.setEditable(true);
+        boxField = (JTextField)comboBoxP4.getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxP4.setRenderer(new MyComboBoxRender());
+        
+        comboBoxP5 .setOpaque(false);
+        comboBoxP5.setEditable(true);
+        boxField = (JTextField)comboBoxP5.getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxP5.setRenderer(new MyComboBoxRender());
+        
+        comboBoxP6 .setOpaque(false);
+        comboBoxP6.setEditable(true);
+        boxField = (JTextField)comboBoxP6 .getEditor().getEditorComponent();
+        boxField.setBorder(BorderFactory.createEmptyBorder());
+        boxField.setForeground(new Color(230,231,235));
+        boxField.setBackground(new Color(0, 0, 0, 0));
+        boxField.setFocusable(false);
+        comboBoxP6.setRenderer(new MyComboBoxRender());
     }
 
     /**

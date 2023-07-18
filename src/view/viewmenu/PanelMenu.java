@@ -15,6 +15,7 @@ public class PanelMenu extends javax.swing.JPanel {
      */
     public PanelMenu() {
         initComponents();
+        labelFondoPresionado.setVisible(false);
     }
 
     /**
@@ -29,6 +30,7 @@ public class PanelMenu extends javax.swing.JPanel {
         botonMenu = new javax.swing.JButton();
         labelNombreMenu = new javax.swing.JLabel();
         labelIconoMenu = new javax.swing.JLabel();
+        labelFondoPresionado = new javax.swing.JLabel();
         labelFondo = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(102, 102, 102));
@@ -60,23 +62,29 @@ public class PanelMenu extends javax.swing.JPanel {
         labelIconoMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/iconMenu.png"))); // NOI18N
         add(labelIconoMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 20, -1, 30));
 
+        labelFondoPresionado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoNombre.png"))); // NOI18N
+        add(labelFondoPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, -1, -1));
+
         labelFondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoNombre.png"))); // NOI18N
         add(labelFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonMenuMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonMenuMouseEntered
         // TODO add your handling code here:
+        labelFondoPresionado.setVisible(true);
     }//GEN-LAST:event_botonMenuMouseEntered
 
     private void botonMenuMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonMenuMouseExited
         // TODO add your handling code here:
+        labelFondoPresionado.setVisible(false);
     }//GEN-LAST:event_botonMenuMouseExited
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton botonMenu;
     private javax.swing.JLabel labelFondo;
+    private javax.swing.JLabel labelFondoPresionado;
     private javax.swing.JLabel labelIconoMenu;
-    private javax.swing.JLabel labelNombreMenu;
+    public javax.swing.JLabel labelNombreMenu;
     // End of variables declaration//GEN-END:variables
 }

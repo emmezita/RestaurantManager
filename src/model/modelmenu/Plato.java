@@ -10,19 +10,29 @@ import javax.swing.JOptionPane;
 
 public class Plato {
     
- private String nombre;
+    private int ID;
+    private String nombre;
     private String categoria;
     private String descripcion;
 
     public Plato() {
     }
 
-    public Plato(String nombre, String categoria, String descripcion) {
+    public Plato(int ID, String nombre, String categoria, String descripcion) {
+        this.ID = ID;
         this.nombre = nombre;
         this.categoria = categoria;
         this.descripcion = descripcion;
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+    
     public String getNombre() {
         return nombre;
     }
@@ -82,18 +92,18 @@ public class Plato {
 }
     
     // Busca un plato mediante su nombre y devuelve su objeto
-    public Plato buscarPlato(String nombre, ArrayList<Plato> listaPlatos) {
-    for (Plato p : listaPlatos) {
-        if (p.getNombre().equals(nombre)) {
-            return p;
+    public Plato buscarPlato(int ID, ArrayList<Plato> listaPlatos) {
+        for (Plato p : listaPlatos) {
+            if(p.getID() == ID){    
+                return p;
+            }
         }
-    }
-    return null;
+        return null;
     }
     
-        public void modificarPlato (String nombre, String categoria, String descripcion, ArrayList<Plato> listaPlatos, String indicadorNombre) {
+    public void modificarPlato (String nombre, String categoria, String descripcion, ArrayList<Plato> listaPlatos, int indicadorID) {
         for (Plato p: listaPlatos){
-            if (p.getNombre().equals(indicadorNombre)){
+            if (p.getID() == indicadorID){
                 p.setNombre(nombre);
                 p.setCategoria(categoria);
                 p.setDescripcion(descripcion);

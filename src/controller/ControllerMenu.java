@@ -8,6 +8,9 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,33 +19,50 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.conexionBD.ConexionServidor;
 import model.modelmenu.Bebida;
+import model.modelmenu.Menu;
 import model.modelmenu.Plato;
 import view.viewmenu.PanelBebida;
 import view.viewmenu.PanelConsultarMenu;
 import view.viewmenu.PanelIngresarBebida;
+import view.viewmenu.PanelIngresarMenu;
+import view.viewmenu.PanelIngresarMenuS1;
+import view.viewmenu.PanelIngresarMenuS2;
+import view.viewmenu.PanelIngresarMenuS3;
+import view.viewmenu.PanelIngresarMenuS4;
+import view.viewmenu.PanelIngresarMenuS5;
+import view.viewmenu.PanelIngresarMenuS6;
 import view.viewmenu.PanelIngresarPlato;
+import view.viewmenu.PanelMenu;
 import view.viewmenu.PanelPlato;
+import view.viewmenu.PanelTiempo1;
+import view.viewmenu.PanelTiempo2;
+import view.viewmenu.PanelTiempo3;
+import view.viewmenu.PanelTiempo4;
+import view.viewmenu.PanelTiempo5;
+import view.viewmenu.PanelTiempo6;
 import view.viewprincipal.SistemaPrincipal;
 
 /**
  *
  * @author emmez
  */
-public class ControllerMenu implements ActionListener{
+public class ControllerMenu implements ActionListener, ItemListener, KeyListener{
     
     private Plato plato = new Plato();
     private Bebida bebida = new Bebida();
+    private Menu menu = new Menu();
     
-    private String indicadorNombrePlato = "";
-    private String indicadorNombreBebida = "";       
+    private int indicadorIDPlato = -1;
+    private int indicadorIDBebida = -1;       
     
     private static final ArrayList<Plato> listaPlatos = new ArrayList<>();
     private static final ArrayList<Bebida> listaBebidas = new ArrayList<>();
+    private static final ArrayList<Menu> listaMenus = new ArrayList<>();
     
     private PreparedStatement PS;                                                                                                                   
     private final ConexionServidor CN;
     
-    private final String SQL_INSERT_PLATOBEBIDA = "INSERT INTO PlatoBebida (nombre,categoria,descripcion,tipo) values (?,?,?,?)";
+    private final String SQL_INSERT_PLATOBEBIDA = "INSERT INTO PlatoBebida (id,nombre,categoria,descripcion,tipo) values (?,?,?,?,?)";
     private PreparedStatement PS_PLATOBEBIDA;
     
     private final String SQL_SELECT_PLATOBEBIDA = "SELECT * FROM PlatoBebida";
@@ -53,6 +73,15 @@ public class ControllerMenu implements ActionListener{
     private final PanelConsultarMenu panelConsultar = new PanelConsultarMenu();
     private final PanelIngresarPlato panelIngresarPlato = new PanelIngresarPlato();
     private final PanelIngresarBebida panelIngresarBebida = new PanelIngresarBebida();
+    private final PanelIngresarMenu panelIngresarMenu = new PanelIngresarMenu();
+    
+    private final PanelIngresarMenuS1 panelMS1 = new PanelIngresarMenuS1();
+    private final PanelIngresarMenuS2 panelMS2 = new PanelIngresarMenuS2();
+    private final PanelIngresarMenuS3 panelMS3 = new PanelIngresarMenuS3();
+    private final PanelIngresarMenuS4 panelMS4 = new PanelIngresarMenuS4();
+    private final PanelIngresarMenuS5 panelMS5 = new PanelIngresarMenuS5();
+    private final PanelIngresarMenuS6 panelMS6 = new PanelIngresarMenuS6();
+    
     
     public ControllerMenu(SistemaPrincipal panelSistema) {
         //Ventana del sistema
@@ -62,6 +91,33 @@ public class ControllerMenu implements ActionListener{
         //Panel Consultar Menú
         panelConsultar.botonIngresar.addActionListener(this);
         panelConsultar.botonEditar.addActionListener(this);
+        panelConsultar.comboBoxVista.addItemListener(this);
+        
+        //Panel Ingresar Menú
+        panelIngresarMenu.botonRegresar.addActionListener(this);
+        
+        //Panel Ingresar Menú 1
+        panelMS1.botonContinuar.addActionListener(this);
+        
+        //Panel Ingresar Menú 2
+        panelMS2.botonContinuar.addActionListener(this);
+        panelMS2.botonRegresar.addActionListener(this);
+        
+        //Panel Ingresar Menú 3
+        panelMS3.botonContinuar.addActionListener(this);
+        panelMS3.botonRegresar.addActionListener(this);
+        
+        //Panel Ingresar Menú 4
+        panelMS4.botonContinuar.addActionListener(this);
+        panelMS4.botonRegresar.addActionListener(this);
+        
+        //Panel Ingresar Menú 5
+        panelMS5.botonContinuar.addActionListener(this);
+        panelMS5.botonRegresar.addActionListener(this);
+        
+        //Panel Ingresar Menú 6
+        panelMS6.botonRegistrar.addActionListener(this);
+        panelMS6.botonRegresar.addActionListener(this);
         
         //Panel Ingresar Plato
         panelIngresarPlato.botonRegistrar.addActionListener(this);
@@ -82,6 +138,7 @@ public class ControllerMenu implements ActionListener{
     
     private DefaultTableModel setColumnasPlatoBebida(){
         DT_PLATOBEBIDA = new DefaultTableModel();
+        DT_PLATOBEBIDA.addColumn("id");
         DT_PLATOBEBIDA.addColumn("nombre");
         DT_PLATOBEBIDA.addColumn("categoria");
         DT_PLATOBEBIDA.addColumn("descripcion");
@@ -100,17 +157,100 @@ public class ControllerMenu implements ActionListener{
             RS_PLATOBEBIDA = PS_PLATOBEBIDA.executeQuery();
             // Busca datos de cada columna
             while (RS_PLATOBEBIDA.next()){
-                String nombre = RS_PLATOBEBIDA.getString(1);
-                String categoria = RS_PLATOBEBIDA.getString(2);
-                String descripcion = RS_PLATOBEBIDA.getString(3);
-                String tipo = RS_PLATOBEBIDA.getString(4);
+                int ID = RS_PLATOBEBIDA.getInt(1);
+                String nombre = RS_PLATOBEBIDA.getString(2);
+                String categoria = RS_PLATOBEBIDA.getString(3);
+                String descripcion = RS_PLATOBEBIDA.getString(4);
+                String tipo = RS_PLATOBEBIDA.getString(5);
                 
                 if (tipo.equals("p")){
-                    Plato p = new Plato(nombre,categoria,descripcion);
+                    Plato p = new Plato(ID,nombre,categoria,descripcion);
                     listaPlatos.add(p);
+                    if(p.getCategoria().equals("Entrada")){
+                        panelMS2.comboBoxP1.addItem(p.getNombre());
+                        panelMS2.comboBoxP2.addItem(p.getNombre());
+                        panelMS2.comboBoxP3.addItem(p.getNombre());
+                        panelMS2.comboBoxP4.addItem(p.getNombre());
+                        panelMS2.comboBoxP5.addItem(p.getNombre());
+                        panelMS2.comboBoxP6.addItem(p.getNombre());
+                    }
+                    if(p.getCategoria().equals("Primer Tiempo")){
+                        panelMS3.comboBoxP1.addItem(p.getNombre());
+                        panelMS3.comboBoxP2.addItem(p.getNombre());
+                        panelMS3.comboBoxP3.addItem(p.getNombre());
+                        panelMS3.comboBoxP4.addItem(p.getNombre());
+                        panelMS3.comboBoxP5.addItem(p.getNombre());
+                        panelMS3.comboBoxP6.addItem(p.getNombre());
+                    }
+                    if(p.getCategoria().equals("Segundo Tiempo")){
+                        panelMS4.comboBoxP1.addItem(p.getNombre());
+                        panelMS4.comboBoxP2.addItem(p.getNombre());
+                        panelMS4.comboBoxP3.addItem(p.getNombre());
+                        panelMS4.comboBoxP4.addItem(p.getNombre());
+                        panelMS4.comboBoxP5.addItem(p.getNombre());
+                        panelMS4.comboBoxP6.addItem(p.getNombre());
+                        
+                    }
+                    if(p.getCategoria().equals("Tercer Tiempo")){
+                        panelMS5.comboBoxP1.addItem(p.getNombre());
+                        panelMS5.comboBoxP2.addItem(p.getNombre());
+                        panelMS5.comboBoxP3.addItem(p.getNombre());
+                        panelMS5.comboBoxP4.addItem(p.getNombre());
+                        panelMS5.comboBoxP5.addItem(p.getNombre());
+                        panelMS5.comboBoxP6.addItem(p.getNombre());
+                    }
+                    if(p.getCategoria().equals("Postre")){
+                        panelMS6.comboBoxP1.addItem(p.getNombre());
+                        panelMS6.comboBoxP2.addItem(p.getNombre());
+                        panelMS6.comboBoxP3.addItem(p.getNombre());
+                        panelMS6.comboBoxP4.addItem(p.getNombre());
+                        panelMS6.comboBoxP5.addItem(p.getNombre());
+                        panelMS6.comboBoxP6.addItem(p.getNombre());
+                    }
                 }else if(tipo.equals("b")){
-                    Bebida b = new Bebida(nombre,categoria,descripcion);
+                    Bebida b = new Bebida(ID,nombre,categoria,descripcion);
                     listaBebidas.add(b);
+                    if(b.getCategoria().equals("Entrada")){
+                        panelMS2.comboBoxP1.addItem(b.getNombre());
+                        panelMS2.comboBoxP2.addItem(b.getNombre());
+                        panelMS2.comboBoxP3.addItem(b.getNombre());
+                        panelMS2.comboBoxP4.addItem(b.getNombre());
+                        panelMS2.comboBoxP5.addItem(b.getNombre());
+                        panelMS2.comboBoxP6.addItem(b.getNombre());
+                    }
+                    if(b.getCategoria().equals("Primer Tiempo")){
+                        panelMS3.comboBoxP1.addItem(b.getNombre());
+                        panelMS3.comboBoxP2.addItem(b.getNombre());
+                        panelMS3.comboBoxP3.addItem(b.getNombre());
+                        panelMS3.comboBoxP4.addItem(b.getNombre());
+                        panelMS3.comboBoxP5.addItem(b.getNombre());
+                        panelMS3.comboBoxP6.addItem(b.getNombre());
+                    }
+                    if(b.getCategoria().equals("Segundo Tiempo")){
+                        panelMS4.comboBoxP1.addItem(b.getNombre());
+                        panelMS4.comboBoxP2.addItem(b.getNombre());
+                        panelMS4.comboBoxP3.addItem(b.getNombre());
+                        panelMS4.comboBoxP4.addItem(b.getNombre());
+                        panelMS4.comboBoxP5.addItem(b.getNombre());
+                        panelMS4.comboBoxP6.addItem(b.getNombre());
+                        
+                    }
+                    if(b.getCategoria().equals("Tercer Tiempo")){
+                        panelMS5.comboBoxP1.addItem(b.getNombre());
+                        panelMS5.comboBoxP2.addItem(b.getNombre());
+                        panelMS5.comboBoxP3.addItem(b.getNombre());
+                        panelMS5.comboBoxP4.addItem(b.getNombre());
+                        panelMS5.comboBoxP5.addItem(b.getNombre());
+                        panelMS5.comboBoxP6.addItem(b.getNombre());
+                    }
+                    if(b.getCategoria().equals("Postre")){
+                        panelMS6.comboBoxP1.addItem(b.getNombre());
+                        panelMS6.comboBoxP2.addItem(b.getNombre());
+                        panelMS6.comboBoxP3.addItem(b.getNombre());
+                        panelMS6.comboBoxP4.addItem(b.getNombre());
+                        panelMS6.comboBoxP5.addItem(b.getNombre());
+                        panelMS6.comboBoxP6.addItem(b.getNombre());
+                    }
                 }
                 
             }
@@ -140,6 +280,28 @@ public class ControllerMenu implements ActionListener{
             ||panelIngresarBebida.comboBoxCategoria.getSelectedIndex()==0;
     }
     
+    public int generarIDPlato(){
+        int numMax = 0;
+        for (int i = 0; i<listaPlatos.size();i++){
+            int num=listaPlatos.get(i).getID();
+            if(num > numMax){
+                numMax = num;
+            }
+        }
+        return numMax + 1;
+    }  
+    
+        public int generarIDBebida(){
+        int numMax = 0;
+        for (int i = 0; i<listaBebidas.size();i++){
+            int num=listaBebidas.get(i).getID();
+            if(num > numMax){
+                numMax = num;
+            }
+        }
+        return numMax + 1;
+    }  
+    
     public int buscarCategoria (String categoria){
         switch (categoria){
             case "Entrada": return 1;
@@ -152,73 +314,921 @@ public class ControllerMenu implements ActionListener{
         }
     }
     
+    public void mostrarDatosBedidaoPlato(boolean visible){
+        panelConsultar.labelFondoDatosPoB.setVisible(visible);
+        panelConsultar.labelImagenPoB.setVisible(visible);
+        panelConsultar.labelLineaPoB.setVisible(visible);
+        panelConsultar.labelTipoPoB.setVisible(visible);
+        panelConsultar.labelNombrePoB.setVisible(visible);
+        //panelConsultar.labelID.setVisible(visible);
+        panelConsultar.txtDescripcion.setVisible(visible);
+        panelConsultar.jScrollPaneDescripcion.setVisible(visible);
+        panelConsultar.labelTituloDescripcion1.setVisible(visible);
+    }
     
-    public void cargarPoB(String tipo){
-        String opcionSeleccionada = tipo;
-        
-        panelConsultar.labelFondoDatosPoB.setVisible(false);
-        panelConsultar.labelImagenPoB.setVisible(false);
-        panelConsultar.labelLineaPoB.setVisible(false);
-        panelConsultar.labelTipoPoB.setVisible(false);
-        panelConsultar.labelNombrePoB.setVisible(false);
-        panelConsultar.labelTituloDescripcion.setVisible(false);
-        panelConsultar.txtDescripcion.setVisible(false);
-        
-        
-        
-        if (opcionSeleccionada.equals("Platos")){
-            for (Plato pl : listaPlatos) {
-                PanelPlato panelP = new PanelPlato();
-                panelP.setSize(310,70);
-                panelP.labelNombrePlato.setText(pl.getNombre());
-                
-                panelP.botonPlato.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Actualizar el texto del JLabel
-                        //indicadorCedula = em.getCedula();
-                        panelConsultar.labelFondoDatosPoB.setVisible(true);
-                        panelConsultar.labelImagenPoB.setVisible(true);
-                        panelConsultar.labelLineaPoB.setVisible(true);
-                        panelConsultar.labelTipoPoB.setVisible(true);
-                        panelConsultar.labelNombrePoB.setVisible(true);
-                        panelConsultar.labelTituloDescripcion.setVisible(true);
-                        panelConsultar.txtDescripcion.setVisible(true);
-                        panelConsultar.labelNombrePoB.setText(pl.getNombre());
-                        panelConsultar.labelTipoPoB.setText("Plato");
-                        panelConsultar.txtDescripcion.setText(pl.getDescripcion());
-                    }
-                });
-                panelConsultar.jScrollPane.add(panelP);
+    public void mostrarDatosMenu(boolean visible){
+        panelConsultar.labelFondoDetalleMenu.setVisible(visible);
+        panelConsultar.labelImagenMenu.setVisible(visible);
+        panelConsultar.labelLineaMenu.setVisible(visible);
+        panelConsultar.labelTipoMenu.setVisible(visible);
+        panelConsultar.labelFondoPanelTiempos.setVisible(visible);
+        panelConsultar.jScrollPaneTiempos.setVisible(visible);
+        panelConsultar.panelTiempos.setVisible(visible);
+        panelConsultar.labelNombreMenu.setVisible(visible);
+    }
+    
+    public void cargarPlatos(){
+        mostrarDatosBedidaoPlato(false);
+        mostrarDatosMenu(false);
+        panelConsultar.panelMenu.removeAll();
+        for (Plato pl : listaPlatos) {
+            PanelPlato panelP = new PanelPlato();
+            panelP.setSize(310,70);
+            panelP.labelNombrePlato.setText(pl.getNombre());
+            panelP.botonPlato.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Actualizar el texto del JLabel
+                    //indicadorCedula = em.getCedula();
+                    panelConsultar.labelImagenPoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/imagenPlato.png")));
+                    mostrarDatosBedidaoPlato(true);    
+                    panelConsultar.labelID.setText(Integer.toString(pl.getID()));
+                    panelConsultar.labelNombrePoB.setText(pl.getNombre());
+                    panelConsultar.labelTipoPoB.setText("Plato");
+                    panelConsultar.txtDescripcion.setText(pl.getDescripcion());
+                }
+            });
+            panelConsultar.panelMenu.add(panelP);
+            
+        }
+        panelConsultar.panelMenu.revalidate();
+        panelConsultar.panelMenu.repaint();
+    }
+    
+    public void cargarBebidas(){
+        mostrarDatosBedidaoPlato(false);
+        mostrarDatosMenu(false);
+        panelConsultar.panelMenu.removeAll();
+        for (Bebida be : listaBebidas) {
+            PanelBebida panelB = new PanelBebida();
+            panelB.setSize(310,70);
+            panelB.labelNombreBebida.setText(be.getNombre());
+            panelB.botonBebida.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Actualizar el texto del JLabel
+                    //indicadorCedula = em.getCedula();
+                    panelConsultar.labelImagenPoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/imagenBebida.png")));
+                    mostrarDatosBedidaoPlato(true);
+                    panelConsultar.labelID.setText(Integer.toString(be.getID()));
+                    panelConsultar.labelNombrePoB.setText(be.getNombre());
+                    panelConsultar.labelTipoPoB.setText("Bebida");
+                    panelConsultar.txtDescripcion.setText(be.getDescripcion());
+                }
+            });
+            panelConsultar.panelMenu.add(panelB);
+        }
+        panelConsultar.panelMenu.revalidate();
+        panelConsultar.panelMenu.repaint();
+    }
+    
+    public void cargarTiempos(ArrayList<Plato> listaP, ArrayList<Bebida> listaB, String tiempo){
+        if((listaP.size() + listaB.size()) == 6){
+            PanelTiempo6 panelT6 = new PanelTiempo6();
+            panelT6.setSize(400, 270);
+            panelT6.labelTiempo.setText(tiempo);
+            int i = 0;
+            String[] nombres = new String[6];
+            if(!listaP.isEmpty()){
+                for(Plato p: listaP){
+                    nombres[i] = p.getNombre();
+                    i++;
+                }
             }
-        }else if (opcionSeleccionada.equals("Bebidas")){
-            for (Bebida be : listaBebidas) {
-                PanelBebida panelB = new PanelBebida();
-                panelB.setSize(310,70);
-                panelB.labelNombreBebida.setText(be.getNombre());
-                
-                panelB.botonBebida.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Actualizar el texto del JLabel
-                        //indicadorCedula = em.getCedula();
-                        panelConsultar.labelFondoDatosPoB.setVisible(true);
-                        panelConsultar.labelImagenPoB.setVisible(true);
-                        panelConsultar.labelLineaPoB.setVisible(true);
-                        panelConsultar.labelTipoPoB.setVisible(true);
-                        panelConsultar.labelNombrePoB.setVisible(true);
-                        panelConsultar.labelTituloDescripcion.setVisible(true);
-                        panelConsultar.txtDescripcion.setVisible(true);
-                        panelConsultar.labelNombrePoB.setText(be.getNombre());
-                        panelConsultar.labelTipoPoB.setText("Bebida");
-                        panelConsultar.txtDescripcion.setText(be.getDescripcion());
+            if(!listaB.isEmpty()){
+                for(Bebida b: listaB){
+                    nombres[i] = b.getNombre();
+                    i++;
+                }
+            }
+            panelT6.labelP1.setText(nombres[0]);
+            panelT6.labelP2.setText(nombres[1]);
+            panelT6.labelP3.setText(nombres[2]);
+            panelT6.labelP4.setText(nombres[3]);
+            panelT6.labelP5.setText(nombres[4]);
+            panelT6.labelP6.setText(nombres[5]);
+            panelConsultar.panelTiempos.add(panelT6);
+        }
+        if((listaP.size() + listaB.size()) == 5){
+            PanelTiempo5 panelT5 = new PanelTiempo5();
+            panelT5.setSize(410, 230);
+            panelT5.labelTiempo.setText(tiempo);
+            int i = 0;
+            String[] nombres = new String[5];
+            if(!listaP.isEmpty()){
+                 for(Plato p: listaP){
+                    nombres[i] = p.getNombre();
+                    i++;
+                }
+            }
+            if(!listaB.isEmpty()){
+                for(Bebida b: listaB){
+                    nombres[i] = b.getNombre();
+                    i++;
+                }
+            }
+            panelT5.labelP1.setText(nombres[0]);
+            panelT5.labelP2.setText(nombres[1]);
+            panelT5.labelP3.setText(nombres[2]);
+            panelT5.labelP4.setText(nombres[3]);
+            panelT5.labelP5.setText(nombres[4]);
+            panelConsultar.panelTiempos.add(panelT5);
+        }
+        if((listaP.size() + listaB.size()) == 4){
+            PanelTiempo4 panelT4 = new PanelTiempo4();
+            panelT4.setSize(410, 215);
+            panelT4.labelTiempo.setText(tiempo);
+            int i = 0;
+            String[] nombres = new String[4];
+            if(!listaP.isEmpty()){
+                for(Plato p: listaP){
+                    nombres[i] = p.getNombre();
+                    i++;
+                }
+            }
+            if(!listaB.isEmpty()){
+                for(Bebida b: listaB){
+                    nombres[i] = b.getNombre();
+                    i++;
+                }
+            }
+            panelT4.labelP1.setText(nombres[0]);
+            panelT4.labelP2.setText(nombres[1]);
+            panelT4.labelP3.setText(nombres[2]);
+            panelT4.labelP4.setText(nombres[3]);
+            panelConsultar.panelTiempos.add(panelT4);
+        }
+        if((listaP.size() + listaB.size()) == 3){
+            PanelTiempo3 panelT3 = new PanelTiempo3();
+            panelT3.setSize(410, 190);
+            panelT3.labelTiempo.setText(tiempo);
+            int i = 0;
+            String[] nombres = new String[3];
+            if(!listaP.isEmpty()){
+                for(Plato p: listaP){
+                    nombres[i] = p.getNombre();
+                    i++;
+                }
+            }
+            if(!listaB.isEmpty()){
+                for(Bebida b: listaB){
+                    nombres[i] = b.getNombre();
+                    i++;
+                 }
+            }
+            panelT3.labelP1.setText(nombres[0]);
+            panelT3.labelP2.setText(nombres[1]);
+            panelT3.labelP3.setText(nombres[2]);
+            panelConsultar.panelTiempos.add(panelT3);
+        }
+        if((listaP.size() + listaB.size()) == 2){
+            PanelTiempo2 panelT2 = new PanelTiempo2();
+            panelT2.setSize(410, 165);
+            panelT2.labelTiempo.setText(tiempo);
+            int i = 0;
+            String[] nombres = new String[2];
+            if(!listaP.isEmpty()){
+                for(Plato p: listaP){
+                    nombres[i] = p.getNombre();
+                    i++;
+                }
+            }
+            if(!listaB.isEmpty()){
+                for(Bebida b: listaB){
+                    nombres[i] = b.getNombre();
+                    i++;
+                }
+            }
+            panelT2.labelP1.setText(nombres[0]);
+            panelT2.labelP2.setText(nombres[1]);
+            panelConsultar.panelTiempos.add(panelT2);
+        }
+        if((listaP.size() + listaB.size()) == 1){
+            PanelTiempo1 panelT1 = new PanelTiempo1();
+            panelT1.setSize(410, 135);
+            panelT1.labelTiempo.setText(tiempo);
+            int i = 0;
+            String[] nombres = new String[1];
+            if(!listaP.isEmpty()){
+                for(Plato p: listaP){
+                    nombres[i] = p.getNombre();
+                    i++;
+                }
+            }
+            if(!listaB.isEmpty()){
+                for(Bebida b: listaB){
+                    nombres[i] = b.getNombre();
+                    i++;
+                }
+            }
+            panelT1.labelP1.setText(nombres[0]);
+            panelConsultar.panelTiempos.add(panelT1);
+        }    
+    }
+    
+    public void cargarMenus(){
+        mostrarDatosBedidaoPlato(false);
+        mostrarDatosMenu(false);
+        panelConsultar.panelMenu.removeAll();
+        for (Menu m : listaMenus) {
+            PanelMenu panelM = new PanelMenu();
+            panelM.setSize(310,70);
+            panelM.labelNombreMenu.setText(m.getNombre());
+            panelM.botonMenu.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    panelConsultar.labelNombreMenu.setText(m.getNombre());
+                    panelConsultar.panelTiempos.removeAll();
+                    mostrarDatosMenu(true);
+                    ArrayList <Plato> listaP = m.getListaPlatos();
+                    ArrayList <Bebida> listaB = m.getListaBebidas();
+                    
+                    ArrayList <Plato> listaP1 = new ArrayList<>();
+                    ArrayList <Plato> listaP2 = new ArrayList<>();
+                    ArrayList <Plato> listaP3 = new ArrayList<>();
+                    ArrayList <Plato> listaP4 = new ArrayList<>();
+                    ArrayList <Plato> listaP5 = new ArrayList<>();
+                    
+                    ArrayList <Bebida> listaB1 = new ArrayList<>();
+                    ArrayList <Bebida> listaB2 = new ArrayList<>();
+                    ArrayList <Bebida> listaB3 = new ArrayList<>();
+                    ArrayList <Bebida> listaB4 = new ArrayList<>();
+                    ArrayList <Bebida> listaB5 = new ArrayList<>();
+                    
+                    for (Plato p: listaP){
+                        if(p.getCategoria().equals("Entrada")){
+                            listaP1.add(p);
+                        }
+                        if(p.getCategoria().equals("Primer Tiempo")){
+                            listaP2.add(p);
+                        }
+                        if(p.getCategoria().equals("Segundo Tiempo")){
+                            listaP3.add(p);
+                        }
+                        if(p.getCategoria().equals("Tercer Tiempo")){
+                            listaP4.add(p);
+                        }
+                        if(p.getCategoria().equals("Postre")){
+                            listaP5.add(p);
+                        }
                     }
-                });
-                panelConsultar.jScrollPane.add(panelB);
+                    for (Bebida b: listaB){
+                        if(b.getCategoria().equals("Entrada")){
+                            listaB1.add(b);
+                        }
+                        if(b.getCategoria().equals("Primer Tiempo")){
+                            listaB2.add(b);
+                        }
+                        if(b.getCategoria().equals("Segundo Tiempo")){
+                            listaB3.add(b);
+                        }
+                        if(b.getCategoria().equals("Tercer Tiempo")){
+                            listaB4.add(b);
+                        }
+                        if(b.getCategoria().equals("Postre")){
+                            listaB5.add(b);
+                        }
+                    }
+                    cargarTiempos(listaP1,listaB1,"Entrada");
+                    cargarTiempos(listaP2,listaB2,"Primer Tiempo");
+                    cargarTiempos(listaP3,listaB3,"Segundo Tiempo");
+                    cargarTiempos(listaP4,listaB4,"Tercer Tiempo");
+                    cargarTiempos(listaP5,listaB5,"Postre");
+                    panelConsultar.panelTiempos.revalidate();
+                    panelConsultar.panelTiempos.repaint();
+                }
+            });
+            panelConsultar.panelMenu.add(panelM);
+        }
+        panelConsultar.panelMenu.revalidate();
+        panelConsultar.panelMenu.repaint();
+    }
+    
+    public void cargarPaneles(String tipo){
+        if(tipo.equals("Menús")){
+            cargarMenus();
+        }
+        if(tipo.equals("Platos")){
+            cargarPlatos();
+        }
+        if(tipo.equals("Bebidas")){
+            cargarBebidas();
+        }
+    }
+    
+    public boolean camposVaciosMS1(){
+        return panelMS1.txtNombre.getText().equals("Nombre") || panelMS1.txtNombre.equals("");
+    }
+
+    public boolean camposVaciosMS2(){
+        return panelMS2.comboBoxP1.getSelectedIndex() == 0 &&
+               panelMS2.comboBoxP2.getSelectedIndex() == 0 &&
+               panelMS2.comboBoxP3.getSelectedIndex() == 0 &&
+               panelMS2.comboBoxP4.getSelectedIndex() == 0 &&
+               panelMS2.comboBoxP5.getSelectedIndex() == 0 &&
+               panelMS2.comboBoxP6.getSelectedIndex() == 0 ;
+    }
+    
+    public boolean camposVaciosMS3(){
+        return panelMS3.comboBoxP1.getSelectedIndex() == 0 &&
+               panelMS3.comboBoxP2.getSelectedIndex() == 0 &&
+               panelMS3.comboBoxP3.getSelectedIndex() == 0 &&
+               panelMS3.comboBoxP4.getSelectedIndex() == 0 &&
+               panelMS3.comboBoxP5.getSelectedIndex() == 0 &&
+               panelMS3.comboBoxP6.getSelectedIndex() == 0 ;
+    }
+    
+    public boolean camposVaciosMS4(){
+        return panelMS4.comboBoxP1.getSelectedIndex() == 0 &&
+               panelMS4.comboBoxP2.getSelectedIndex() == 0 &&
+               panelMS4.comboBoxP3.getSelectedIndex() == 0 &&
+               panelMS4.comboBoxP4.getSelectedIndex() == 0 &&
+               panelMS4.comboBoxP5.getSelectedIndex() == 0 &&
+               panelMS4.comboBoxP6.getSelectedIndex() == 0 ;
+    }
+
+    public boolean camposVaciosMS5(){
+        return panelMS5.comboBoxP1.getSelectedIndex() == 0 &&
+               panelMS5.comboBoxP2.getSelectedIndex() == 0 &&
+               panelMS5.comboBoxP3.getSelectedIndex() == 0 &&
+               panelMS5.comboBoxP4.getSelectedIndex() == 0 &&
+               panelMS5.comboBoxP5.getSelectedIndex() == 0 &&
+               panelMS5.comboBoxP6.getSelectedIndex() == 0 ;
+    }
+    
+    public boolean camposVaciosMS6(){
+        return panelMS6.comboBoxP1.getSelectedIndex() == 0 &&
+               panelMS6.comboBoxP2.getSelectedIndex() == 0 &&
+               panelMS6.comboBoxP3.getSelectedIndex() == 0 &&
+               panelMS6.comboBoxP4.getSelectedIndex() == 0 &&
+               panelMS6.comboBoxP5.getSelectedIndex() == 0 &&
+               panelMS6.comboBoxP6.getSelectedIndex() == 0 ;
+    }
+    
+    public boolean estaEnArray(String[] array, String elemento) {
+        for (String e : array) {
+            if(elemento != null){
+                if (elemento.equals(e)) {
+                    return true;
+                }                
+            }
+
+        }
+        return false;
+    }   
+    
+    public boolean nombresRepetidos(String[] nombres) {
+        String[] nombresUnicos = new String[nombres.length];
+        int indice = 0;
+        for (String nombre : nombres) {
+            if (!estaEnArray(nombresUnicos, nombre)) {
+                nombresUnicos[indice++] = nombre;
+            } else {
+                // El nombre ya estaba en el array, es decir, está repetido
+                return true;
             }
         }
-        panelConsultar.jScrollPane.revalidate();
-        panelConsultar.jScrollPane.repaint();
+        // Si llegamos aquí, no hay nombres repetidos
+        return false;
+    }
+
+    public Plato buscarPlatoNombre(String nombre){
+        Plato plato = null;
+        for(Plato p: listaPlatos){
+            if(p.getNombre().equals(nombre)){
+                plato = p;
+            }
+        }
+        return plato;
+    }
+    
+    public Bebida buscarBebidaNombre(String nombre){
+        Bebida bebida = null;
+        for(Bebida b: listaBebidas){
+            if(b.getNombre().equals(nombre)){
+                bebida = b;
+            }
+        }
+        return bebida;
+    }    
+    
+    public boolean validarCamposMS2(){
+        String[] nombres = new String[6];
+        int i = 0;
+        if(panelMS2.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        String[] nombresA = new String[i];
+        nombresA= nombres;
+        if(nombresRepetidos(nombresA) ){
+            JOptionPane.showMessageDialog(null, "Hay platos o bebidas repetidos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return false;
+        } else{
+            return true;
+        }
+    }
+    
+    public boolean validarCamposMS3(){
+        String[] nombres = new String[6];
+        int i = 0;
+        if(panelMS3.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        String[] nombresA = new String[i];
+        nombresA= nombres;
+        if(nombresRepetidos(nombresA) ){
+            JOptionPane.showMessageDialog(null, "Hay platos o bebidas repetidos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return false;
+        } else{
+            return true;
+        }
+    }
+    
+    public boolean validarCamposMS4(){
+        String[] nombres = new String[6];
+        int i = 0;
+        if(panelMS4.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        String[] nombresA = new String[i];
+        nombresA= nombres;
+        if(nombresRepetidos(nombresA) ){
+            JOptionPane.showMessageDialog(null, "Hay platos o bebidas repetidos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return false;
+        } else{
+            return true;
+        }
+    }
+    
+    public boolean validarCamposMS5(){
+        String[] nombres = new String[6];
+        int i = 0;
+        if(panelMS5.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        String[] nombresA = new String[i];
+        nombresA= nombres;
+        if(nombresRepetidos(nombresA) ){
+            JOptionPane.showMessageDialog(null, "Hay platos o bebidas repetidos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return false;
+        } else{
+            return true;
+        }
+    }
+    
+    public boolean validarCamposMS6(){
+        String[] nombres = new String[6];
+        int i = 0;
+        if(panelMS6.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        String[] nombresA = new String[i];
+        nombresA= nombres;
+        if(nombresRepetidos(nombresA) ){
+            JOptionPane.showMessageDialog(null, "Hay platos o bebidas repetidos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return false;
+        } else{
+            return true;
+        }
+    }
+    
+    public void registrarPlatosBebidas(){
+        String[] nombres = new String[30];
+        int i = 0;
+        if(panelMS2.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS2.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS2.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS3.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS3.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS4.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS4.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS5.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS5.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP1.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP1.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP2.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP2.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP3.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP3.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP4.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP4.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP5.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP5.getSelectedItem().toString();
+            i++;
+        }
+        if(panelMS6.comboBoxP6.getSelectedIndex() != 0){
+            nombres[i] = panelMS6.comboBoxP6.getSelectedItem().toString();
+            i++;
+        }
+        String[] nombresA = new String[i];
+        nombresA= nombres;
+        ArrayList <Bebida> listaBebidasTemporal = new ArrayList<>();
+        ArrayList <Plato> listaPlatosTemporal = new ArrayList<>();
+        for(int j = 0; j<i;j++){
+            Plato p =  buscarPlatoNombre(nombresA[j]);
+            Bebida b = buscarBebidaNombre(nombresA[j]);
+            if(b != null){
+                listaBebidasTemporal.add(b);
+            }
+            if(p != null){
+                listaPlatosTemporal.add(p);
+            }
+        }
+        Menu menu = new Menu(panelMS1.txtNombre.getText(),listaPlatosTemporal,listaBebidasTemporal);
+        listaMenus.add(menu);
+        JOptionPane.showMessageDialog(null, "El menú ha sido registrado con éxito", "", 1);
+    }
+    
+    public void ActualizarComboBox(){
+        panelMS2.comboBoxP1.removeAllItems();
+        panelMS2.comboBoxP2.removeAllItems();
+        panelMS2.comboBoxP3.removeAllItems();
+        panelMS2.comboBoxP4.removeAllItems();
+        panelMS2.comboBoxP5.removeAllItems();
+        panelMS2.comboBoxP6.removeAllItems();
+        panelMS3.comboBoxP1.removeAllItems();
+        panelMS3.comboBoxP2.removeAllItems();
+        panelMS3.comboBoxP3.removeAllItems();
+        panelMS3.comboBoxP4.removeAllItems();
+        panelMS3.comboBoxP5.removeAllItems();
+        panelMS3.comboBoxP6.removeAllItems();
+        panelMS4.comboBoxP1.removeAllItems();
+        panelMS4.comboBoxP2.removeAllItems();
+        panelMS4.comboBoxP3.removeAllItems();
+        panelMS4.comboBoxP4.removeAllItems();
+        panelMS4.comboBoxP5.removeAllItems();
+        panelMS4.comboBoxP6.removeAllItems();
+        panelMS5.comboBoxP1.removeAllItems();
+        panelMS5.comboBoxP2.removeAllItems();
+        panelMS5.comboBoxP3.removeAllItems();
+        panelMS5.comboBoxP4.removeAllItems();
+        panelMS5.comboBoxP5.removeAllItems();
+        panelMS5.comboBoxP6.removeAllItems();
+        panelMS6.comboBoxP1.removeAllItems();
+        panelMS6.comboBoxP2.removeAllItems();
+        panelMS6.comboBoxP3.removeAllItems();
+        panelMS6.comboBoxP4.removeAllItems();
+        panelMS6.comboBoxP5.removeAllItems();
+        panelMS6.comboBoxP6.removeAllItems();
+        panelMS2.comboBoxP1.addItem("Plato o Bebida");
+        panelMS2.comboBoxP2.addItem("Plato o Bebida");
+        panelMS2.comboBoxP3.addItem("Plato o Bebida");
+        panelMS2.comboBoxP4.addItem("Plato o Bebida");
+        panelMS2.comboBoxP5.addItem("Plato o Bebida");
+        panelMS2.comboBoxP6.addItem("Plato o Bebida");
+        panelMS3.comboBoxP1.addItem("Plato o Bebida");
+        panelMS3.comboBoxP2.addItem("Plato o Bebida");
+        panelMS3.comboBoxP3.addItem("Plato o Bebida");;
+        panelMS3.comboBoxP4.addItem("Plato o Bebida");
+        panelMS3.comboBoxP5.addItem("Plato o Bebida");
+        panelMS3.comboBoxP6.addItem("Plato o Bebida");
+        panelMS4.comboBoxP1.addItem("Plato o Bebida");
+        panelMS4.comboBoxP2.addItem("Plato o Bebida");
+        panelMS4.comboBoxP3.addItem("Plato o Bebida");
+        panelMS4.comboBoxP4.addItem("Plato o Bebida");
+        panelMS4.comboBoxP5.addItem("Plato o Bebida");
+        panelMS4.comboBoxP6.addItem("Plato o Bebida");
+        panelMS5.comboBoxP1.addItem("Plato o Bebida");;
+        panelMS5.comboBoxP2.addItem("Plato o Bebida");
+        panelMS5.comboBoxP3.addItem("Plato o Bebida");
+        panelMS5.comboBoxP4.addItem("Plato o Bebida");
+        panelMS5.comboBoxP5.addItem("Plato o Bebida");
+        panelMS5.comboBoxP6.addItem("Plato o Bebida");
+        panelMS6.comboBoxP1.addItem("Plato o Bebida");
+        panelMS6.comboBoxP2.addItem("Plato o Bebida");
+        panelMS6.comboBoxP3.addItem("Plato o Bebida");
+        panelMS6.comboBoxP4.addItem("Plato o Bebida");
+        panelMS6.comboBoxP5.addItem("Plato o Bebida");
+        panelMS6.comboBoxP6.addItem("Plato o Bebida");
+        for (Plato p: listaPlatos){
+            if(p.getCategoria().equals("Entrada")){
+                panelMS2.comboBoxP1.addItem(p.getNombre());
+                panelMS2.comboBoxP2.addItem(p.getNombre());
+                panelMS2.comboBoxP3.addItem(p.getNombre());
+                panelMS2.comboBoxP4.addItem(p.getNombre());
+                panelMS2.comboBoxP5.addItem(p.getNombre());
+                panelMS2.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Primer Tiempo")){
+                panelMS3.comboBoxP1.addItem(p.getNombre());
+                panelMS3.comboBoxP2.addItem(p.getNombre());
+                panelMS3.comboBoxP3.addItem(p.getNombre());
+                panelMS3.comboBoxP4.addItem(p.getNombre());
+                panelMS3.comboBoxP5.addItem(p.getNombre());
+                panelMS3.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Segundo Tiempo")){
+                panelMS4.comboBoxP1.addItem(p.getNombre());
+                panelMS4.comboBoxP2.addItem(p.getNombre());
+                panelMS4.comboBoxP3.addItem(p.getNombre());
+                panelMS4.comboBoxP4.addItem(p.getNombre());
+                panelMS4.comboBoxP5.addItem(p.getNombre());
+                panelMS4.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Tercer Tiempo")){
+                panelMS5.comboBoxP1.addItem(p.getNombre());
+                panelMS5.comboBoxP2.addItem(p.getNombre());
+                panelMS5.comboBoxP3.addItem(p.getNombre());
+                panelMS5.comboBoxP4.addItem(p.getNombre());
+                panelMS5.comboBoxP5.addItem(p.getNombre());
+                panelMS5.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Postre")){
+                panelMS6.comboBoxP1.addItem(p.getNombre());
+                panelMS6.comboBoxP2.addItem(p.getNombre());
+                panelMS6.comboBoxP3.addItem(p.getNombre());
+                panelMS6.comboBoxP4.addItem(p.getNombre());
+                panelMS6.comboBoxP5.addItem(p.getNombre());
+                panelMS6.comboBoxP6.addItem(p.getNombre());
+            }            
+        }
+        for (Bebida p: listaBebidas){
+            if(p.getCategoria().equals("Entrada")){
+                panelMS2.comboBoxP1.addItem(p.getNombre());
+                panelMS2.comboBoxP2.addItem(p.getNombre());
+                panelMS2.comboBoxP3.addItem(p.getNombre());
+                panelMS2.comboBoxP4.addItem(p.getNombre());
+                panelMS2.comboBoxP5.addItem(p.getNombre());
+                panelMS2.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Primer Tiempo")){
+                panelMS3.comboBoxP1.addItem(p.getNombre());
+                panelMS3.comboBoxP2.addItem(p.getNombre());
+                panelMS3.comboBoxP3.addItem(p.getNombre());
+                panelMS3.comboBoxP4.addItem(p.getNombre());
+                panelMS3.comboBoxP5.addItem(p.getNombre());
+                panelMS3.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Segundo Tiempo")){
+                panelMS4.comboBoxP1.addItem(p.getNombre());
+                panelMS4.comboBoxP2.addItem(p.getNombre());
+                panelMS4.comboBoxP3.addItem(p.getNombre());
+                panelMS4.comboBoxP4.addItem(p.getNombre());
+                panelMS4.comboBoxP5.addItem(p.getNombre());
+                panelMS4.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Tercer Tiempo")){
+                panelMS5.comboBoxP1.addItem(p.getNombre());
+                panelMS5.comboBoxP2.addItem(p.getNombre());
+                panelMS5.comboBoxP3.addItem(p.getNombre());
+                panelMS5.comboBoxP4.addItem(p.getNombre());
+                panelMS5.comboBoxP5.addItem(p.getNombre());
+                panelMS5.comboBoxP6.addItem(p.getNombre());
+            }
+            if(p.getCategoria().equals("Postre")){
+                panelMS6.comboBoxP1.addItem(p.getNombre());
+                panelMS6.comboBoxP2.addItem(p.getNombre());
+                panelMS6.comboBoxP3.addItem(p.getNombre());
+                panelMS6.comboBoxP4.addItem(p.getNombre());
+                panelMS6.comboBoxP5.addItem(p.getNombre());
+                panelMS6.comboBoxP6.addItem(p.getNombre());
+            }            
+        }            
+    }
+    
+    public void resetearIngresarMenu(){
+        panelMS1.txtNombre.setText("Nombre");
+        panelMS1.txtNombre.setForeground(Color.lightGray);
+        panelMS2.comboBoxP1.setSelectedIndex(0);
+        panelMS2.comboBoxP2.setSelectedIndex(0);
+        panelMS2.comboBoxP3.setSelectedIndex(0);
+        panelMS2.comboBoxP4.setSelectedIndex(0);
+        panelMS2.comboBoxP5.setSelectedIndex(0);
+        panelMS2.comboBoxP6.setSelectedIndex(0);
+        panelMS3.comboBoxP1.setSelectedIndex(0);
+        panelMS3.comboBoxP2.setSelectedIndex(0);
+        panelMS3.comboBoxP3.setSelectedIndex(0);
+        panelMS3.comboBoxP4.setSelectedIndex(0);
+        panelMS3.comboBoxP5.setSelectedIndex(0);
+        panelMS3.comboBoxP6.setSelectedIndex(0);
+        panelMS4.comboBoxP1.setSelectedIndex(0);
+        panelMS4.comboBoxP2.setSelectedIndex(0);
+        panelMS4.comboBoxP3.setSelectedIndex(0);
+        panelMS4.comboBoxP4.setSelectedIndex(0);
+        panelMS4.comboBoxP5.setSelectedIndex(0);
+        panelMS4.comboBoxP6.setSelectedIndex(0);
+        panelMS5.comboBoxP1.setSelectedIndex(0);
+        panelMS5.comboBoxP2.setSelectedIndex(0);
+        panelMS5.comboBoxP3.setSelectedIndex(0);
+        panelMS5.comboBoxP4.setSelectedIndex(0);
+        panelMS5.comboBoxP5.setSelectedIndex(0);
+        panelMS5.comboBoxP6.setSelectedIndex(0);
+        panelMS6.comboBoxP1.setSelectedIndex(0);
+        panelMS6.comboBoxP2.setSelectedIndex(0);
+        panelMS6.comboBoxP3.setSelectedIndex(0);
+        panelMS6.comboBoxP4.setSelectedIndex(0);
+        panelMS6.comboBoxP5.setSelectedIndex(0);
+        panelMS6.comboBoxP6.setSelectedIndex(0);
     }
     
     @Override
@@ -228,7 +1238,8 @@ public class ControllerMenu implements ActionListener{
         
         //Boton icono de menu
         if(e.getSource() == panelSistema.botonMenu){
-            cargarPoB(panelConsultar.comboBoxVista.getSelectedItem().toString());
+            cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+            panelConsultar.labelID.setVisible(false);
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -236,6 +1247,8 @@ public class ControllerMenu implements ActionListener{
             panelSistema.panelPrincipal.revalidate();
             panelSistema.panelPrincipal.repaint();
         }
+        
+       //BOTONES DEL PANEL: Panel Consultar
         
         if(e.getSource()==panelConsultar.botonIngresar){
             if (panelConsultar.comboBoxVista.getSelectedItem().equals("Platos")){
@@ -258,9 +1271,228 @@ public class ControllerMenu implements ActionListener{
                 panelSistema.panelPrincipal.revalidate();
                 panelSistema.panelPrincipal.repaint();  
             }
+            if(panelConsultar.comboBoxVista.getSelectedItem().equals("Menús")){
+                resetearIngresarMenu();
+                panelMS1.setSize(385,615);
+                panelMS1.setLocation(0,0);
+                panelIngresarMenu.setSize(926,720);
+                panelIngresarMenu.setLocation(0,0);
+                panelIngresarMenu.panelIngresar.removeAll();
+                panelIngresarMenu.panelIngresar.add(panelMS1);
+                panelIngresarMenu.panelIngresar.revalidate();
+                panelIngresarMenu.panelIngresar.repaint();
+                panelSistema.panelPrincipal.removeAll();
+                panelSistema.panelPrincipal.add(panelIngresarMenu);
+                panelSistema.panelPrincipal.revalidate();
+                panelSistema.panelPrincipal.repaint(); 
+            }
               
         }
         
+        
+        if(e.getSource()==panelConsultar.botonEditar){
+            if(panelConsultar.comboBoxVista.getSelectedItem().toString().equals("Platos")){
+                panelIngresarPlato.txtNombre.setForeground(new Color(230,231,235));
+                panelIngresarPlato.txtDescripcion.setForeground(new Color(230,231,235));
+                Plato pl = plato.buscarPlato(Integer.parseInt(panelConsultar.labelID.getText()), listaPlatos);
+                indicadorIDPlato = Integer.parseInt(panelConsultar.labelID.getText());
+                panelIngresarPlato.txtNombre.setText(pl.getNombre());
+                panelIngresarPlato.comboBoxCategoria.setSelectedIndex(buscarCategoria(pl.getCategoria()));
+                panelIngresarPlato.txtDescripcion.setText(pl.getDescripcion());
+                panelIngresarPlato.botonGuardarCambios.setVisible(true);
+                panelIngresarPlato.botonRegistrar.setVisible(false);
+                panelIngresarPlato.setSize(926,720);
+                panelIngresarPlato.setLocation(0,0);
+                panelSistema.panelPrincipal.removeAll();
+                panelSistema.panelPrincipal.add(panelIngresarPlato);
+                panelSistema.panelPrincipal.revalidate();
+                panelSistema.panelPrincipal.repaint();             
+            }else if(panelConsultar.comboBoxVista.getSelectedItem().toString().equals("Bebidas")){
+                panelIngresarBebida.txtNombre.setForeground(new Color(230,231,235));
+                panelIngresarBebida.txtDescripcion.setForeground(new Color(230,231,235));
+                Bebida b = bebida.buscarBebida(Integer.parseInt(panelConsultar.labelID.getText()), listaBebidas);
+                indicadorIDBebida = Integer.parseInt(panelConsultar.labelID.getText());
+                panelIngresarBebida.txtNombre.setText(b.getNombre());
+                panelIngresarBebida.comboBoxCategoria.setSelectedIndex(buscarCategoria(b.getCategoria()));
+                panelIngresarBebida.txtDescripcion.setText(b.getDescripcion());
+                panelIngresarBebida.botonGuardarCambios.setVisible(true);
+                panelIngresarBebida.botonRegistrar.setVisible(false);
+                panelIngresarBebida.setSize(926,720);
+                panelIngresarBebida.setLocation(0,0);
+                panelSistema.panelPrincipal.removeAll();
+                panelSistema.panelPrincipal.add(panelIngresarBebida);
+                panelSistema.panelPrincipal.revalidate();
+                panelSistema.panelPrincipal.repaint();
+            }
+        }
+              
+        //BOTONES DEL PANEL: Panel Ingresar Menu
+        
+        if(e.getSource() == panelIngresarMenu.botonRegresar){
+            cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+            panelConsultar.setSize(926,720);
+            panelConsultar.setLocation(0,0);
+            panelSistema.panelPrincipal.removeAll();
+            panelSistema.panelPrincipal.add(panelConsultar);
+            panelSistema.panelPrincipal.revalidate();
+            panelSistema.panelPrincipal.repaint();
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Menu S1
+        
+        if(e.getSource()==panelMS1.botonContinuar){
+            if(!camposVaciosMS1()){
+                if(menu.validarNombre(panelMS1.txtNombre.getText())){
+                    if(!menu.nombreRepetido(listaMenus, panelMS1.txtNombre.getText())){
+                        panelMS2.setSize(385,615);
+                        panelMS2.setLocation(0,0);
+                        panelIngresarMenu.panelIngresar.removeAll();
+                        panelIngresarMenu.panelIngresar.add(panelMS2);
+                        panelIngresarMenu.panelIngresar.revalidate();
+                        panelIngresarMenu.panelIngresar.repaint();                          
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de registrar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+            
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Menu S2
+        
+        if(e.getSource()==panelMS2.botonRegresar){
+            panelMS1.setSize(385,615);
+            panelMS1.setLocation(0,0);
+            panelIngresarMenu.panelIngresar.removeAll();
+            panelIngresarMenu.panelIngresar.add(panelMS1);
+            panelIngresarMenu.panelIngresar.revalidate();
+            panelIngresarMenu.panelIngresar.repaint();
+        }
+        
+        if(e.getSource()==panelMS2.botonContinuar){
+            if(!camposVaciosMS2()){
+                if(validarCamposMS2()){
+                    panelMS3.setSize(385,615);
+                    panelMS3.setLocation(0,0);
+                    panelIngresarMenu.panelIngresar.removeAll();
+                    panelIngresarMenu.panelIngresar.add(panelMS3);
+                    panelIngresarMenu.panelIngresar.revalidate();
+                    panelIngresarMenu.panelIngresar.repaint();  
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe ingresar al menos un plato o bebida", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Menu S3
+        
+        if(e.getSource()==panelMS3.botonRegresar){
+            panelMS2.setSize(385,615);
+            panelMS2.setLocation(0,0);
+            panelIngresarMenu.panelIngresar.removeAll();
+            panelIngresarMenu.panelIngresar.add(panelMS2);
+            panelIngresarMenu.panelIngresar.revalidate();
+            panelIngresarMenu.panelIngresar.repaint();
+        }
+        
+        if(e.getSource()==panelMS3.botonContinuar){
+            if(!camposVaciosMS3()){
+                if(validarCamposMS3()){
+                    panelMS4.setSize(385,615);
+                    panelMS4.setLocation(0,0);
+                    panelIngresarMenu.panelIngresar.removeAll();
+                    panelIngresarMenu.panelIngresar.add(panelMS4);
+                    panelIngresarMenu.panelIngresar.revalidate();
+                    panelIngresarMenu.panelIngresar.repaint();  
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe ingresar al menos un plato o bebida", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Menu S4
+        
+        if(e.getSource()==panelMS4.botonRegresar){
+            panelMS3.setSize(385,615);
+            panelMS3.setLocation(0,0);
+            panelIngresarMenu.panelIngresar.removeAll();
+            panelIngresarMenu.panelIngresar.add(panelMS3);
+            panelIngresarMenu.panelIngresar.revalidate();
+            panelIngresarMenu.panelIngresar.repaint();
+        }
+        
+        if(e.getSource()==panelMS4.botonContinuar){
+            if(!camposVaciosMS4()){
+                if(validarCamposMS4()){
+                    panelMS5.setSize(385,615);
+                    panelMS5.setLocation(0,0);
+                    panelIngresarMenu.panelIngresar.removeAll();
+                    panelIngresarMenu.panelIngresar.add(panelMS5);
+                    panelIngresarMenu.panelIngresar.revalidate();
+                    panelIngresarMenu.panelIngresar.repaint();                      
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe ingresar al menos un plato o bebida", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Menu S5
+        
+        if(e.getSource()==panelMS5.botonRegresar){
+            panelMS4.setSize(385,615);
+            panelMS4.setLocation(0,0);
+            panelIngresarMenu.panelIngresar.removeAll();
+            panelIngresarMenu.panelIngresar.add(panelMS4);
+            panelIngresarMenu.panelIngresar.revalidate();
+            panelIngresarMenu.panelIngresar.repaint();
+        }
+        
+        if(e.getSource()==panelMS5.botonContinuar){
+            if(!camposVaciosMS5()){
+                if(validarCamposMS5()){
+                    panelMS6.setSize(385,615);
+                    panelMS6.setLocation(0,0);
+                    panelIngresarMenu.panelIngresar.removeAll();
+                    panelIngresarMenu.panelIngresar.add(panelMS6);
+                    panelIngresarMenu.panelIngresar.revalidate();
+                    panelIngresarMenu.panelIngresar.repaint();                      
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe ingresar al menos un plato o bebida", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Menu S6
+        
+        if(e.getSource()==panelMS6.botonRegresar){
+            panelMS5.setSize(385,615);
+            panelMS5.setLocation(0,0);
+            panelIngresarMenu.panelIngresar.removeAll();
+            panelIngresarMenu.panelIngresar.add(panelMS5);
+            panelIngresarMenu.panelIngresar.revalidate();
+            panelIngresarMenu.panelIngresar.repaint();
+        }
+        
+        if(e.getSource()==panelMS6.botonRegistrar){
+            if(!camposVaciosMS6()){
+                if(validarCamposMS6()){
+                    registrarPlatosBebidas();
+                    cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+                    panelConsultar.labelID.setVisible(false);
+                    panelConsultar.setSize(926,720);
+                    panelConsultar.setLocation(0,0);
+                    panelSistema.panelPrincipal.removeAll();
+                    panelSistema.panelPrincipal.add(panelConsultar);
+                    panelSistema.panelPrincipal.revalidate();
+                    panelSistema.panelPrincipal.repaint();
+                }
+            }else {
+                JOptionPane.showMessageDialog(null, "Debe ingresar al menos un plato o bebida", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Plato
+ 
         if (e.getSource() == panelIngresarPlato.botonRegistrar) {
             if (!camposVaciosPanelRegistrarPlato()) {
                 String nombre = panelIngresarPlato.txtNombre.getText();
@@ -268,19 +1500,70 @@ public class ControllerMenu implements ActionListener{
                 String descripcion = panelIngresarPlato.txtDescripcion.getText();
                 if (!(plato.nombrePlatoRepetido(listaPlatos, nombre))) {
                     Plato pl = new Plato();
+                    int ID = generarIDPlato();
+                    pl.setID(ID);
                     pl.setNombre(nombre);
                     pl.setCategoria(categoria);
                     pl.setDescripcion(descripcion);
                     listaPlatos.add(pl);
+                    if(pl.getCategoria().equals("Entrada")){
+                        panelMS2.comboBoxP1.addItem(pl.getNombre());
+                        panelMS2.comboBoxP2.addItem(pl.getNombre());
+                        panelMS2.comboBoxP3.addItem(pl.getNombre());
+                        panelMS2.comboBoxP4.addItem(pl.getNombre());
+                        panelMS2.comboBoxP5.addItem(pl.getNombre());
+                        panelMS2.comboBoxP6.addItem(pl.getNombre());
+                    }
+                    if(pl.getCategoria().equals("Primer Tiempo")){
+                        panelMS3.comboBoxP1.addItem(pl.getNombre());
+                        panelMS3.comboBoxP2.addItem(pl.getNombre());
+                        panelMS3.comboBoxP3.addItem(pl.getNombre());
+                        panelMS3.comboBoxP4.addItem(pl.getNombre());
+                        panelMS3.comboBoxP5.addItem(pl.getNombre());
+                        panelMS3.comboBoxP6.addItem(pl.getNombre());
+                    }
+                    if(pl.getCategoria().equals("Segundo Tiempo")){
+                        panelMS4.comboBoxP1.addItem(pl.getNombre());
+                        panelMS4.comboBoxP2.addItem(pl.getNombre());
+                        panelMS4.comboBoxP3.addItem(pl.getNombre());
+                        panelMS4.comboBoxP4.addItem(pl.getNombre());
+                        panelMS4.comboBoxP5.addItem(pl.getNombre());
+                        panelMS4.comboBoxP6.addItem(pl.getNombre());
+                        
+                    }
+                    if(pl.getCategoria().equals("Tercer Tiempo")){
+                        panelMS5.comboBoxP1.addItem(pl.getNombre());
+                        panelMS5.comboBoxP2.addItem(pl.getNombre());
+                        panelMS5.comboBoxP3.addItem(pl.getNombre());
+                        panelMS5.comboBoxP4.addItem(pl.getNombre());
+                        panelMS5.comboBoxP5.addItem(pl.getNombre());
+                        panelMS5.comboBoxP6.addItem(pl.getNombre());
+                    }
+                    if(pl.getCategoria().equals("Postre")){
+                        panelMS6.comboBoxP1.addItem(pl.getNombre());
+                        panelMS6.comboBoxP2.addItem(pl.getNombre());
+                        panelMS6.comboBoxP3.addItem(pl.getNombre());
+                        panelMS6.comboBoxP4.addItem(pl.getNombre());
+                        panelMS6.comboBoxP5.addItem(pl.getNombre());
+                        panelMS6.comboBoxP6.addItem(pl.getNombre());
+                    }
                     try{
                             PS_PLATOBEBIDA=CN.getConnection().prepareStatement(SQL_INSERT_PLATOBEBIDA);
-                            PS_PLATOBEBIDA.setString(1, nombre);
-                            PS_PLATOBEBIDA.setString(2, categoria);
-                            PS_PLATOBEBIDA.setString(3, descripcion);
-                            PS_PLATOBEBIDA.setString(4, "p");
+                            PS_PLATOBEBIDA.setInt(1, ID);
+                            PS_PLATOBEBIDA.setString(2, nombre);
+                            PS_PLATOBEBIDA.setString(3, categoria);
+                            PS_PLATOBEBIDA.setString(4, descripcion);
+                            PS_PLATOBEBIDA.setString(5, "p");
                             int res = PS_PLATOBEBIDA.executeUpdate();
                             if (res > 0){
                                 JOptionPane.showMessageDialog(null, "El plato ha sido registrado con éxito.", "", 1);
+                                cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+                                panelConsultar.setSize(926,720);
+                                panelConsultar.setLocation(0,0);
+                                panelSistema.panelPrincipal.removeAll();
+                                panelSistema.panelPrincipal.add(panelConsultar);
+                                panelSistema.panelPrincipal.revalidate();
+                                panelSistema.panelPrincipal.repaint();
                             }
                         }catch(SQLException ex){
                             JOptionPane.showMessageDialog(null, "Error al guardar los datos del plato en la base de datos: " +ex.getMessage(), "Error", 0);
@@ -302,6 +1585,65 @@ public class ControllerMenu implements ActionListener{
             }
         }
         
+        if(e.getSource()==panelIngresarPlato.botonGuardarCambios){ 
+            Plato p = plato.buscarPlato(indicadorIDPlato, listaPlatos);
+            System.out.print(p.getNombre());
+            if (!camposVaciosPanelRegistrarPlato()) {
+                String nombre = panelIngresarPlato.txtNombre.getText();
+                String categoria = panelIngresarPlato.comboBoxCategoria.getSelectedItem().toString();
+                String descripcion = panelIngresarPlato.txtDescripcion.getText();
+                
+                try {
+                    // Actualiza el plato en la base de datos
+                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE id=?";
+                    PS_PLATOBEBIDA = CN.getConnection().prepareStatement(SQL);
+                    PS_PLATOBEBIDA.setString(1, nombre);
+                    PS_PLATOBEBIDA.setString(2, categoria);
+                    PS_PLATOBEBIDA.setString(3, descripcion);
+                    PS_PLATOBEBIDA.setString(4, "p");
+                    PS_PLATOBEBIDA.setInt(5, indicadorIDPlato);
+                    int res = PS_PLATOBEBIDA.executeUpdate();
+                    if (res > 0) {
+                        plato.modificarPlato(nombre, categoria, descripcion, listaPlatos, indicadorIDPlato);
+                        JOptionPane.showMessageDialog(null, "El plato ha sido modificado con éxito.", "", 1);
+                        ActualizarComboBox();
+                        cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+                        panelConsultar.labelID.setVisible(false);
+                        panelConsultar.setSize(926,720);
+                        panelConsultar.setLocation(0,0);
+                        panelSistema.panelPrincipal.removeAll();
+                        panelSistema.panelPrincipal.add(panelConsultar);
+                        panelSistema.panelPrincipal.revalidate();
+                        panelSistema.panelPrincipal.repaint();
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Error al actualizar los datos del plato en la base de datos: " + ex.getMessage(), "Error", 0);
+                } finally {
+                    PS_PLATOBEBIDA = null;
+                    CN.desconectar();
+                }
+
+                // Limpia los campos del panel
+                panelIngresarPlato.txtNombre.setText("");
+                panelIngresarPlato.comboBoxCategoria.setSelectedIndex(0);
+                panelIngresarPlato.txtDescripcion.setText("");
+            } else {
+                JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de modificar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
+        if(e.getSource() == panelIngresarPlato.botonRegresar){
+            cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+            panelConsultar.setSize(926,720);
+            panelConsultar.setLocation(0,0);
+            panelSistema.panelPrincipal.removeAll();
+            panelSistema.panelPrincipal.add(panelConsultar);
+            panelSistema.panelPrincipal.revalidate();
+            panelSistema.panelPrincipal.repaint();
+        }
+        
+        //BOTONES DEL PANEL: Panel Ingresar Bebida
+        
         if (e.getSource() == panelIngresarBebida.botonRegistrar) {
             if (!camposVaciosPanelRegistrarBebida()) {
                 String nombre = panelIngresarBebida.txtNombre.getText();
@@ -309,19 +1651,70 @@ public class ControllerMenu implements ActionListener{
                 String descripcion = panelIngresarBebida.txtDescripcion.getText();
                 if (!(bebida.nombreBebidaRepetida(listaBebidas, nombre))) {
                     Bebida b = new Bebida();
+                    int ID = generarIDBebida();
+                    b.setID(ID);
                     b.setNombre(nombre);
                     b.setCategoria(categoria);
                     b.setDescripcion(descripcion);
                     listaBebidas.add(b);
+                    if(b.getCategoria().equals("Entrada")){
+                        panelMS2.comboBoxP1.addItem(b.getNombre());
+                        panelMS2.comboBoxP2.addItem(b.getNombre());
+                        panelMS2.comboBoxP3.addItem(b.getNombre());
+                        panelMS2.comboBoxP4.addItem(b.getNombre());
+                        panelMS2.comboBoxP5.addItem(b.getNombre());
+                        panelMS2.comboBoxP6.addItem(b.getNombre());
+                    }
+                    if(b.getCategoria().equals("Primer Tiempo")){
+                        panelMS3.comboBoxP1.addItem(b.getNombre());
+                        panelMS3.comboBoxP2.addItem(b.getNombre());
+                        panelMS3.comboBoxP3.addItem(b.getNombre());
+                        panelMS3.comboBoxP4.addItem(b.getNombre());
+                        panelMS3.comboBoxP5.addItem(b.getNombre());
+                        panelMS3.comboBoxP6.addItem(b.getNombre());
+                    }
+                    if(b.getCategoria().equals("Segundo Tiempo")){
+                        panelMS4.comboBoxP1.addItem(b.getNombre());
+                        panelMS4.comboBoxP2.addItem(b.getNombre());
+                        panelMS4.comboBoxP3.addItem(b.getNombre());
+                        panelMS4.comboBoxP4.addItem(b.getNombre());
+                        panelMS4.comboBoxP5.addItem(b.getNombre());
+                        panelMS4.comboBoxP6.addItem(b.getNombre());
+                        
+                    }
+                    if(b.getCategoria().equals("Tercer Tiempo")){
+                        panelMS5.comboBoxP1.addItem(b.getNombre());
+                        panelMS5.comboBoxP2.addItem(b.getNombre());
+                        panelMS5.comboBoxP3.addItem(b.getNombre());
+                        panelMS5.comboBoxP4.addItem(b.getNombre());
+                        panelMS5.comboBoxP5.addItem(b.getNombre());
+                        panelMS5.comboBoxP6.addItem(b.getNombre());
+                    }
+                    if(b.getCategoria().equals("Postre")){
+                        panelMS6.comboBoxP1.addItem(b.getNombre());
+                        panelMS6.comboBoxP2.addItem(b.getNombre());
+                        panelMS6.comboBoxP3.addItem(b.getNombre());
+                        panelMS6.comboBoxP4.addItem(b.getNombre());
+                        panelMS6.comboBoxP5.addItem(b.getNombre());
+                        panelMS6.comboBoxP6.addItem(b.getNombre());
+                    }
                     try{
                             PS_PLATOBEBIDA=CN.getConnection().prepareStatement(SQL_INSERT_PLATOBEBIDA);
-                            PS_PLATOBEBIDA.setString(1, nombre);
-                            PS_PLATOBEBIDA.setString(2, categoria);
-                            PS_PLATOBEBIDA.setString(3, descripcion);
-                            PS_PLATOBEBIDA.setString(4, "b");
+                            PS_PLATOBEBIDA.setInt(1, ID);
+                            PS_PLATOBEBIDA.setString(2, nombre);
+                            PS_PLATOBEBIDA.setString(3, categoria);
+                            PS_PLATOBEBIDA.setString(4, descripcion);
+                            PS_PLATOBEBIDA.setString(5, "b");
                             int res = PS_PLATOBEBIDA.executeUpdate();
                             if (res > 0){
                                 JOptionPane.showMessageDialog(null, "La bebida ha sido registrada con éxito.", "", 1);
+                                cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+                                panelConsultar.setSize(926,720);
+                                panelConsultar.setLocation(0,0);
+                                panelSistema.panelPrincipal.removeAll();
+                                panelSistema.panelPrincipal.add(panelConsultar);
+                                panelSistema.panelPrincipal.revalidate();
+                                panelSistema.panelPrincipal.repaint();
                             }
                         }catch(SQLException ex){
                             JOptionPane.showMessageDialog(null, "Error al guardar los datos de la bebida en la base de datos: " +ex.getMessage(), "Error", 0);
@@ -343,43 +1736,8 @@ public class ControllerMenu implements ActionListener{
             }
         }
         
-        if(e.getSource()==panelIngresarPlato.botonGuardarCambios){          
-            if (!camposVaciosPanelRegistrarPlato()) {
-                String nombre = panelIngresarPlato.txtNombre.getText();
-                String categoria = panelIngresarPlato.comboBoxCategoria.getSelectedItem().toString();
-                String descripcion = panelIngresarPlato.txtDescripcion.getText();
-                
-                try {
-                    // Actualiza el plato en la base de datos
-                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE nombre=?";
-                    PS_PLATOBEBIDA = CN.getConnection().prepareStatement(SQL);
-                    PS_PLATOBEBIDA.setString(1, nombre);
-                    PS_PLATOBEBIDA.setString(2, categoria);
-                    PS_PLATOBEBIDA.setString(3, descripcion);
-                    PS_PLATOBEBIDA.setString(4, "p");
-                    PS_PLATOBEBIDA.setString(5, indicadorNombrePlato);
-                    int res = PS_PLATOBEBIDA.executeUpdate();
-                    if (res > 0) {
-                        plato.modificarPlato(nombre, categoria, descripcion, listaPlatos, indicadorNombrePlato);
-                        JOptionPane.showMessageDialog(null, "El plato ha sido modificado con éxito.", "", 1);
-                    }
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Error al actualizar los datos del plato en la base de datos: " + ex.getMessage(), "Error", 0);
-                } finally {
-                    PS_PLATOBEBIDA = null;
-                    CN.desconectar();
-                }
-
-                // Limpia los campos del panel
-                panelIngresarPlato.txtNombre.setText("");
-                panelIngresarPlato.comboBoxCategoria.setSelectedIndex(0);
-                panelIngresarPlato.txtDescripcion.setText("");
-            } else {
-                JOptionPane.showMessageDialog(null, "Ingrese todos los campos antes de modificar", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-        
-        if(e.getSource()==panelIngresarBebida.botonGuardarCambios){          
+        if(e.getSource()==panelIngresarBebida.botonGuardarCambios){   
+            Bebida b = bebida.buscarBebida(indicadorIDBebida, listaBebidas);
             if (!camposVaciosPanelRegistrarBebida()) {
                 String nombre = panelIngresarBebida.txtNombre.getText();
                 String categoria = panelIngresarBebida.comboBoxCategoria.getSelectedItem().toString();
@@ -387,17 +1745,26 @@ public class ControllerMenu implements ActionListener{
 
                 try {
                     // Actualiza la bebida en la base de datos
-                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE nombre=?";
+                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE id=?"; 
                     PS_PLATOBEBIDA = CN.getConnection().prepareStatement(SQL);
                     PS_PLATOBEBIDA.setString(1, nombre);
                     PS_PLATOBEBIDA.setString(2, categoria);
                     PS_PLATOBEBIDA.setString(3, descripcion);
                    PS_PLATOBEBIDA.setString(4, "b");
-                    PS_PLATOBEBIDA.setString(5, indicadorNombreBebida);
+                    PS_PLATOBEBIDA.setInt(5, indicadorIDBebida);
                     int res = PS_PLATOBEBIDA.executeUpdate();
                     if (res > 0) {
-                        bebida.modificarBebida(nombre, categoria, descripcion, listaBebidas, indicadorNombreBebida);
+                        bebida.modificarBebida(nombre, categoria, descripcion, listaBebidas, indicadorIDBebida);
                         JOptionPane.showMessageDialog(null, "La bebida ha sido modificada con éxito.", "", 1);
+                        ActualizarComboBox();
+                        cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+                        panelConsultar.labelID.setVisible(false);
+                        panelConsultar.setSize(926,720);
+                        panelConsultar.setLocation(0,0);
+                        panelSistema.panelPrincipal.removeAll();
+                        panelSistema.panelPrincipal.add(panelConsultar);
+                        panelSistema.panelPrincipal.revalidate();
+                        panelSistema.panelPrincipal.repaint();
                     }
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(null, "Error al actualizar los datos de la bebida en la base de datos: " + ex.getMessage(), "Error", 0);
@@ -415,42 +1782,39 @@ public class ControllerMenu implements ActionListener{
             }
         }
         
-        if(e.getSource()==panelConsultar.botonEditar){
-            if(panelConsultar.comboBoxVista.getSelectedItem().toString().equals("Platos")){
-                panelIngresarPlato.txtNombre.setForeground(new Color(230,231,235));
-                panelIngresarPlato.txtDescripcion.setForeground(new Color(230,231,235));
-                Plato pl = plato.buscarPlato(panelConsultar.labelNombrePoB.getText(), listaPlatos);
-                indicadorNombrePlato = panelConsultar.labelNombrePoB.getText();
-                panelIngresarPlato.txtNombre.setText(pl.getNombre());
-                panelIngresarPlato.comboBoxCategoria.setSelectedIndex(buscarCategoria(pl.getCategoria()));
-                panelIngresarPlato.txtDescripcion.setText(pl.getDescripcion());
-                panelIngresarPlato.botonGuardarCambios.setVisible(true);
-                panelIngresarPlato.botonRegistrar.setVisible(false);
-                panelIngresarPlato.setSize(926,720);
-                panelIngresarPlato.setLocation(0,0);
-                panelSistema.panelPrincipal.removeAll();
-                panelSistema.panelPrincipal.add(panelIngresarPlato);
-                panelSistema.panelPrincipal.revalidate();
-                panelSistema.panelPrincipal.repaint();             
-            }else if(panelConsultar.comboBoxVista.getSelectedItem().toString().equals("Bebidas")){
-                panelIngresarBebida.txtNombre.setForeground(new Color(230,231,235));
-                panelIngresarBebida.txtDescripcion.setForeground(new Color(230,231,235));
-                Bebida b = bebida.buscarBebida(panelConsultar.labelNombrePoB.getText(), listaBebidas);
-                indicadorNombreBebida = panelConsultar.labelNombrePoB.getText();
-                panelIngresarBebida.txtNombre.setText(b.getNombre());
-                panelIngresarBebida.comboBoxCategoria.setSelectedIndex(buscarCategoria(b.getCategoria()));
-                panelIngresarBebida.txtDescripcion.setText(b.getDescripcion());
-                panelIngresarBebida.botonGuardarCambios.setVisible(true);
-                panelIngresarBebida.botonRegistrar.setVisible(false);
-                panelIngresarBebida.setSize(926,720);
-                panelIngresarBebida.setLocation(0,0);
-                panelSistema.panelPrincipal.removeAll();
-                panelSistema.panelPrincipal.add(panelIngresarBebida);
-                panelSistema.panelPrincipal.revalidate();
-                panelSistema.panelPrincipal.repaint();
-            }
+        if(e.getSource() == panelIngresarBebida.botonRegresar){
+            cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+            panelConsultar.setSize(926,720);
+            panelConsultar.setLocation(0,0);
+            panelSistema.panelPrincipal.removeAll();
+            panelSistema.panelPrincipal.add(panelConsultar);
+            panelSistema.panelPrincipal.revalidate();
+            panelSistema.panelPrincipal.repaint();
         }
         
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        if ( e.getStateChange() == ItemEvent.SELECTED ){
+            if(e.getItem().toString().equals("Menús") || 
+               e.getItem().toString().equals("Platos") ||
+               e.getItem().toString().equals("Bebidas")){
+                cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+            }
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
     }
     
 }
