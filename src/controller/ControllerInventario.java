@@ -89,6 +89,14 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     private DefaultTableModel DT;
     private ResultSet RS;
     
+    private final String SQL_INSERT_LOTE = "INSERT INTO Lote (idLote, nombre, tipo, unidad, cantidad, fechaVencimiento,"
+            + " fechaRegistro, responsable, documentoIdentidad, tipoRegistro, idInsumo) values (?,?,?,?,?,?,?,?,?,?,?)";
+    private PreparedStatement PS_LOTE;                                                         
+    
+    private final String SQL_SELECT_LOTE = "SELECT * FROM Lote";
+    private DefaultTableModel DT_LOTE;
+    private ResultSet RS_LOTE;
+    
     private DefaultTableModel modeloEntrada, modeloSalida;
     
     private final Calendar calendar = Calendar.getInstance();
@@ -174,10 +182,12 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         panelIngresarProveedor.botonRegresarI.addActionListener(this);
 
         PS = null;
+        PS_LOTE = null;
         CN= new ConexionServidor();
         
         setDatosInventario();
         setDatosProveedor();
+        setDatosLote();
         
         /*inventario.revisarInsumoVencido(fechaActual, inventario.getListaInsumos());
         inventario.mandarMensajeInsumosVencidos();*/
@@ -325,6 +335,91 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             CN.desconectar();
         }
         return DT_PROVEEDOR;
+    }
+    
+    private DefaultTableModel setColumnasLote(){
+        DT_LOTE = new DefaultTableModel();
+        DT_LOTE.addColumn("idLote");
+        DT_LOTE.addColumn("nombre");
+        DT_LOTE.addColumn("tipo");
+        DT_LOTE.addColumn("unidad");
+        DT_LOTE.addColumn("cantidad");
+        DT_LOTE.addColumn("fechaVencimiento");
+        DT_LOTE.addColumn("fechaRegistro");
+        DT_LOTE.addColumn("responsable");
+        DT_LOTE.addColumn("documentoIdentidad");
+        DT_LOTE.addColumn("tipoRegistro");
+        DT_LOTE.addColumn("idInsumo");
+        return DT_LOTE;
+    }
+ 
+    public DefaultTableModel setDatosLote(){
+        try{
+            // Establece modelo de tabla
+            setColumnasLote();
+            // Conexion a BD para obtener informacion de tabla Lote
+            PS_LOTE = CN.getConnection().prepareStatement(SQL_SELECT_LOTE);
+            RS_LOTE = PS_LOTE.executeQuery();
+                
+            ArrayList<Lote> listaLotes = new ArrayList<>();
+            int idAux = 1;
+            String fechaRegistro=""; String responsable=""; 
+            String documentoIdentidad =""; String tipoRegistro = "";
+            Registro registro;
+            while (RS_LOTE.next()){
+                int idLote = RS_LOTE.getInt(1);
+                String nombre = RS_LOTE.getString(2);
+                String tipo = RS_LOTE.getString(3);
+                String unidad = RS_LOTE.getString(4);
+                double cantidad = RS_LOTE.getDouble(5);
+                String fechaVencimiento = RS_LOTE.getString(6);
+                int idInsumo = RS_LOTE.getInt(11);
+                /*fechaRegistro = RS_LOTE.getString(7);
+                responsable = RS_LOTE.getString(8);
+                documentoIdentidad = RS_LOTE.getString(9);
+                tipoRegistro = RS_LOTE.getString(10);*/
+                if (idAux == idLote) {
+                    Lote lote = new Lote(idInsumo, idLote, nombre, tipo, unidad, cantidad,fechaVencimiento);
+                    listaLotes.add(lote);
+                    fechaRegistro = RS_LOTE.getString(7);
+                    responsable = RS_LOTE.getString(8);
+                    documentoIdentidad = RS_LOTE.getString(9);
+                    tipoRegistro = RS_LOTE.getString(10);
+                    if (RS_LOTE.isLast()) {
+                        registro = new Registro(tipoRegistro,fechaRegistro,responsable,documentoIdentidad,listaLotes);
+                        listaRegistros.add(registro);
+                    }
+                }
+                else {
+                    registro = new Registro(tipoRegistro,fechaRegistro,responsable,documentoIdentidad,listaLotes);
+                    listaRegistros.add(registro);
+                    listaLotes = new ArrayList<>();
+                    idAux++;
+                    Lote lote = new Lote(idInsumo, idLote, nombre, tipo, unidad, cantidad,fechaVencimiento);
+                    listaLotes.add(lote);
+                    if (RS_LOTE.isLast()) {
+                        fechaRegistro = RS_LOTE.getString(7);
+                        responsable = RS_LOTE.getString(8);
+                        documentoIdentidad = RS_LOTE.getString(9);
+                        tipoRegistro = RS_LOTE.getString(10);
+                        registro = new Registro(tipoRegistro,fechaRegistro,responsable,documentoIdentidad,listaLotes);
+                        listaRegistros.add(registro);
+                    }
+                }
+            }
+            
+        }
+        // Excepcion si no se pudo listar las tablas
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error al listar los datos de los lotes: " +e.getMessage(), "Error", 0);
+        }
+        // Finaliza conexion con BD
+        finally{
+            PS_LOTE=null;
+            RS_LOTE=null;
+            CN.desconectar();
+        }
+        return DT_LOTE;
     }
     
     public void mostrarCamposConsultarProveedores(boolean visible){
@@ -1176,6 +1271,10 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             if(!validarFechasIngresarLoteEntrada()){
                 if(!validarCantidadesIngresarLote()){
                     ArrayList<Lote> listaLotes = new ArrayList<>();
+                    boolean guardado = true;
+                    String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
+                    String responsable = panelIngresarLotes.txtResponsable.getText();
+                    String documento = panelIngresarLotes.txtCedula.getText();
                     for (int i = 0; i<inventario.getListaInsumos().size(); i++){
                         int j = 0;
                         int id = Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString()); j++;
@@ -1184,18 +1283,42 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                         String unidad = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
                         double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i,j).toString());j++;
                         String fechaV = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();
-                         
                         int largo = inventario.getListaInsumos().size();
                         int posicion = largo - i - 1;
-                        Lote lote = new Lote(inventario.getListaInsumos().get(posicion).getId(), id,nombre,tipo,unidad,cantidad, fechaV);
-                        listaLotes.add(lote);
+                        int idInsumo = inventario.getListaInsumos().get(posicion).getId();
+                        try {
+                            PS_LOTE = CN.getConnection().prepareStatement(SQL_INSERT_LOTE);
+                            PS_LOTE.setInt(1, id);
+                            PS_LOTE.setString(2, nombre);
+                            PS_LOTE.setString(3, tipo);
+                            PS_LOTE.setString(4, unidad);
+                            PS_LOTE.setDouble(5, cantidad);
+                            PS_LOTE.setString(6, fechaV);
+                            PS_LOTE.setString(7, fechaRegistro);
+                            PS_LOTE.setString(8, responsable);
+                            PS_LOTE.setString(9, documento);
+                            PS_LOTE.setString(10, "entrada");
+                            PS_LOTE.setInt(11, idInsumo);
+                            int res = PS_LOTE.executeUpdate();
+                            if (res > 0) {
+                                Lote lote = new Lote(idInsumo, id,nombre,tipo,unidad,cantidad, fechaV);
+                                listaLotes.add(lote);   
+                            }
+                        }catch(SQLException ex){
+                            JOptionPane.showMessageDialog(null, "Error al guardar los datos del registro de entrada en la base de datos: " +ex.getMessage(), "Error", 0);
+                            guardado = false;
+                            break;
+                        }
+                        finally{
+                            PS_LOTE = null;
+                            CN.desconectar();
+                        }
                     }
-                    String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
-                    String responsable = panelIngresarLotes.txtResponsable.getText();
-                    String documento = panelIngresarLotes.txtCedula.getText();
-                    Registro registro = new Registro("entrada",fechaRegistro,responsable,documento,listaLotes);
-                    listaRegistros.add(registro);
-                    JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
+                    if (guardado) {
+                        Registro registro = new Registro("entrada",fechaRegistro,responsable,documento,listaLotes);
+                        listaRegistros.add(registro);
+                        JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
+                    }
                     cargarInsumosEntrada();
                 } else {
                     JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -1208,6 +1331,10 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         if(e.getSource() == panelIngresarLotes.botonRegistrarS){
             if(!validarCantidadesIngresarLote()){
                 ArrayList<Lote> listaLotes = new ArrayList<>();
+                boolean guardado = true;
+                String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
+                String responsable = panelIngresarLotes.txtResponsable.getText();
+                String documento = panelIngresarLotes.txtCedula.getText();
                 for (int i = 0; i<inventario.getListaInsumos().size(); i++){
                     int j = 0;
                     int id = Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString()); j++;
@@ -1215,19 +1342,43 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     String tipo = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
                     String unidad = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
                     double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i,j).toString());
-                         
                     int largo = inventario.getListaInsumos().size();
                     int posicion = largo - i - 1;
-                    Lote lote = new Lote(inventario.getListaInsumos().get(posicion).getId(), id,nombre,tipo,unidad,cantidad, "");
-                    listaLotes.add(lote);
+                    int idInsumo = inventario.getListaInsumos().get(posicion).getId();
+                    try {
+                        PS_LOTE = CN.getConnection().prepareStatement(SQL_INSERT_LOTE);
+                        PS_LOTE.setInt(1, id);
+                        PS_LOTE.setString(2, nombre);
+                        PS_LOTE.setString(3, tipo);
+                        PS_LOTE.setString(4, unidad);
+                        PS_LOTE.setDouble(5, cantidad);
+                        PS_LOTE.setString(6, "");
+                        PS_LOTE.setString(7, fechaRegistro);
+                        PS_LOTE.setString(8, responsable);
+                        PS_LOTE.setString(9, documento);
+                        PS_LOTE.setString(10, "salida");
+                        PS_LOTE.setInt(11, idInsumo);
+                        int res = PS_LOTE.executeUpdate();
+                        if (res > 0) {
+                            Lote lote = new Lote(idInsumo, id,nombre,tipo,unidad,cantidad, "");
+                            listaLotes.add(lote);   
+                        }
+                    }catch(SQLException ex){
+                        JOptionPane.showMessageDialog(null, "Error al guardar los datos del registro de salida en la base de datos: " +ex.getMessage(), "Error", 0);
+                        guardado = false;
+                        break;
+                    }
+                    finally{
+                        PS_LOTE = null;
+                        CN.desconectar();
+                    }
                 } 
-                String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
-                String responsable = panelIngresarLotes.txtResponsable.getText();
-                String documento = panelIngresarLotes.txtCedula.getText();
-                Registro registro = new Registro("salida",fechaRegistro,responsable,documento,listaLotes);
-                listaRegistros.add(registro);
+                if (guardado) {
+                    Registro registro = new Registro("salida",fechaRegistro,responsable,documento,listaLotes);
+                    listaRegistros.add(registro);
+                    JOptionPane.showMessageDialog(null, "El registro de salida de insumos ha sido guardado satisfactoriamente", "", 1);
+                }
                 cargarInsumosSalida();
-                JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
             } else {
                 JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
