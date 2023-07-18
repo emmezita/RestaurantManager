@@ -326,8 +326,6 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
         panelConsultar.labelTituloDescripcion1.setVisible(visible);
         panelConsultar.botonEditar.setVisible(visible);
         panelConsultar.fondoBotonEditar.setVisible(visible);
-        panelConsultar.botonIngresar.setVisible(visible);
-        panelConsultar.fondoBotonIngresar.setVisible(visible);
     }
     
     public void mostrarDatosMenu(boolean visible){
@@ -338,8 +336,6 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
         panelConsultar.labelFondoPanelTiempos.setVisible(visible);
         panelConsultar.jScrollPaneTiempos.setVisible(visible);
         panelConsultar.panelTiempos.setVisible(visible);
-        panelConsultar.labelNombreMenu.setVisible(visible);
-        panelConsultar.fondoBotonIngresar.setVisible(visible);
     }
     
     public void cargarPlatos(){

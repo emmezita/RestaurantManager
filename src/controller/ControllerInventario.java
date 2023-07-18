@@ -580,6 +580,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     @Override
                         public void actionPerformed(ActionEvent e) {
                             frameVer.setTitle("Restaurant Manager");
+                            frameVer.labelCantidadExistente.setText(String.valueOf(i.getCantidad()));
                             frameVer.setSize(355,547);
                             frameVer.setLocationRelativeTo(null);
                             frameVer.setResizable(false);
