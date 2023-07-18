@@ -59,10 +59,12 @@ public class PanelIngresarMenu extends javax.swing.JPanel {
 
     private void botonRegresarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegresarMouseEntered
         // TODO add your handling code here:
+        fondoBotonRegresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/botonRegresarPresionado.png")));
     }//GEN-LAST:event_botonRegresarMouseEntered
 
     private void botonRegresarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegresarMouseExited
         // TODO add your handling code here:
+        fondoBotonRegresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/botonRegresar.png")));
     }//GEN-LAST:event_botonRegresarMouseExited
 
 

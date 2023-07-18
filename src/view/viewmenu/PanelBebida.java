@@ -31,6 +31,7 @@ public class PanelBebida extends javax.swing.JPanel {
         labelIconoBebida = new javax.swing.JLabel();
         labelFondo = new javax.swing.JLabel();
 
+        setOpaque(false);
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         botonBebida.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N

@@ -4,6 +4,8 @@
  */
 package view.viewmenu;
 
+import java.awt.Color;
+
 /**
  *
  * @author emmez
@@ -65,6 +67,11 @@ public class PanelIngresarMenuS1 extends javax.swing.JPanel {
         txtNombre.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtNombre.setText("Nombre");
         txtNombre.setBorder(null);
+        txtNombre.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                txtNombreMousePressed(evt);
+            }
+        });
         add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 290, 250, 40));
 
         labelInputP1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/inputMenu.png"))); // NOI18N
@@ -96,6 +103,14 @@ public class PanelIngresarMenuS1 extends javax.swing.JPanel {
     private void botonContinuarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonContinuarMouseExited
         // TODO add your handling code here:
     }//GEN-LAST:event_botonContinuarMouseExited
+
+    private void txtNombreMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtNombreMousePressed
+        // TODO add your handling code here:
+        if(txtNombre.getText().equals("Nombre")){
+            txtNombre.setText("");
+            txtNombre.setForeground(new Color(230,231,235));
+        }
+    }//GEN-LAST:event_txtNombreMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
