@@ -374,10 +374,6 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                 double cantidad = RS_LOTE.getDouble(5);
                 String fechaVencimiento = RS_LOTE.getString(6);
                 int idInsumo = RS_LOTE.getInt(11);
-                /*fechaRegistro = RS_LOTE.getString(7);
-                responsable = RS_LOTE.getString(8);
-                documentoIdentidad = RS_LOTE.getString(9);
-                tipoRegistro = RS_LOTE.getString(10);*/
                 if (idAux == idLote) {
                     Lote lote = new Lote(idInsumo, idLote, nombre, tipo, unidad, cantidad,fechaVencimiento);
                     listaLotes.add(lote);

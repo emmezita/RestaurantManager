@@ -92,7 +92,7 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
     private DefaultTableModel modeloEmpleado, modeloNomina;
     
     private final String SQL_INSERT_NOMINA = "INSERT INTO DatosPago (cedula,nombre,rol,sueldoDiario,"
-            + "diasTrabajo,netoACobrar,fechaInicio,fechaCierre) values (?,?,?,?,?,?,?,?)";
+            + "diasTrabajo,netoACobrar,fechaInicio,fechaCierre,idNomina) values (?,?,?,?,?,?,?,?,?)";
     private PreparedStatement PS_NOMINA;
     
     private final String SQL_SELECT_NOMINA = "SELECT * FROM DatosPago";
@@ -264,25 +264,40 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
             RS_NOMINA = PS_NOMINA.executeQuery();
             // Busca datos de cada columna
             ArrayList<DatosPago> listaPagos = new ArrayList<>();
-            int i = 1;
+            int idAux = 1;
+            String fechaInicio=""; String fechaCierre="";
+            NominaPago nomina;
             while (RS_NOMINA.next()){
                 String cedula = RS_NOMINA.getString(2);
                 String nombre = RS_NOMINA.getString(3);
                 String rol = RS_NOMINA.getString(4);
                 double sueldoDiario = RS_NOMINA.getDouble(5);
                 int diasTrabajo = RS_NOMINA.getInt(6);
-                double netoACobrar = RS_NOMINA.getDouble(7);                
-                DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
-                listaPagos.add(dp);
-                if (i == listaEmpleados.size()) {
-                    String fechaInicio = RS_NOMINA.getString(8);
-                    String fechaCierre = RS_NOMINA.getString(9);
-                    NominaPago nomina = new NominaPago(fechaInicio, fechaCierre, listaPagos);
+                double netoACobrar = RS_NOMINA.getDouble(7);  
+                int idNomina = RS_NOMINA.getInt(10);
+                if (idAux == idNomina) {
+                    DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
+                    listaPagos.add(dp);
+                    fechaInicio = RS_NOMINA.getString(8);
+                    fechaCierre = RS_NOMINA.getString(9);
+                    if (RS_NOMINA.isLast()) {
+                        nomina = new NominaPago(fechaInicio, fechaCierre, listaPagos, idAux);
+                        listaNominas.add(nomina);  
+                    }
+                } else {
+                    nomina = new NominaPago(fechaInicio, fechaCierre, listaPagos, idAux);
                     listaNominas.add(nomina);
                     listaPagos = new ArrayList<>();
-                    i = 1;
-                } else 
-                    i++;
+                    idAux = idNomina;
+                    DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
+                    listaPagos.add(dp);
+                    if (RS_NOMINA.isLast()) {
+                        fechaInicio = RS_NOMINA.getString(8);
+                        fechaCierre = RS_NOMINA.getString(9);
+                        nomina = new NominaPago(fechaInicio, fechaCierre, listaPagos, idAux);
+                        listaNominas.add(nomina);  
+                    }
+                }
             }
         }
         // Excepcion si no se pudo listar las tablas
@@ -505,6 +520,17 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
             JOptionPane.showMessageDialog(null, "Sólo puede ingresar números en esta celda", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
         
+    }
+    
+    public int generarIDNomina() {
+        int numMax = 0;
+        for (int i = 0; i < listaNominas.size();i++){
+            int num = listaNominas.get(i).getId();
+            if(num > numMax){
+                numMax = num;
+            }
+        }
+        return numMax + 1;
     }
     
     public void cargarEmpleadosNomina(){
@@ -1056,6 +1082,7 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
                                         if(seguir){
                                             ArrayList<DatosPago> listaPagos = new ArrayList<>();
                                             boolean guardado = true;
+                                            int idNomina = generarIDNomina();
                                             for (int i = 0; i<listaEmpleados.size(); i++){
                                                 int j = 0;
                                                 String cedula = panelIngresarN.tablaNominas.getValueAt(i, j).toString(); j++;
@@ -1074,6 +1101,7 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
                                                     PS_NOMINA.setDouble(6, netoACobrar);
                                                     PS_NOMINA.setString(7, fIni);
                                                     PS_NOMINA.setString(8, fCie);
+                                                    PS_NOMINA.setInt(9, idNomina);
                                                     int res = PS_NOMINA.executeUpdate();
                                                     if(res > 0) {
                                                         DatosPago dp = new DatosPago(cedula,nombre, rol, sueldoDiario, diasTrabajo, netoACobrar);
@@ -1090,7 +1118,7 @@ public final class ControllerEmpleados implements ActionListener, ItemListener, 
                                                 }
                                             }
                                             if (guardado) {
-                                                NominaPago np = new NominaPago(fIni,fCie,listaPagos);
+                                                NominaPago np = new NominaPago(fIni,fCie,listaPagos, idNomina);
                                                 listaNominas.add(np);
                                                 JOptionPane.showMessageDialog(null, "La Nómina de Pago ha sido registrada con éxito", "", 1);
                                             }
