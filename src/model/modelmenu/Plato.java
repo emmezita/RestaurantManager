@@ -93,15 +93,15 @@ public class Plato {
     
     // Busca un plato mediante su nombre y devuelve su objeto
     public Plato buscarPlato(int ID, ArrayList<Plato> listaPlatos) {
-    for (Plato p : listaPlatos) {
-        if(p.getID() == ID){    
-            return p;
+        for (Plato p : listaPlatos) {
+            if(p.getID() == ID){    
+                return p;
+            }
         }
-    }
-    return null;
+        return null;
     }
     
-        public void modificarPlato (String nombre, String categoria, String descripcion, ArrayList<Plato> listaPlatos, int indicadorID) {
+    public void modificarPlato (String nombre, String categoria, String descripcion, ArrayList<Plato> listaPlatos, int indicadorID) {
         for (Plato p: listaPlatos){
             if (p.getID() == indicadorID){
                 p.setNombre(nombre);

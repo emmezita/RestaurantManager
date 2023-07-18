@@ -15,6 +15,7 @@ public class PanelBebida extends javax.swing.JPanel {
      */
     public PanelBebida() {
         initComponents();
+        labelFondoPresionado.setVisible(false);
     }
 
     /**
@@ -29,6 +30,7 @@ public class PanelBebida extends javax.swing.JPanel {
         botonBebida = new javax.swing.JButton();
         labelNombreBebida = new javax.swing.JLabel();
         labelIconoBebida = new javax.swing.JLabel();
+        labelFondoPresionado = new javax.swing.JLabel();
         labelFondo = new javax.swing.JLabel();
 
         setOpaque(false);
@@ -59,22 +61,28 @@ public class PanelBebida extends javax.swing.JPanel {
         labelIconoBebida.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/iconoBebida.png"))); // NOI18N
         add(labelIconoBebida, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 20, -1, 30));
 
+        labelFondoPresionado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoNombre.png"))); // NOI18N
+        add(labelFondoPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, -1, -1));
+
         labelFondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoNombre.png"))); // NOI18N
         add(labelFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonBebidaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonBebidaMouseEntered
         // TODO add your handling code here:
+        labelFondoPresionado.setVisible(true);
     }//GEN-LAST:event_botonBebidaMouseEntered
 
     private void botonBebidaMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonBebidaMouseExited
         // TODO add your handling code here:
+        labelFondoPresionado.setVisible(false);
     }//GEN-LAST:event_botonBebidaMouseExited
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton botonBebida;
     private javax.swing.JLabel labelFondo;
+    private javax.swing.JLabel labelFondoPresionado;
     private javax.swing.JLabel labelIconoBebida;
     public javax.swing.JLabel labelNombreBebida;
     // End of variables declaration//GEN-END:variables

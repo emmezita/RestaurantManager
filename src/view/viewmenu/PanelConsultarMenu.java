@@ -18,7 +18,7 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
 
     public PanelConsultarMenu() {
         initComponents();
-        
+        labelID.setVisible(false);
         comboBoxVista.setOpaque(false);
         comboBoxVista.setEditable(true);
         JTextField boxField = (JTextField)comboBoxVista .getEditor().getEditorComponent();
@@ -38,8 +38,6 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        botonEliminar = new javax.swing.JButton();
-        fondoBotonEliminar = new javax.swing.JLabel();
         botonEditar = new javax.swing.JButton();
         fondoBotonEditar = new javax.swing.JLabel();
         botonIngresar = new javax.swing.JButton();
@@ -55,6 +53,7 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         txtBuscar = new javax.swing.JTextField();
         jScrollPaneDescripcion = new javax.swing.JScrollPane();
         txtDescripcion = new javax.swing.JTextArea();
+        labelTituloDescripcion1 = new javax.swing.JLabel();
         labelBarraBuscar = new javax.swing.JLabel();
         labelTipoPoB = new javax.swing.JLabel();
         labelNombrePoB = new javax.swing.JLabel();
@@ -69,32 +68,10 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         jScrollPaneTiempos = new javax.swing.JScrollPane();
         panelTiempos = new javax.swing.JPanel(new GridLayout(0, 1, 1, 1));
         labelFondoPanelTiempos = new javax.swing.JLabel();
-        labelTituloDescripcion1 = new javax.swing.JLabel();
         labelID = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(39, 45, 47));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        botonEliminar.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
-        botonEliminar.setForeground(new java.awt.Color(230, 231, 235));
-        botonEliminar.setBorder(null);
-        botonEliminar.setBorderPainted(false);
-        botonEliminar.setContentAreaFilled(false);
-        botonEliminar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        botonEliminar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        botonEliminar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonEliminarMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonEliminarMouseExited(evt);
-            }
-        });
-        add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 460, 70, 60));
-
-        fondoBotonEliminar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        fondoBotonEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/botonEliminar.png"))); // NOI18N
-        add(fondoBotonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 460, 70, 60));
 
         botonEditar.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
         botonEditar.setForeground(new java.awt.Color(230, 231, 235));
@@ -194,6 +171,11 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
 
         add(jScrollPaneDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 270, 330, 110));
 
+        labelTituloDescripcion1.setFont(new java.awt.Font("Open Sans Medium", 0, 15)); // NOI18N
+        labelTituloDescripcion1.setForeground(new java.awt.Color(255, 197, 41));
+        labelTituloDescripcion1.setText("Descripción:");
+        add(labelTituloDescripcion1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 240, 240, -1));
+
         labelBarraBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/barraBuscar.png"))); // NOI18N
         add(labelBarraBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 152, 310, 50));
 
@@ -252,11 +234,6 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         labelFondoPanelTiempos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoPanelTiempos.png"))); // NOI18N
         add(labelFondoPanelTiempos, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 200, -1, -1));
 
-        labelTituloDescripcion1.setFont(new java.awt.Font("Open Sans Medium", 0, 15)); // NOI18N
-        labelTituloDescripcion1.setForeground(new java.awt.Color(255, 197, 41));
-        labelTituloDescripcion1.setText("Descripción:");
-        add(labelTituloDescripcion1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 240, 240, -1));
-
         labelID.setFont(new java.awt.Font("Open Sans Medium", 0, 15)); // NOI18N
         labelID.setForeground(new java.awt.Color(255, 197, 41));
         add(labelID, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 100, 100, 30));
@@ -282,24 +259,12 @@ public class PanelConsultarMenu extends javax.swing.JPanel {
         fondoBotonEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/botonEditar.png")));
     }//GEN-LAST:event_botonEditarMouseExited
 
-    private void botonEliminarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseEntered
-        // TODO add your handling code here:
-        fondoBotonEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/botonEliminarPresionado.png")));
-    }//GEN-LAST:event_botonEliminarMouseEntered
-
-    private void botonEliminarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseExited
-        // TODO add your handling code here:
-        fondoBotonEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/botonEliminar.png")));
-    }//GEN-LAST:event_botonEliminarMouseExited
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton botonEditar;
-    public javax.swing.JButton botonEliminar;
     public javax.swing.JButton botonIngresar;
     public javax.swing.JComboBox<String> comboBoxVista;
     public javax.swing.JLabel fondoBotonEditar;
-    public javax.swing.JLabel fondoBotonEliminar;
     public javax.swing.JLabel fondoBotonIngresar;
     private javax.swing.JLabel fondoComboMenu;
     private javax.swing.JLabel fondoPanelMenus;

@@ -25,7 +25,7 @@ public class PanelIngresarMenuS2 extends javax.swing.JPanel {
         comboBoxP1.setEditable(true);
         JTextField boxField = (JTextField)comboBoxP1 .getEditor().getEditorComponent();
         boxField.setBorder(BorderFactory.createEmptyBorder());
-        boxField.setForeground(Color.LIGHT_GRAY);
+        boxField.setForeground(new Color(230,231,235));
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxP1.setRenderer(new MyComboBoxRender());
@@ -34,7 +34,7 @@ public class PanelIngresarMenuS2 extends javax.swing.JPanel {
         comboBoxP2.setEditable(true);
         boxField = (JTextField)comboBoxP2 .getEditor().getEditorComponent();
         boxField.setBorder(BorderFactory.createEmptyBorder());
-        boxField.setForeground(Color.LIGHT_GRAY);
+        boxField.setForeground(new Color(230,231,235));
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxP2.setRenderer(new MyComboBoxRender());
@@ -43,7 +43,7 @@ public class PanelIngresarMenuS2 extends javax.swing.JPanel {
         comboBoxP3.setEditable(true);
         boxField = (JTextField)comboBoxP3 .getEditor().getEditorComponent();
         boxField.setBorder(BorderFactory.createEmptyBorder());
-        boxField.setForeground(Color.LIGHT_GRAY);
+        boxField.setForeground(new Color(230,231,235));
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxP3.setRenderer(new MyComboBoxRender());
@@ -52,7 +52,7 @@ public class PanelIngresarMenuS2 extends javax.swing.JPanel {
         comboBoxP4.setEditable(true);
         boxField = (JTextField)comboBoxP4.getEditor().getEditorComponent();
         boxField.setBorder(BorderFactory.createEmptyBorder());
-        boxField.setForeground(Color.LIGHT_GRAY);
+        boxField.setForeground(new Color(230,231,235));
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxP4.setRenderer(new MyComboBoxRender());
@@ -61,7 +61,7 @@ public class PanelIngresarMenuS2 extends javax.swing.JPanel {
         comboBoxP5.setEditable(true);
         boxField = (JTextField)comboBoxP5.getEditor().getEditorComponent();
         boxField.setBorder(BorderFactory.createEmptyBorder());
-        boxField.setForeground(Color.LIGHT_GRAY);
+        boxField.setForeground(new Color(230,231,235));
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxP5.setRenderer(new MyComboBoxRender());
@@ -70,7 +70,7 @@ public class PanelIngresarMenuS2 extends javax.swing.JPanel {
         comboBoxP6.setEditable(true);
         boxField = (JTextField)comboBoxP6 .getEditor().getEditorComponent();
         boxField.setBorder(BorderFactory.createEmptyBorder());
-        boxField.setForeground(Color.LIGHT_GRAY);
+        boxField.setForeground(new Color(230,231,235));
         boxField.setBackground(new Color(0, 0, 0, 0));
         boxField.setFocusable(false);
         comboBoxP6.setRenderer(new MyComboBoxRender());

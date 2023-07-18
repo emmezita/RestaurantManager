@@ -15,6 +15,7 @@ public class PanelPlato extends javax.swing.JPanel {
      */
     public PanelPlato() {
         initComponents();
+        labelFondoPresionado.setVisible(false);
     }
 
     /**
@@ -29,6 +30,7 @@ public class PanelPlato extends javax.swing.JPanel {
         botonPlato = new javax.swing.JButton();
         labelNombrePlato = new javax.swing.JLabel();
         labelIconoPlato = new javax.swing.JLabel();
+        labelFondoPresionado = new javax.swing.JLabel();
         labelFondo = new javax.swing.JLabel();
 
         setOpaque(false);
@@ -49,11 +51,6 @@ public class PanelPlato extends javax.swing.JPanel {
                 botonPlatoMouseExited(evt);
             }
         });
-        botonPlato.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonPlatoActionPerformed(evt);
-            }
-        });
         add(botonPlato, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, 262, 50));
 
         labelNombrePlato.setFont(new java.awt.Font("Open Sans SemiBold", 0, 15)); // NOI18N
@@ -64,26 +61,28 @@ public class PanelPlato extends javax.swing.JPanel {
         labelIconoPlato.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/iconoPlato.png"))); // NOI18N
         add(labelIconoPlato, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, 30));
 
+        labelFondoPresionado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoNombre.png"))); // NOI18N
+        add(labelFondoPresionado, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, -1, -1));
+
         labelFondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/fondoNombre.png"))); // NOI18N
         add(labelFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 10, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonPlatoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonPlatoMouseEntered
         // TODO add your handling code here:
+        labelFondoPresionado.setVisible(true);
     }//GEN-LAST:event_botonPlatoMouseEntered
 
     private void botonPlatoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonPlatoMouseExited
         // TODO add your handling code here:
+        labelFondoPresionado.setVisible(false);
     }//GEN-LAST:event_botonPlatoMouseExited
-
-    private void botonPlatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPlatoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_botonPlatoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton botonPlato;
     private javax.swing.JLabel labelFondo;
+    private javax.swing.JLabel labelFondoPresionado;
     private javax.swing.JLabel labelIconoPlato;
     public javax.swing.JLabel labelNombrePlato;
     // End of variables declaration//GEN-END:variables
