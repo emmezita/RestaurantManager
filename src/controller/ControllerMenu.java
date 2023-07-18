@@ -324,6 +324,10 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
         panelConsultar.txtDescripcion.setVisible(visible);
         panelConsultar.jScrollPaneDescripcion.setVisible(visible);
         panelConsultar.labelTituloDescripcion1.setVisible(visible);
+        panelConsultar.botonEditar.setVisible(visible);
+        panelConsultar.fondoBotonEditar.setVisible(visible);
+        panelConsultar.botonIngresar.setVisible(visible);
+        panelConsultar.fondoBotonIngresar.setVisible(visible);
     }
     
     public void mostrarDatosMenu(boolean visible){
@@ -335,11 +339,13 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
         panelConsultar.jScrollPaneTiempos.setVisible(visible);
         panelConsultar.panelTiempos.setVisible(visible);
         panelConsultar.labelNombreMenu.setVisible(visible);
+        panelConsultar.fondoBotonIngresar.setVisible(visible);
     }
     
     public void cargarPlatos(){
         mostrarDatosBedidaoPlato(false);
         mostrarDatosMenu(false);
+        panelConsultar.labelTItulo.setText("PLATOS");
         panelConsultar.panelMenu.removeAll();
         for (Plato pl : listaPlatos) {
             PanelPlato panelP = new PanelPlato();
@@ -368,6 +374,7 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
     public void cargarBebidas(){
         mostrarDatosBedidaoPlato(false);
         mostrarDatosMenu(false);
+        panelConsultar.labelTItulo.setText("BEBIDAS");
         panelConsultar.panelMenu.removeAll();
         for (Bebida be : listaBebidas) {
             PanelBebida panelB = new PanelBebida();
@@ -539,6 +546,7 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
     public void cargarMenus(){
         mostrarDatosBedidaoPlato(false);
         mostrarDatosMenu(false);
+        panelConsultar.labelTItulo.setText("MENÚS");
         panelConsultar.panelMenu.removeAll();
         for (Menu m : listaMenus) {
             PanelMenu panelM = new PanelMenu();
