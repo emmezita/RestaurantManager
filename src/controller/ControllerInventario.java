@@ -564,11 +564,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
 
                 // Verifica los datos del insumo para saber en que panel colocarlos
                 // Panel de vencidos
-                if (i.isVencido()) {
-                    panelConsultar.panelInsumosVencidos.add(panel);
-                }
-                // Panel por reponer
-                else if (i.getCantidad() == 0) {
+                if (i.getCantidad() == 0) {
                     panelConsultar.panelInsumosPorReponer.add(panel);
                 }
                 // Panel de disponibles
@@ -808,6 +804,22 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             int posicion = largo - i - 1;
             double calculo = inventario.getListaInsumos().get(posicion).getCantidad() + cantidad;
             inventario.getListaInsumos().get(posicion).setCantidad(calculo);
+            /*try{
+                String SQL = "UPDATE Insumo SET cantidad=? WHERE idInsumo=? and idLote?";
+                PS = CN.getConnection().prepareStatement(SQL);
+                PS.setString(1, String.valueOf(calculo));
+                PS.setInt(2, inventario.getListaInsumos().get(posicion).getId());
+                PS.setInt(3, Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, 0).toString()));
+                int res = PS.executeUpdate();
+                if (res > 0) {
+                    JOptionPane.showMessageDialog(null, "Las cantidades se actualizaron.", "", 1);
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error al actualizar los datos del insumo en la base de datos: " + ex.getMessage(), "Error", 0);
+            } finally {
+                PS = null;
+                CN.desconectar();
+            }*/
         }
     }
     
@@ -818,6 +830,22 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             int posicion = largo - i - 1;
             double calculo = inventario.getListaInsumos().get(posicion).getCantidad() - cantidad;
             inventario.getListaInsumos().get(posicion).setCantidad(calculo);
+            /*try{
+                String SQL = "UPDATE Insumo SET cantidad=? WHERE idInsumo=? and idLote?";
+                PS = CN.getConnection().prepareStatement(SQL);
+                PS.setString(1, String.valueOf(calculo));
+                PS.setInt(2, inventario.getListaInsumos().get(posicion).getId());
+                PS.setInt(3, Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, 0).toString()));
+                int res = PS.executeUpdate();
+                if (res > 0) {
+                    JOptionPane.showMessageDialog(null, "Las cantidades se actualizaron.", "", 1);
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error al actualizar los datos del insumo en la base de datos: " + ex.getMessage(), "Error", 0);
+            } finally {
+                PS = null;
+                CN.desconectar();
+            }*/
         }
     }
     
@@ -1009,7 +1037,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     String tipo = frameVer.comboBoxTipoInsumo.getSelectedItem().toString();
                     String unidad =  frameVer.comboBoxUnidad.getSelectedItem().toString();
                     String proveedor = frameVer.comboBoxProveedor.getSelectedItem().toString();
-                    try{
+                try{
                         String SQL = "UPDATE Insumo SET tipoinsumo=?, unidad=?, nombre=?, proveedor=? WHERE idInsumo=?";
                         PS = CN.getConnection().prepareStatement(SQL);
                         PS.setString(1, tipo);
