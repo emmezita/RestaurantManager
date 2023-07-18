@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 public class Bebida {
     
+    private int ID;
     private String nombre;
     private String categoria;
     private String descripcion;
@@ -16,10 +17,19 @@ public class Bebida {
     public Bebida() {
     }
 
-    public Bebida(String nombre, String categoria, String descripcion) {
+    public Bebida(int ID, String nombre, String categoria, String descripcion) {
+        this.ID = ID;
         this.nombre = nombre;
         this.categoria = categoria;
         this.descripcion = descripcion;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public String getNombre() {
@@ -81,9 +91,9 @@ public class Bebida {
     }
     
     // Busca una bebida mediante su nombre y devuelve su objeto
-    public Bebida buscarBebida(String nombre, ArrayList<Bebida> listaBebidas) {
+    public Bebida buscarBebida(int ID, ArrayList<Bebida> listaBebidas) {
     for (Bebida b : listaBebidas) {
-        if (b.getNombre().equals(nombre)) {
+        if(b.getID() == ID){
             return b;
         }
     }
@@ -91,9 +101,9 @@ public class Bebida {
     }
     
     // Modifica la información de una bebida en una lista en memoria
-    public void modificarBebida(String nombre, String categoria, String descripcion, ArrayList<Bebida> listaBebidas, String indicadorNombre) {
+    public void modificarBebida(String nombre, String categoria, String descripcion, ArrayList<Bebida> listaBebidas, int indicadorID) {
     for (Bebida b : listaBebidas) {
-        if (b.getNombre().equals(indicadorNombre)) {
+        if (b.getID() == indicadorID) {
             b.setNombre(nombre);
             b.setCategoria(categoria);
             b.setDescripcion(descripcion);

@@ -44,8 +44,8 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
     private Plato plato = new Plato();
     private Bebida bebida = new Bebida();
     
-    private String indicadorNombrePlato = "";
-    private String indicadorNombreBebida = "";       
+    private int indicadorIDPlato = -1;
+    private int indicadorIDBebida = -1;       
     
     private static final ArrayList<Plato> listaPlatos = new ArrayList<>();
     private static final ArrayList<Bebida> listaBebidas = new ArrayList<>();
@@ -57,7 +57,7 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
     private PreparedStatement PS;                                                                                                                   
     private final ConexionServidor CN;
     
-    private final String SQL_INSERT_PLATOBEBIDA = "INSERT INTO PlatoBebida (nombre,categoria,descripcion,tipo) values (?,?,?,?)";
+    private final String SQL_INSERT_PLATOBEBIDA = "INSERT INTO PlatoBebida (id,nombre,categoria,descripcion,tipo) values (?,?,?,?,?)";
     private PreparedStatement PS_PLATOBEBIDA;
     
     private final String SQL_SELECT_PLATOBEBIDA = "SELECT * FROM PlatoBebida";
@@ -133,6 +133,7 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
     
     private DefaultTableModel setColumnasPlatoBebida(){
         DT_PLATOBEBIDA = new DefaultTableModel();
+        DT_PLATOBEBIDA.addColumn("id");
         DT_PLATOBEBIDA.addColumn("nombre");
         DT_PLATOBEBIDA.addColumn("categoria");
         DT_PLATOBEBIDA.addColumn("descripcion");
@@ -151,16 +152,17 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
             RS_PLATOBEBIDA = PS_PLATOBEBIDA.executeQuery();
             // Busca datos de cada columna
             while (RS_PLATOBEBIDA.next()){
-                String nombre = RS_PLATOBEBIDA.getString(1);
-                String categoria = RS_PLATOBEBIDA.getString(2);
-                String descripcion = RS_PLATOBEBIDA.getString(3);
-                String tipo = RS_PLATOBEBIDA.getString(4);
+                int ID = RS_PLATOBEBIDA.getInt(1);
+                String nombre = RS_PLATOBEBIDA.getString(2);
+                String categoria = RS_PLATOBEBIDA.getString(3);
+                String descripcion = RS_PLATOBEBIDA.getString(4);
+                String tipo = RS_PLATOBEBIDA.getString(5);
                 
                 if (tipo.equals("p")){
-                    Plato p = new Plato(nombre,categoria,descripcion);
+                    Plato p = new Plato(ID,nombre,categoria,descripcion);
                     listaPlatos.add(p);
                 }else if(tipo.equals("b")){
-                    Bebida b = new Bebida(nombre,categoria,descripcion);
+                    Bebida b = new Bebida(ID,nombre,categoria,descripcion);
                     listaBebidas.add(b);
                 }
                 
@@ -191,6 +193,28 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
             ||panelIngresarBebida.comboBoxCategoria.getSelectedIndex()==0;
     }
     
+    public int generarIDPlato(){
+        int numMax = 0;
+        for (int i = 0; i<listaPlatos.size();i++){
+            int num=listaPlatos.get(i).getID();
+            if(num > numMax){
+                numMax = num;
+            }
+        }
+        return numMax + 1;
+    }  
+    
+        public int generarIDBebida(){
+        int numMax = 0;
+        for (int i = 0; i<listaBebidas.size();i++){
+            int num=listaBebidas.get(i).getID();
+            if(num > numMax){
+                numMax = num;
+            }
+        }
+        return numMax + 1;
+    }  
+    
     public int buscarCategoria (String categoria){
         switch (categoria){
             case "Entrada": return 1;
@@ -209,7 +233,7 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
         panelConsultar.labelLineaPoB.setVisible(visible);
         panelConsultar.labelTipoPoB.setVisible(visible);
         panelConsultar.labelNombrePoB.setVisible(visible);
-        panelConsultar.labelTituloDescripcion.setVisible(visible);
+        panelConsultar.labelID.setVisible(visible);
         panelConsultar.txtDescripcion.setVisible(visible);
         panelConsultar.jScrollPaneDescripcion.setVisible(visible);
     }
@@ -240,6 +264,7 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
                     //indicadorCedula = em.getCedula();
                     panelConsultar.labelImagenPoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/imagenPlato.png")));
                     mostrarDatosBedidaoPlato(true);    
+                    panelConsultar.labelID.setText(Integer.toString(pl.getID()));
                     panelConsultar.labelNombrePoB.setText(pl.getNombre());
                     panelConsultar.labelTipoPoB.setText("Plato");
                     panelConsultar.txtDescripcion.setText(pl.getDescripcion());
@@ -266,7 +291,8 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
                     // Actualizar el texto del JLabel
                     //indicadorCedula = em.getCedula();
                     panelConsultar.labelImagenPoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/imagesviewmenu/imagenBebida.png")));
-                    mostrarDatosBedidaoPlato(true);      
+                    mostrarDatosBedidaoPlato(true);
+                    panelConsultar.labelID.setText(Integer.toString(be.getID()));
                     panelConsultar.labelNombrePoB.setText(be.getNombre());
                     panelConsultar.labelTipoPoB.setText("Bebida");
                     panelConsultar.txtDescripcion.setText(be.getDescripcion());
@@ -369,6 +395,7 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
         //Boton icono de menu
         if(e.getSource() == panelSistema.botonMenu){
             cargarPaneles(panelConsultar.comboBoxVista.getSelectedItem().toString());
+            panelConsultar.labelID.setVisible(false);
             panelConsultar.setSize(926,720);
             panelConsultar.setLocation(0,0);
             panelSistema.panelPrincipal.removeAll();
@@ -583,6 +610,8 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
                 String descripcion = panelIngresarPlato.txtDescripcion.getText();
                 if (!(plato.nombrePlatoRepetido(listaPlatos, nombre))) {
                     Plato pl = new Plato();
+                    int ID = generarIDPlato();
+                    pl.setID(ID);
                     pl.setNombre(nombre);
                     pl.setCategoria(categoria);
                     pl.setDescripcion(descripcion);
@@ -624,6 +653,8 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
                 String descripcion = panelIngresarBebida.txtDescripcion.getText();
                 if (!(bebida.nombreBebidaRepetida(listaBebidas, nombre))) {
                     Bebida b = new Bebida();
+                    int ID = generarIDBebida();
+                    b.setID(ID);
                     b.setNombre(nombre);
                     b.setCategoria(categoria);
                     b.setDescripcion(descripcion);
@@ -666,16 +697,16 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
                 
                 try {
                     // Actualiza el plato en la base de datos
-                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE nombre=?";
+                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE id=?";
                     PS_PLATOBEBIDA = CN.getConnection().prepareStatement(SQL);
                     PS_PLATOBEBIDA.setString(1, nombre);
                     PS_PLATOBEBIDA.setString(2, categoria);
                     PS_PLATOBEBIDA.setString(3, descripcion);
                     PS_PLATOBEBIDA.setString(4, "p");
-                    PS_PLATOBEBIDA.setString(5, indicadorNombrePlato);
+                    PS_PLATOBEBIDA.setInt(5, indicadorIDPlato);
                     int res = PS_PLATOBEBIDA.executeUpdate();
                     if (res > 0) {
-                        plato.modificarPlato(nombre, categoria, descripcion, listaPlatos, indicadorNombrePlato);
+                        plato.modificarPlato(nombre, categoria, descripcion, listaPlatos, indicadorIDPlato);
                         JOptionPane.showMessageDialog(null, "El plato ha sido modificado con éxito.", "", 1);
                     }
                 } catch (SQLException ex) {
@@ -702,16 +733,16 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
 
                 try {
                     // Actualiza la bebida en la base de datos
-                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE nombre=?";
+                    String SQL = "UPDATE PlatoBebida SET nombre=?, categoria=?, descripcion=?, tipo=? WHERE id=?"; 
                     PS_PLATOBEBIDA = CN.getConnection().prepareStatement(SQL);
                     PS_PLATOBEBIDA.setString(1, nombre);
                     PS_PLATOBEBIDA.setString(2, categoria);
                     PS_PLATOBEBIDA.setString(3, descripcion);
                    PS_PLATOBEBIDA.setString(4, "b");
-                    PS_PLATOBEBIDA.setString(5, indicadorNombreBebida);
+                    PS_PLATOBEBIDA.setInt(5, indicadorIDBebida);
                     int res = PS_PLATOBEBIDA.executeUpdate();
                     if (res > 0) {
-                        bebida.modificarBebida(nombre, categoria, descripcion, listaBebidas, indicadorNombreBebida);
+                        bebida.modificarBebida(nombre, categoria, descripcion, listaBebidas, indicadorIDBebida);
                         JOptionPane.showMessageDialog(null, "La bebida ha sido modificada con éxito.", "", 1);
                     }
                 } catch (SQLException ex) {
@@ -734,8 +765,8 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
             if(panelConsultar.comboBoxVista.getSelectedItem().toString().equals("Platos")){
                 panelIngresarPlato.txtNombre.setForeground(new Color(230,231,235));
                 panelIngresarPlato.txtDescripcion.setForeground(new Color(230,231,235));
-                Plato pl = plato.buscarPlato(panelConsultar.labelNombrePoB.getText(), listaPlatos);
-                indicadorNombrePlato = panelConsultar.labelNombrePoB.getText();
+                Plato pl = plato.buscarPlato(Integer.parseInt(panelConsultar.labelID.getText()), listaPlatos);
+                indicadorIDPlato = Integer.parseInt(panelConsultar.labelID.getText());
                 panelIngresarPlato.txtNombre.setText(pl.getNombre());
                 panelIngresarPlato.comboBoxCategoria.setSelectedIndex(buscarCategoria(pl.getCategoria()));
                 panelIngresarPlato.txtDescripcion.setText(pl.getDescripcion());
@@ -750,8 +781,8 @@ public class ControllerMenu implements ActionListener, ItemListener, KeyListener
             }else if(panelConsultar.comboBoxVista.getSelectedItem().toString().equals("Bebidas")){
                 panelIngresarBebida.txtNombre.setForeground(new Color(230,231,235));
                 panelIngresarBebida.txtDescripcion.setForeground(new Color(230,231,235));
-                Bebida b = bebida.buscarBebida(panelConsultar.labelNombrePoB.getText(), listaBebidas);
-                indicadorNombreBebida = panelConsultar.labelNombrePoB.getText();
+                Bebida b = bebida.buscarBebida(Integer.parseInt(panelConsultar.labelID.getText()), listaBebidas);
+                indicadorIDBebida = Integer.parseInt(panelConsultar.labelID.getText());
                 panelIngresarBebida.txtNombre.setText(b.getNombre());
                 panelIngresarBebida.comboBoxCategoria.setSelectedIndex(buscarCategoria(b.getCategoria()));
                 panelIngresarBebida.txtDescripcion.setText(b.getDescripcion());
