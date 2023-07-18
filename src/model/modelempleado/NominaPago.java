@@ -14,16 +14,19 @@ public class NominaPago {
     private String fechaInicio;
     private String fechaCierre;
     private ArrayList<DatosPago> listaPagos;
+    private int id;
 
-    public NominaPago(String fechaInicio, String fechaCierre, ArrayList<DatosPago> listaPagos) {
+    public NominaPago(String fechaInicio, String fechaCierre, ArrayList<DatosPago> listaPagos, int id) {
         this.fechaInicio = fechaInicio;
         this.fechaCierre = fechaCierre;
         this.listaPagos = listaPagos;
+        this.id = id;
     }
 
     public NominaPago() {
         fechaInicio = "";
         fechaCierre = "";
+        id = 0;
     }
 
     public String getFechaInicio() {
@@ -48,6 +51,14 @@ public class NominaPago {
 
     public void setListaPagos(ArrayList<DatosPago> listaPagos) {
         this.listaPagos = listaPagos;
+    }
+    
+    public int getId() {
+        return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
     }
     
     public boolean nominaRepetida(ArrayList<NominaPago> listaNominas, String fechaInicio, String fechaCierre){

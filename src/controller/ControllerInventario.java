@@ -374,10 +374,6 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                 double cantidad = RS_LOTE.getDouble(5);
                 String fechaVencimiento = RS_LOTE.getString(6);
                 int idInsumo = RS_LOTE.getInt(11);
-                /*fechaRegistro = RS_LOTE.getString(7);
-                responsable = RS_LOTE.getString(8);
-                documentoIdentidad = RS_LOTE.getString(9);
-                tipoRegistro = RS_LOTE.getString(10);*/
                 if (idAux == idLote) {
                     Lote lote = new Lote(idInsumo, idLote, nombre, tipo, unidad, cantidad,fechaVencimiento);
                     listaLotes.add(lote);
@@ -790,6 +786,71 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             }
         }
         return flag;
+    }
+    
+    public boolean validarCantidadesInsumoSalidaLote() {
+        boolean flag = true;
+        for(int i = 0; i<inventario.getListaInsumos().size();i++){
+            double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i, 4).toString());
+            int largo = inventario.getListaInsumos().size();
+            int posicion = largo - i - 1;
+            if ( (inventario.getListaInsumos().get(posicion).getCantidad() - cantidad) < 0 )
+                flag = false;
+        }
+        return flag;
+    }
+    
+    public void ingresarCantidadInsumos() {
+        for(int i = 0; i<inventario.getListaInsumos().size();i++){
+            double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i, 4).toString());
+            int largo = inventario.getListaInsumos().size();
+            int posicion = largo - i - 1;
+            double calculo = inventario.getListaInsumos().get(posicion).getCantidad() + cantidad;
+            inventario.getListaInsumos().get(posicion).setCantidad(calculo);
+        }
+    }
+    
+    public void salidaCantidadInsumos() {
+        for(int i = 0; i<inventario.getListaInsumos().size();i++){
+            double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i, 4).toString());
+            int largo = inventario.getListaInsumos().size();
+            int posicion = largo - i - 1;
+            double calculo = inventario.getListaInsumos().get(posicion).getCantidad() - cantidad;
+            inventario.getListaInsumos().get(posicion).setCantidad(calculo);
+        }
+    }
+    
+    public boolean validarTipoDeCantidadBotellas() {
+        boolean flag = true;
+        double cantidad = 0.00;
+        for(int i = 0; i<inventario.getListaInsumos().size();i++){
+            if(panelIngresarLotes.tablaEntradas.getValueAt(i,3).toString().equals("Botella"))
+                cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i, 4).toString());
+                if (cantidad % 1 != 0)
+                    flag = false;
+        }
+        return flag;
+    }
+    
+    public Inventario insumosVencidos() {
+        Inventario listaVencidos = new Inventario();
+        listaVencidos.getListaInsumos().addAll(inventario.getListaInsumos());
+        ArrayList<Lote> ultimoLote = listaRegistros.get(listaRegistros.size()-1).getListaLotes();
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        Date fechaVencimiento = null;
+        String fechaV;
+        for (int i = 0; i < ultimoLote.size();i++) {
+            fechaV = ultimoLote.get(i).getFechaVencimiento();
+            try {
+                fechaVencimiento = formato.parse(fechaV);
+            } catch (ParseException ex) {
+                Logger.getLogger(ControllerInventario.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (fechaVencimiento.equals(fechaActual) || fechaVencimiento.after(fechaActual)) {
+                listaVencidos.eliminarInsumo(ultimoLote.get(i).getIdInsummo());
+            } 
+        }
+        return listaVencidos;
     }
     
     public void cargarEntradas(String fechaFiltro){
@@ -1252,7 +1313,7 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
             if(fila >= 0){
                 Date fechaVencimiento = panelIngresarLotes.jDateFechaV.getDate();
                 if(fechaVencimiento != null){
-                    if(fechaVencimiento.equals(fechaActual) || fechaVencimiento.before(fechaActual)){
+                    if(fechaVencimiento.equals(fechaActual) || fechaVencimiento.equals(fechaActual)){
                         JOptionPane.showMessageDialog(null, "La fecha de vencimiento no puede ser igual o anterior a la fecha de hoy", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     } else {
                         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
@@ -1317,7 +1378,9 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
                     if (guardado) {
                         Registro registro = new Registro("entrada",fechaRegistro,responsable,documento,listaLotes);
                         listaRegistros.add(registro);
+                        ingresarCantidadInsumos();
                         JOptionPane.showMessageDialog(null, "El registro de entrada de insumos ha sido guardado satisfactoriamente", "", 1);
+                    
                     }
                     cargarInsumosEntrada();
                 } else {
@@ -1330,55 +1393,64 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
         
         if(e.getSource() == panelIngresarLotes.botonRegistrarS){
             if(!validarCantidadesIngresarLote()){
-                ArrayList<Lote> listaLotes = new ArrayList<>();
-                boolean guardado = true;
-                String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
-                String responsable = panelIngresarLotes.txtResponsable.getText();
-                String documento = panelIngresarLotes.txtCedula.getText();
-                for (int i = 0; i<inventario.getListaInsumos().size(); i++){
-                    int j = 0;
-                    int id = Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString()); j++;
-                    String nombre = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
-                    String tipo = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
-                    String unidad = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
-                    double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i,j).toString());
-                    int largo = inventario.getListaInsumos().size();
-                    int posicion = largo - i - 1;
-                    int idInsumo = inventario.getListaInsumos().get(posicion).getId();
-                    try {
-                        PS_LOTE = CN.getConnection().prepareStatement(SQL_INSERT_LOTE);
-                        PS_LOTE.setInt(1, id);
-                        PS_LOTE.setString(2, nombre);
-                        PS_LOTE.setString(3, tipo);
-                        PS_LOTE.setString(4, unidad);
-                        PS_LOTE.setDouble(5, cantidad);
-                        PS_LOTE.setString(6, "");
-                        PS_LOTE.setString(7, fechaRegistro);
-                        PS_LOTE.setString(8, responsable);
-                        PS_LOTE.setString(9, documento);
-                        PS_LOTE.setString(10, "salida");
-                        PS_LOTE.setInt(11, idInsumo);
-                        int res = PS_LOTE.executeUpdate();
-                        if (res > 0) {
-                            Lote lote = new Lote(idInsumo, id,nombre,tipo,unidad,cantidad, "");
-                            listaLotes.add(lote);   
+                if (validarTipoDeCantidadBotellas()) {
+                    if(validarCantidadesInsumoSalidaLote()) {
+                        ArrayList<Lote> listaLotes = new ArrayList<>();
+                        boolean guardado = true;
+                        String fechaRegistro = panelIngresarLotes.txtFechaIngreso.getText();
+                        String responsable = panelIngresarLotes.txtResponsable.getText();
+                        String documento = panelIngresarLotes.txtCedula.getText();
+                        for (int i = 0; i<inventario.getListaInsumos().size(); i++){
+                            int j = 0;
+                            int id = Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString()); j++;
+                            String nombre = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                            String tipo = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                            String unidad = panelIngresarLotes.tablaEntradas.getValueAt(i, j).toString();j++;
+                            double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i,j).toString());
+                            int largo = inventario.getListaInsumos().size();
+                            int posicion = largo - i - 1;
+                            int idInsumo = inventario.getListaInsumos().get(posicion).getId();
+                            try {
+                                PS_LOTE = CN.getConnection().prepareStatement(SQL_INSERT_LOTE);
+                                PS_LOTE.setInt(1, id);
+                                PS_LOTE.setString(2, nombre);
+                                PS_LOTE.setString(3, tipo);
+                                PS_LOTE.setString(4, unidad);
+                                PS_LOTE.setDouble(5, cantidad);
+                                PS_LOTE.setString(6, "");
+                                PS_LOTE.setString(7, fechaRegistro);
+                                PS_LOTE.setString(8, responsable);
+                                PS_LOTE.setString(9, documento);
+                                PS_LOTE.setString(10, "salida");
+                                PS_LOTE.setInt(11, idInsumo);
+                                int res = PS_LOTE.executeUpdate();
+                                if (res > 0) {
+                                    Lote lote = new Lote(idInsumo, id,nombre,tipo,unidad,cantidad, "");
+                                    listaLotes.add(lote);   
+                                }
+                            }catch(SQLException ex){
+                                JOptionPane.showMessageDialog(null, "Error al guardar los datos del registro de salida en la base de datos: " +ex.getMessage(), "Error", 0);
+                                guardado = false;
+                                break;
+                            }
+                            finally{
+                                PS_LOTE = null;
+                                CN.desconectar();
+                            }
+                        } 
+                        if (guardado) {
+                            Registro registro = new Registro("salida",fechaRegistro,responsable,documento,listaLotes);
+                            listaRegistros.add(registro);
+                            salidaCantidadInsumos();
+                            JOptionPane.showMessageDialog(null, "El registro de salida de insumos ha sido guardado satisfactoriamente", "", 1);
                         }
-                    }catch(SQLException ex){
-                        JOptionPane.showMessageDialog(null, "Error al guardar los datos del registro de salida en la base de datos: " +ex.getMessage(), "Error", 0);
-                        guardado = false;
-                        break;
+                        cargarInsumosSalida();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Cantidad insuficiente de insumos en el inventario", "Advertencia", JOptionPane.WARNING_MESSAGE); 
                     }
-                    finally{
-                        PS_LOTE = null;
-                        CN.desconectar();
-                    }
-                } 
-                if (guardado) {
-                    Registro registro = new Registro("salida",fechaRegistro,responsable,documento,listaLotes);
-                    listaRegistros.add(registro);
-                    JOptionPane.showMessageDialog(null, "El registro de salida de insumos ha sido guardado satisfactoriamente", "", 1);
+                } else {
+                JOptionPane.showMessageDialog(null, "Las botellas no se le pueden descontar cantidades decimales", "Advertencia", JOptionPane.WARNING_MESSAGE);   
                 }
-                cargarInsumosSalida();
             } else {
                 JOptionPane.showMessageDialog(null, "Debe haber al menos un insumo con una cantidad mayor a 0", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
