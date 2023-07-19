@@ -798,54 +798,52 @@ public class ControllerInventario implements ActionListener, ItemListener, KeyLi
     }
     
     public void ingresarCantidadInsumos() {
+        int res = 0;
         for(int i = 0; i<inventario.getListaInsumos().size();i++){
             double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i, 4).toString());
             int largo = inventario.getListaInsumos().size();
             int posicion = largo - i - 1;
             double calculo = inventario.getListaInsumos().get(posicion).getCantidad() + cantidad;
             inventario.getListaInsumos().get(posicion).setCantidad(calculo);
-            /*try{
-                String SQL = "UPDATE Insumo SET cantidad=? WHERE idInsumo=? and idLote?";
+            try{
+                String SQL = "UPDATE Insumo SET cantidad=? WHERE idInsumo ='"+inventario.getListaInsumos().get(posicion).getId()+"'";
                 PS = CN.getConnection().prepareStatement(SQL);
-                PS.setString(1, String.valueOf(calculo));
-                PS.setInt(2, inventario.getListaInsumos().get(posicion).getId());
-                PS.setInt(3, Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, 0).toString()));
-                int res = PS.executeUpdate();
-                if (res > 0) {
-                    JOptionPane.showMessageDialog(null, "Las cantidades se actualizaron.", "", 1);
-                }
+                PS.setDouble(1, calculo);
+                res = PS.executeUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error al actualizar los datos del insumo en la base de datos: " + ex.getMessage(), "Error", 0);
             } finally {
                 PS = null;
                 CN.desconectar();
-            }*/
+            }
+        }
+        if (res > 0) {
+            JOptionPane.showMessageDialog(null, "Las cantidades se actualizaron.", "", 1);
         }
     }
     
     public void salidaCantidadInsumos() {
+        int res = 0;
         for(int i = 0; i<inventario.getListaInsumos().size();i++){
             double cantidad = Double.parseDouble(panelIngresarLotes.tablaEntradas.getValueAt(i, 4).toString());
             int largo = inventario.getListaInsumos().size();
             int posicion = largo - i - 1;
             double calculo = inventario.getListaInsumos().get(posicion).getCantidad() - cantidad;
             inventario.getListaInsumos().get(posicion).setCantidad(calculo);
-            /*try{
-                String SQL = "UPDATE Insumo SET cantidad=? WHERE idInsumo=? and idLote?";
+            try{
+                String SQL = "UPDATE Insumo SET cantidad=? WHERE idInsumo ='"+inventario.getListaInsumos().get(posicion).getId()+"'";
                 PS = CN.getConnection().prepareStatement(SQL);
-                PS.setString(1, String.valueOf(calculo));
-                PS.setInt(2, inventario.getListaInsumos().get(posicion).getId());
-                PS.setInt(3, Integer.parseInt(panelIngresarLotes.tablaEntradas.getValueAt(i, 0).toString()));
-                int res = PS.executeUpdate();
-                if (res > 0) {
-                    JOptionPane.showMessageDialog(null, "Las cantidades se actualizaron.", "", 1);
-                }
+                PS.setDouble(1, calculo);
+                res = PS.executeUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error al actualizar los datos del insumo en la base de datos: " + ex.getMessage(), "Error", 0);
             } finally {
                 PS = null;
                 CN.desconectar();
-            }*/
+            }
+        }
+        if (res > 0) {
+            JOptionPane.showMessageDialog(null, "Las cantidades se actualizaron.", "", 1);
         }
     }
     
