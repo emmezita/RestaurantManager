@@ -2,18 +2,15 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerInventario.java</file>
-            <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerEmpleados.java</file>
-            <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/model/modelinventario/Registro.java</file>
-            <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/view/viewinventario/PanelConsultarLotes.java</file>
-            <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerReservaciones.java</file>
-        </group>
         <group/>
         <group>
             <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/view/viewmenu/PanelConsultarMenu.java</file>
             <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerMenu.java</file>
             <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerUsuarios.java</file>
+        </group>
+        <group>
+            <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerInventario.java</file>
+            <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerMenu.java</file>
         </group>
         <group>
             <file>file:/C:/Users/emmez/OneDrive/Documentos/Universidad/7.%20Quinto%20semestre/Ingeniería%20del%20Software/Proyecto/RestaurantManager/src/controller/ControllerInventario.java</file>
