@@ -229,8 +229,8 @@ public class ControllerLogin implements ActionListener{
                             panelSistema.iconoEmpleados.setVisible(true);
                             panelSistema.botonInventario.setVisible(true);
                             panelSistema.iconoInventario.setVisible(true);
-                            panelSistema.botonMenu.setVisible(true);
-                            panelSistema.iconoIMenu.setVisible(true);
+                            panelSistema.botonMenu.setVisible(false);
+                            panelSistema.iconoIMenu.setVisible(false);
                             for(int i = 0; i<4 ; i++){
                                 if(g.getRol().equals("Gerente")){
                                     if(!g.getResp()[i]){

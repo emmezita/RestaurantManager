@@ -19,6 +19,8 @@ public class FrameAsignarRol extends javax.swing.JFrame {
     public FrameAsignarRol() {
         initComponents();
         setIconImage(getIconImage());
+        labelMenus.setVisible(false);
+        botonMenu.setVisible(false);
     }
     
     @Override
