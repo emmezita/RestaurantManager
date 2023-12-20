@@ -2061,7 +2061,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                             JOptionPane.showMessageDialog(null, "El comensal ha sido registrado con éxito. Continúe con el registro", "", 1);
                         }
                     }catch(SQLException ex){
-                        JOptionPane.showMessageDialog(null, "Error al guardar los datos del empleado en la base de datos: " +ex.getMessage(), "Error", 0);
+                        JOptionPane.showMessageDialog(null, "Error al guardar los datos del comensal en la base de datos: " +ex.getMessage(), "Error", 0);
                     }finally{
                             PS_COMENSAL=null;
                             CN.desconectar();
@@ -2253,7 +2253,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                     }
                 }catch(SQLException ex){
                     System.out.println(ex);
-                    JOptionPane.showMessageDialog(null, "Error al guardar los datos del empleado en la base de datos: " +ex.getMessage(), "Error", 0);
+                    JOptionPane.showMessageDialog(null, "Error al guardar los datos de la reservacion en la base de datos: " +ex.getMessage(), "Error", 0);
                 }
                 finally{
                     PS_RESERVACION=null;
@@ -2404,7 +2404,7 @@ public class ControllerReservaciones implements ActionListener, ChangeListener, 
                             }
                         }
                     }catch(SQLException ex){
-                        JOptionPane.showMessageDialog(null, "Error al guardar los datos del empleado en la base de datos: " +ex.getMessage(), "Error", 0);
+                        JOptionPane.showMessageDialog(null, "Error al guardar los datos de la reservacion en la base de datos: " +ex.getMessage(), "Error", 0);
                     }
                     finally{
                         PS_RESERVACION=null;
